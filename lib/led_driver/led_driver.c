@@ -22,7 +22,9 @@
 #define MODE2_INVRT   0x10  // Invert logic: 1 = High duty cycle is Sink (GND)
 #define MODE2_OUTDRV  0x04  // 0 = Open-Drain, 1 = Totem-Pole
 
-#define MAX_BRIGHTNESS 32 // Standardize on full 12-bit range
+#define MAX_BRIGHTNESS 200 // Standardize on full 12-bit range
+
+int brightness = 50;
 
 static void write8(pca9685_t *dev, uint8_t reg, uint8_t val) {
     uint8_t buf[2] = {reg, val};
@@ -42,14 +44,14 @@ bool pca9685_init(pca9685_t *dev, i2c_inst_t *i2c, uint8_t addr) {
     dev->osc_freq = PCA9685_OSC_FREQ;
 
     // 1. Enter sleep to allow configuration
-    pca9685_sleep(dev, 1);
+    pca9685_sleep(dev);
 
     // 2. Set MODE2: Open-Drain (0) and Inverted Polarity (1)
     // This makes 4095 = LED Full Bright for cathode-wired setups
     write8(dev, MODE2, MODE2_INVRT);
 
     // 3. Set PWM frequency
-    pca9685_set_pwm_freq(dev, 1000);
+    pca9685_set_pwm_freq(dev, brightness);
 
     // 4. Wake up and enable Auto-Increment
     write8(dev, MODE1, MODE1_AI);
@@ -92,9 +94,14 @@ void pca9685_set_pin(pca9685_t *dev, uint8_t channel, uint16_t value) {
     }
 }
 
-void pca9685_sleep(pca9685_t *dev, bool enable) {
+bool pca9685_checkSleep(pca9685_t *dev) {
+    uint8_t sleepModeQuestionMark = read8(&vu_meter, 0x00) & 0x10; // check MODE1 bit 4
+    return sleepModeQuestionMark;
+}
+
+void pca9685_sleep(pca9685_t *dev) {
     uint8_t mode1 = read8(dev, MODE1);
-    write8(dev, MODE1, mode1 | (enable << 4));
+    write8(dev, MODE1, mode1 | (1 << 4));
 }
 
 void pca9685_wakeup(pca9685_t *dev) {
@@ -102,6 +109,14 @@ void pca9685_wakeup(pca9685_t *dev) {
     write8(dev, MODE1, mode & ~MODE1_SLEEP);
     sleep_ms(1);
     write8(dev, MODE1, (mode & ~MODE1_SLEEP) | MODE1_RESTART);
+}
+
+void pca9685_toggleSleep(pca9685_t *dev) {
+    if (pca9685_checkSleep(dev)) {
+        pca9685_wakeup(dev);
+    } else {
+        pca9685_sleep(dev);
+    }
 }
 
 // ... (pca9685_set_pwm_freq remains the same) ...
@@ -151,22 +166,47 @@ void pca9685_update_vu(pca9685_t *dev, uint16_t adc_left, uint16_t adc_right) {
 
         // Left Bank Logic
         if (peak_l >= threshold) {
-            pca9685_set_pin(dev, pin_l, MAX_BRIGHTNESS);
+            pca9685_set_pin(dev, pin_l, brightness);
         } else if (peak_l > prev_threshold) {
             float fraction = (peak_l - prev_threshold) * 8.0f;
-            pca9685_set_pin(dev, pin_l, (uint16_t)(fraction * MAX_BRIGHTNESS));
+            pca9685_set_pin(dev, pin_l, (uint16_t)(fraction * brightness));
         } else {
             pca9685_set_pin(dev, pin_l, 0);
         }
 
         // Right Bank Logic
         if (peak_r >= threshold) {
-            pca9685_set_pin(dev, pin_r, MAX_BRIGHTNESS);
+            pca9685_set_pin(dev, pin_r, brightness);
         } else if (peak_r > prev_threshold) {
             float fraction = (peak_r - prev_threshold) * 8.0f;
-            pca9685_set_pin(dev, pin_r, (uint16_t)(fraction * MAX_BRIGHTNESS));
+            pca9685_set_pin(dev, pin_r, (uint16_t)(fraction * brightness));
         } else {
             pca9685_set_pin(dev, pin_r, 0);
         }
     }
+}
+
+int pca9685_get_brightness(){
+    return brightness;
+}
+
+void pca9685_set_brightness(int new_brightness){
+    brightness = new_brightness;
+}
+
+void pca9685_decrease_brightness(float x){
+    if (x == 0) brightness = 0;
+    else brightness = brightness * (x * x);
+}
+
+void pca9685_increase_brightness(float x){
+    if (brightness * (x * x) >= MAX_BRIGHTNESS) brightness = MAX_BRIGHTNESS;
+    else brightness = brightness * (x * x);
+}
+void pca9685_update_brightness(float x){
+    int calc = MAX_BRIGHTNESS * (x * x * x) + 1;
+    if (x == 0) brightness = 0;
+    else if (calc > MAX_BRIGHTNESS) brightness = MAX_BRIGHTNESS;
+    else brightness = calc;
+    printf("led_b: %d\n", brightness);
 }

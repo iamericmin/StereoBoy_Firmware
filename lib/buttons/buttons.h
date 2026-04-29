@@ -35,7 +35,9 @@ uint8_t buttons_get_raw_state(void);
 uint8_t buttons_get_just_pressed(void);
 
 
-char buttons_map_to_char_jukebox(int currentEq);
+char buttons_map_to_char_jukebox(void);
+
+char get_button_repeat(char input_char);
 
 char buttons_map_menu_navigation(void);
 

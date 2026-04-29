@@ -46,12 +46,16 @@ extern bool warping;
 
 extern uint16_t play_icon[400];
 extern uint16_t pause_icon[400];
+extern uint16_t empty_icon[400];
+extern uint16_t ff_icon[400];
+extern uint16_t rew_icon[400];
 extern uint16_t frame_buffer[SCREEN_WIDTH * SCREEN_HEIGHT];
 
 extern struct st7789_t st7789_cfg;
 extern uint16_t st7789_width;
 extern uint16_t st7789_height;
 extern bool st7789_data_mode;
+extern float x_brightness;
 
 typedef struct st7789_t {
     spi_inst_t* spi;
@@ -64,9 +68,11 @@ typedef struct st7789_t {
 } st7789_t;
 
 //POT
-extern bool potCheck;
 
 //SB_UTIL
+#define MAX_FILENAME_LEN 256 // max filaname character length
+#define MAX_TRACKS 128 // max number of mp3 files in sd card
+
 extern mutex_t text_buff_mtx;
 extern semaphore_t text_sem;
 extern int visualizer;
@@ -94,6 +100,9 @@ typedef struct {
     char album[128];
 } track_info_t;
 
+extern track_info_t tracks[MAX_TRACKS];
+extern int count;
+
 //CODEC
 typedef struct {
     spi_inst_t *spi;
@@ -114,5 +123,21 @@ struct Node {
     struct Node * next;
     char str[30];
 };
+extern uint16_t* playStatus;
+extern uint16_t* ff_rew_status;
+extern int progress_bar;
+extern bool enableIcons;
+extern int song_choice;
+
+// ST7789 uses 16-bit RGB565 colors
+extern uint16_t played_progres_color;
+extern uint16_t background_progress_color;
+
+#define played_progres_color 0xFFFF
+#define background_progress_color 0x0000
+extern int selected_band;
+extern volatile uint16_t potVal;
+
+
 
 #endif

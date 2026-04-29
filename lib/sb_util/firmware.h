@@ -1,7 +1,0 @@
-#include "lib/dac/dac.h"
-#include "lib/adc/adc.h"
-#include "lib/led_driver/led_driver.h"
-#include "lib/display/display.h"
-#include "lib/buttons/buttons.h"
-#include "lib/pot/pot.h"
-#include "lib/codec/vs1053.h"

@@ -42,6 +42,10 @@
 
 #define DAC_VOL_MIN   0x00
 #define DAC_VOL_MAX   0x60
+//Constants for chaning eq
+#define NUM_EQ_BANDS 6
+#define MAX_GAIN_DB 6.0f
+#define MIN_GAIN_DB -6.0f
 
 
 uint8_t dac_read(uint8_t page, uint8_t reg);

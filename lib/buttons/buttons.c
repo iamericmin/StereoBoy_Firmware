@@ -1,7 +1,5 @@
+#include "lib/sb_util/global_vars.h"
 #include "buttons.h"
-#include "pico/stdlib.h"
-#include "hardware/gpio.h"
-#include "pico/time.h"
 
 // --- Pin Definitions ---
 static const uint PIN_LATCH = 11;
@@ -58,7 +56,6 @@ uint8_t buttons_get_raw_state(void) {
     return current_button_states;
 }
 
-
 uint8_t buttons_get_just_pressed(void) {
     // Snapshot volatile state
     uint8_t current = current_button_states;
@@ -75,16 +72,16 @@ uint8_t buttons_get_just_pressed(void) {
 
 //CHAT MADE THESE FUNCTIONS BELOW!!!
 //maps buttons to characters for use in jukebox, allows for multibutton presses
-char buttons_map_to_char_jukebox(int currentEq) {
-    uint8_t raw = buttons_get_raw_state();       // Is a button HELD
-    uint8_t edge = buttons_get_just_pressed();   // Was a button CLICKED
+char buttons_map_to_char_jukebox(void) {
+    uint8_t edge = ~buttons_get_raw_state();       // Is a button HELD
+    // uint8_t edge = buttons_get_just_pressed();   // Was a button CLICKED
 
     // Identify if the modifier (SELECT) is currently being held
-    bool select_held = (raw & BTN_SELECT);
+    bool select_held = (edge & BTN_SELECT);
     // Process the "Just Pressed" buttons based on the modifier
     if (edge == 0) return 0; // No new press detected
 
-    if (select_held) {
+    if (!select_held) {
         // --- Standard actions (just button) ---
         if (edge & BTN_A)     return 'p'; // B = pause
         if (edge & BTN_B)     return 's'; // A = stop
@@ -99,7 +96,9 @@ char buttons_map_to_char_jukebox(int currentEq) {
         if (edge & BTN_L) return 'r'; // Select + Left = Rewind
         if (edge & BTN_U) return '+';
         if (edge & BTN_D) return '-';
-        if (edge & BTN_A) return (char) (((currentEq % 5) + 1) + '0'); //need to check this
+        if (edge & BTN_A) return 'e'; 
+        if (edge & BTN_START) return 'm';
+        if (edge & BTN_B) return 'l'; // turn off VU meter
     }
     return 0; // No match found
 }
@@ -140,13 +139,14 @@ char buttons_map_to_char_radiomag(int currentEq) {
  * Returns: 'U'(Up), 'D'(Down), 'L'(-5), 'R'(+5), 'E'(Enter/Start)
  */
 char buttons_map_menu_navigation(void) {
-    uint8_t edge = buttons_get_just_pressed();
+    uint8_t edge = ~buttons_get_raw_state();       // Is a button HELD
     if (edge == 0) return 0;
-    if (edge & BTN_U)     return 'U';
-    if (edge & BTN_D)     return 'D';
-    if (edge & BTN_L)     return 'L';
-    if (edge & BTN_R)     return 'R';
-    if (edge & BTN_START) return 'E';
+    if (edge & BTN_U)     return 'u';
+    if (edge & BTN_D)     return 'd';
+    if (edge & BTN_L)     return 'l';
+    if (edge & BTN_R)     return 'r';
+    if (edge & BTN_A)     return 'p';
+    if (edge & BTN_B)     return 'm';
     return 0;
 }
 
@@ -159,3 +159,35 @@ void buttons_sync_state(void) {
     last_button_states = current_button_states;
 }
 
+#define TIME_TO_REPEAT 1000
+#define REPEAT_TIME 100
+char prev_char;
+absolute_time_t timeout;
+    //REPEAT_TIME is in milliseconds (10^-3)
+char get_button_repeat(char input_char){
+
+    absolute_time_t t = get_absolute_time();
+
+    if (prev_char != input_char){
+        prev_char = input_char;
+        timeout = make_timeout_time_ms(TIME_TO_REPEAT);
+        return input_char;
+    }
+    else{
+        //if nothing pressed stop
+        if (input_char == 0) {
+            return 0;
+        }
+        //special keys to not repeat
+        if (input_char == 'p' || input_char == 's' || input_char == 'v') {
+            return 0; 
+        }
+        if (absolute_time_min(t, timeout) == timeout){
+            timeout = make_timeout_time_ms(REPEAT_TIME);
+            return input_char;
+        }
+        else{
+            return 0;
+        }
+    }
+}

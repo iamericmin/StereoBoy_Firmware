@@ -137,6 +137,7 @@ add_executable(StereoBoy_FW
     src/StereoBoy_FW.c
     src/hw_config.c # this is important!!! https://forums.raspberrypi.com/viewtopic.php?t=342315
     lib/sb_util/sb_util.c
+    lib/sb_util/jukebox.c
     lib/sb_util/sb_init.c
     lib/sb_util/filehelper.c
     lib/codec/vs1053.c
@@ -154,6 +155,7 @@ add_executable(StereoBoy_FW
     lib/sb_util/core1_entry.c
     lib/display/display.c
     lib/font/font.c
+    lib/font/find_font_char.c
     )
 
 pico_set_program_name(StereoBoy_FW "StereoBoy_FW")
@@ -174,6 +176,7 @@ target_link_libraries(StereoBoy_FW
         hardware_pio
         hardware_adc
         hardware_dma
+        hardware_pwm
         pico_multicore
         )
 

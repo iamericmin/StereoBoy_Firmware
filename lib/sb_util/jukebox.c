@@ -1,0 +1,390 @@
+#include "global_vars.h"
+#include "sb_util.h"
+
+/* ##########################################################
+JUKEBOX: MAIN PLAY LOOP
+########################################################## */
+
+bool paused = false;
+bool warping = false;
+bool stopped = false;
+bool fast_forward = false;
+bool audio_rewind = false;
+bool enableIcons;
+uint16_t normal_speed = 1; // 1 = normal
+
+volatile uint16_t potVal = 0;
+
+#define PAUSE_WARP_US 600000   // 0.7 seconds for pause
+#define RESUME_WARP_US 1200000 // 1.2 seconds for resume
+#define SKIP_INTERVAL_MS 100   // minimum interval between FF/RW jumps
+
+int selected_band = 0;
+uint16_t *playStatus = empty_icon;
+uint16_t *ff_rew_status = empty_icon;
+
+int progress_bar = 0;
+int prev_progress_bar = 0;
+
+
+/*******************visualizations not scope*******************/
+#define HISTORY_SIZE 256
+cplx audio_history_l[HISTORY_SIZE];
+cplx audio_history_r[HISTORY_SIZE];
+int history_index = 0;
+int num_visualizations = 6;
+bool album_art_ready = false;
+
+int jukebox(vs1053_t *player, track_info_t *track, st7789_t *display)
+{
+    album_art_ready = false;
+
+    FIL fil;             // file object
+    UINT br;             // pointer to number of bytes read
+    uint8_t buffer[512]; // buffer read from file
+
+    char *filename = track->filename;
+    uint16_t sampleSpeed = track->samplespeed;
+    uint16_t bitRate = track->bitrate;
+    uint32_t skip_bits = bitRate * 256; // bitrate * 1024 / 4 = approx. 2 seconds
+    int exitType = 0;
+    sci_write(player, 0x05, sampleSpeed + 1); // initialize codec sampling speed (+1 at the end for stereo)
+
+    // status bits for player state and warp effect
+    paused = false;
+    playStatus = play_icon;
+    warping = false;
+    stopped = 0;
+    enableIcons = true;
+
+    // more warp effect stuff
+    float transport = 1.0f;                  // desired speed
+    float warp_start_transport = 1.0f;       // start speed for warp
+    float warp_target = 1.0f;                // target speed for warp
+    uint32_t warp_duration = RESUME_WARP_US; // warp effect duration
+    absolute_time_t warp_start_time;
+
+    // open selected MP3 file
+    if (f_open(&fil, filename, FA_READ) != FR_OK)
+    {
+        printf("Failed to open %s\r\n", filename);
+        return exitType;
+    }
+
+    uint16_t stereo_bit = sampleSpeed & 1;     // LSB indicates mono or stereo (not exactly sure what but this is pretty much always 1)
+    uint16_t base_rate = sampleSpeed & 0xFFFE; // sampling speed in upper 15 bits
+    album_art_ready = false;
+    if (track->album_art_size > 0 && visualizer == 0)
+    {
+        process_image(track, filename, 160); // fills frame_buffer
+        album_art_ready = true;
+    }
+    uint32_t start = find_audio_start(&fil);
+    f_lseek(&fil, start);
+    absolute_time_t last_skip_time = get_absolute_time();
+
+    selected_band = 0;
+    int currEq = 0;
+    dac_eq_init(sampleSpeed); // init with default sample rate
+    uint8_t vol_check = 10;
+    uint8_t old_volume = 0;
+    read_lwbt();
+    while (1)
+    {
+        // janky counter for volume sampling
+        if (vol_check == 10) {
+            uint16_t vol = (uint32_t)potVal * 0x60 / 4096;
+            ff_rew_status = empty_icon; //update ff/rew icon every 10 as well
+            // Only update DAC if the change is larger than the noise (hysteresis)
+            if (abs((int)vol - (int)old_volume) >= 2) { 
+                dac_set_volume(vol);
+                old_volume = vol; // Only update "old" when the DAC actually changes
+            }
+            vol_check = 0;
+        } else {
+            vol_check++;
+        }
+        
+        
+
+        // --- 2. MUSIC FEEDING (Priority) ---
+        // The rest of your jukebox logic remains here...
+        int c = getchar_timeout_us(0); // nonblocking getchar
+
+        // get value from buttons
+        if (c == PICO_ERROR_TIMEOUT)
+        {
+            char temp_btn = buttons_map_to_char_jukebox();
+            char btn_char = get_button_repeat(temp_btn);
+            if (btn_char != 0)
+                c = (int)btn_char; // Inject the button character into the logic
+        }
+
+        //progress bar (should make seperate function)
+        long song_pos = f_tell(&fil);
+        float progress = (float)(song_pos - track->audio_start) / (float)(track->audio_end - track->audio_start);
+        if (progress < 0.0f)
+            progress = 0.0f;
+        if (progress > 1.0f)
+            progress = 1.0f;
+        prev_progress_bar = progress_bar;
+        progress_bar = 240 * progress;
+        bool update_bar = prev_progress_bar != progress_bar;
+
+        if (c != PICO_ERROR_TIMEOUT)
+        {
+            long pos = f_tell(&fil);
+            // bool headphonesIn = dac_read(0, 0x43) & 0x20;
+            // printf("Headphone prescence: %d\r\n", headphonesIn);
+            absolute_time_t now = get_absolute_time();
+
+            // EQ START
+            
+
+            switch (c)
+            {
+            //  Select the band (keys 0-5)
+            case 'e':
+                selected_band = (selected_band + 1) % 6;
+                printf("\nSelected Band: %d Hz\n", dac_eq_get_freq(selected_band));
+                break;
+            // Adjust the band (+ or -)
+            case '+':
+                dac_eq_adjust(selected_band, 0.5f, sampleSpeed); // Boost
+                printf("Band %d Gain: %.1f dB\n", selected_band, dac_eq_get_gain(selected_band));
+                break;
+
+            case '-':
+                dac_eq_adjust(selected_band, -0.5f, sampleSpeed); // Cut
+                printf("Band %d Gain: %.1f dB\n", selected_band, dac_eq_get_gain(selected_band));
+                break;
+            case 'n':
+            case 'N':
+                exitType = 1;
+                vs1053_set_play_speed(player, 0); // hard pause
+                printf("\r\n Going to next song....\r\n");
+                f_close(&fil);
+                vs1053_stop(player);
+                return exitType;
+            case 'o':
+            case 'O':
+                uint8_t seconds_into_song = (f_tell(&fil) - track->audio_start) / (track->bitrate * 125);
+                if (seconds_into_song >= 5){
+                    pos = 0;
+                    f_lseek(&fil, pos);
+                    break;
+                } else {
+                    exitType = 2;
+                    vs1053_set_play_speed(player, 0); // hard pause
+                    printf("\r\n Going to next song....\r\n");
+                    f_close(&fil);
+                    vs1053_stop(player);
+                    return exitType;
+                }
+            case 'p':
+            case 'P':
+                paused = !paused;                      // set paused flag
+                warp_start_time = get_absolute_time(); // get timestamp for warp start
+                warp_start_transport = transport;      //
+                warp_target = paused ? 0.0f : 1.0f;
+                warping = true;
+                if (paused) playStatus = pause_icon;
+                else playStatus = play_icon;
+
+                // select duration based on pause/resume
+                warp_duration = paused ? PAUSE_WARP_US : RESUME_WARP_US;
+
+                printf(paused ? "\r\nTape slowing...\r\n"
+                              : "\r\nTape resuming...\r\n");
+                break;
+            case 'f':
+            case 'F':
+                if (absolute_time_diff_us(last_skip_time, now) >= SKIP_INTERVAL_MS * 1000)
+                {
+                    ff_rew_status = ff_icon;
+                    pos += skip_bits;
+                    if (pos > f_size(&fil))
+                        pos = f_size(&fil) - 1;
+                    f_lseek(&fil, pos);
+                    printf("\r\nFast-forwarded ~2s\r\n");
+                    last_skip_time = now;
+                }
+                break;
+            case 'r':
+            case 'R':
+                if (absolute_time_diff_us(last_skip_time, now) >= SKIP_INTERVAL_MS * 1000)
+                {
+                    ff_rew_status = rew_icon;
+                    pos -= skip_bits;
+                    if (pos < 0)
+                        pos = 0;
+                    f_lseek(&fil, pos);
+                    printf("\r\nRewound ~2s\r\n");
+                    last_skip_time = now;
+                }
+                break;
+            case 'u':
+            case 'U':
+                x_brightness = x_brightness + 0.1 > 1 ? 1: x_brightness + 0.1;
+                printf("\nValue of x: %f\n", x_brightness);
+                pca9685_update_brightness(x_brightness);
+                st7789_update_brightness(x_brightness);
+                break;
+            case 'd':
+            case 'D':
+                x_brightness = x_brightness - 0.1 <= 0 ? 0: x_brightness - 0.1;
+                printf("\nValue of x: %f\n", x_brightness);
+                pca9685_update_brightness(x_brightness);
+                st7789_update_brightness(x_brightness);
+                
+                break;
+            case 'l':
+            case 'L':
+                pca9685_toggleSleep(&vu_meter);
+                break;
+            case 'v':
+            case 'V':
+                visualizer = (visualizer + 1) % (num_visualizations - 1);
+                if (visualizer == 0 && !album_art_ready && track->album_art_size > 0)
+                {
+                    process_image(track, filename, 160);
+                    album_art_ready = true;
+                    printf("changing visualizer");
+                }
+                switch (visualizer)
+                {
+                case 0:
+                    printf("\r\nAlbum Art Visualization\r\n");
+                    break;
+                case 1:
+                    printf("\r\nScope Visualization\r\n");
+                    break;
+                case 2:
+                    printf("\r\nSpectrum Analyzer Visualization\r\n");
+                    break;
+                case 3:
+                    printf("\r\nLissajous Visualization\r\n");
+                    break;
+                case 4:
+                    printf("\r\nMandala Visualization\r\n");
+                    break;
+                case 5:
+                    dprint("Text Display");
+                    printf("\r\nText Display\r\n");
+                    break;
+                case 6:
+                    dprint("Main Menu");
+                }
+                break;
+            case 'i':
+            case 'I':
+                printf("\r\n\rNOW PLAYING:\r\n");
+                printf("  Title : %s\r\n", track->title);
+                printf("  Artist: %s\r\n", track->artist);
+                printf("  Album : %s\r\n", track->album);
+                printf("  Bitrate : %d Kbps\r\n", track->bitrate);
+                printf("  Sample rate : %d Hz\r\n", track->samplespeed);
+                printf("  Channels : %s\r\n", track->channels == 1 ? "Mono" : "Stereo");
+                printf("  Album Art Size: %lu\r\n", (unsigned long)track->album_art_size);
+                printf("  Mime Type: %s\r\n", track->mime_type);
+                printf("  Header: %X\r\n", track->header);
+                break;
+            case 'm':
+            case 'M':
+                enableIcons = !enableIcons;
+                break;
+            case 's':
+            case 'S':
+                if (paused)
+                {
+                    exitType = 0;
+                    vs1053_set_play_speed(player, 0); // hard pause
+                    printf("\r\nStopping....\r\n");
+                    f_close(&fil);
+                    vs1053_stop(player);
+                    return exitType;
+                }
+                stopped = 1;
+                warp_start_time = get_absolute_time();
+                warp_start_transport = transport;
+                warp_target = 0.0f;
+                warp_duration = PAUSE_WARP_US;
+                warping = true;
+                album_art_ready = false;
+                printf("Stopping...\r\n");
+                break;
+                if (paused)
+                {
+                    exitType = 0;
+                    vs1053_set_play_speed(player, 0); // hard pause
+                    printf("\r\nStopping....\r\n");
+                    f_close(&fil);
+                    vs1053_stop(player);
+                    return exitType;
+                }
+            }
+        }
+
+        // Always feed decoder unless fully paused
+        if (!paused || warping)
+        {
+            if (f_read(&fil, buffer, sizeof(buffer), &br) != FR_OK || br == 0)
+            {
+                exitType = 1; // Default return when no bytes read (end of song)
+                break;
+            }
+
+            vs1053_play_data(player, buffer, br);
+        }
+
+        // --- Warp logic ---
+        if (warping)
+        {
+            int64_t elapsed = absolute_time_diff_us(warp_start_time, get_absolute_time());
+
+            if (elapsed >= warp_duration)
+            {
+                transport = warp_target;
+                warping = false;
+
+                if (paused)
+                {
+                    vs1053_set_play_speed(player, 0); // hard pause
+                    printf("\r\nPaused.\r\n");
+                }
+                else if (stopped)
+                {
+                    vs1053_set_play_speed(player, 0); // hard pause
+                    printf("\r\nPaused.\r\n");
+                    f_close(&fil);
+                    vs1053_stop(player);
+                    return 0;
+                }
+            }
+            else
+            {
+                float t = (float)elapsed / (float)warp_duration;
+                transport = warp_start_transport +
+                            (warp_target - warp_start_transport) * t;
+            }
+        }
+
+        // --- Apply playback rate + volume ---
+        if (!paused || warping)
+        {
+            uint16_t new_rate = (uint16_t)(base_rate * transport) & 0xFFFE;
+            if (new_rate < 9000)
+                new_rate = 9000;
+            sci_write(player, 0x05, new_rate | stereo_bit);
+
+            // volume scales with transport
+            // uint8_t vol = (uint8_t)(0xFE * (1.0f - transport));
+            // if (vol > 0xFE) vol = 0xFE;
+            // vs1053_set_volume(player, vol, vol);
+        }
+    }
+
+    f_close(&fil);
+    // exitType = 0; //plays next song if song just ends
+    return exitType;
+}

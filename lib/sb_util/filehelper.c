@@ -1,5 +1,4 @@
-#include "filehelper.h"
-#include "lib/sb_util/core1_entry.h"
+#include "lib/sb_util/sb_util.h"
 // Convert syncsafe integer (ID3 size format)
 
 uint32_t syncsafe_to_uint(const uint8_t *b)
@@ -132,7 +131,6 @@ uint32_t find_audio_start(FIL *fil)
 
 void get_mp3_header(FIL *fil, track_info_t *track)
 {
-    dprint("start of get_mp3_header heartbeat");
     UINT br;
     uint8_t header[4];
 
@@ -241,12 +239,15 @@ void get_mp3_header(FIL *fil, track_info_t *track)
 
     // Channels
     track->channels = (channel_bits >> 1) & 1; // 0 = stereo, 1 = mono
-    dprint("end of get_mp3_header heartbeat");
 }
 
+/**
+ * Extracts metadata (Title, Artist, Album, Album Art) from an MP3 file.
+ * This implementation supports ID3v2 tags at the start and ID3v1 at the end.
+ */
 void get_mp3_metadata(const char *filename, track_info_t *track)
 {
-    dprint("start of get_mp3_metadata heartbeat");
+    // Initialize track structure with default values to avoid garbage data
     strcpy(track->filename, filename);
     strcpy(track->title, "(unknown)");
     strcpy(track->artist, "(unknown)");
@@ -261,60 +262,72 @@ void get_mp3_metadata(const char *filename, track_info_t *track)
     uint8_t header[10];
     uint8_t frame_header[10];
 
+    // Attempt to open the file using FatFs
     if (f_open(&fil, filename, FA_READ) != FR_OK)
         return;
 
+    // Read the first 10 bytes to check for the ID3v2 header
     if (f_read(&fil, header, 10, &br) != FR_OK || br != 10)
         goto out;
 
+    // Verify 'ID3' identifier; if not found, it's not a standard ID3v2 file
     if (memcmp(header, "ID3", 3) != 0)
         goto out;
 
+    // Convert the 4-byte syncsafe integer to a standard uint32
+    // Syncsafe integers ignore the 7th bit of every byte (0xxxxxxx)
     uint32_t tag_size = syncsafe_to_uint(&header[6]);
     uint32_t bytes_read = 0;
 
+    // Iterate through frames until we've parsed the entire ID3 header block
     while (bytes_read < tag_size)
     {
+        // Read the 10-byte frame header (ID, Size, Flags)
         if (f_read(&fil, frame_header, 10, &br) != FR_OK || br != 10)
             break;
 
         bytes_read += 10;
+        
+        // ID3 padding: if the first byte of a frame ID is 0, we've hit the end of the tags
         if (frame_header[0] == 0)
             break;
 
+        // Extract the 4-character Frame ID (e.g., "TIT2", "APIC")
         char id[5];
         memcpy(id, frame_header, 4);
         id[4] = 0;
 
+        // Calculate frame size (Note: ID3v2.3 uses normal bytes, v2.4 uses syncsafe here)
         uint32_t size =
             (frame_header[4] << 24) |
             (frame_header[5] << 16) |
             (frame_header[6] << 8) |
             frame_header[7];
 
-        if (!strcmp(id, "TIT2"))
+        // Route specific frames to their respective handlers
+        if (!strcmp(id, "TIT2")) // Title
         {
             read_text_frame(&fil, size, track->title, sizeof(track->title));
         }
-        else if (!strcmp(id, "TPE1"))
+        else if (!strcmp(id, "TPE1")) // Artist
         {
             read_text_frame(&fil, size, track->artist, sizeof(track->artist));
         }
-        else if (!strcmp(id, "TALB"))
+        else if (!strcmp(id, "TALB")) // Album
         {
             read_text_frame(&fil, size, track->album, sizeof(track->album));
         }
-        else if (!strcmp(id, "APIC"))
+        else if (!strcmp(id, "APIC")) // Attached Picture
         {
-            // Record exactly where the 10-byte header ended
+            // Note the position exactly after the frame header
             FSIZE_t frame_start_pos = f_tell(&fil);
             UINT br;
             uint8_t encoding;
 
-            // 1. Read Text Encoding (1 byte)
+            // 1. Read Text Encoding (0=ISO-8859-1, 1=UTF-16, etc.)
             f_read(&fil, &encoding, 1, &br);
 
-            // 2. Read MIME Type (null-terminated string)
+            // 2. Read MIME Type (e.g., "image/jpeg") - Handled byte-by-byte
             char temp_mime[32];
             int i = 0;
             do
@@ -322,27 +335,29 @@ void get_mp3_metadata(const char *filename, track_info_t *track)
                 f_read(&fil, &temp_mime[i], 1, &br);
             } while (temp_mime[i++] != '\0' && i < 31);
 
-            // 3. Read Picture Type (1 byte)
+            // 3. Read Picture Type (e.g., 0x03 is Front Cover)
             uint8_t pic_type;
             f_read(&fil, &pic_type, 1, &br);
 
-            // FILTER: Only process if it's the Front Cover (0x03) or if we haven't found one yet
+            // Logic: Prioritize Front Cover (0x03), otherwise take the first image found
             if (pic_type == 0x03 || track->album_art_offset == 0)
             {
                 track->album_art_type = pic_type;
                 strncpy(track->mime_type, temp_mime, sizeof(track->mime_type));
 
-                // 4. Skip Description (null-terminated string)
+                // 4. Skip the Description string (variable length, null-terminated)
                 char dummy;
                 if (encoding == 0)
-                { // ISO-8859-1 (Single null)
+                { 
+                    // Single null terminator for standard ASCII/ISO strings
                     do
                     {
                         f_read(&fil, &dummy, 1, &br);
                     } while (dummy != '\0');
                 }
                 else
-                { // UTF-16 (Double null)
+                { 
+                    // Double null terminator for UTF-16 strings
                     uint16_t dummy16;
                     do
                     {
@@ -350,30 +365,32 @@ void get_mp3_metadata(const char *filename, track_info_t *track)
                     } while (dummy16 != 0x0000);
                 }
 
-                // 5. STORE THE DATA JUMP POINT
-                // We are now at the first byte of the JPEG/PNG data
+                // 5. Store the file pointer location where the actual image binary starts
                 track->album_art_offset = f_tell(&fil);
 
-                // 6. CALCULATE TRUE IMAGE SIZE
-                // Total frame size minus everything we just read/skipped
+                // 6. Calculate image size by subtracting metadata overhead from total frame size
                 track->album_art_size = size - (track->album_art_offset - frame_start_pos);
             }
 
-            // 7. ALWAYS seek to the end of the frame to continue parsing other ID3 tags
+            // 7. Seek to the absolute end of the frame to keep the loop aligned
             f_lseek(&fil, frame_start_pos + size);
         }
         else
         {
+            // Skip unknown/unsupported frames
             f_lseek(&fil, f_tell(&fil) + size);
         }
 
         bytes_read += size;
     }
-    get_mp3_header(&fil, track);
-    uint32_t file_size = f_size(&fil); // Get total file size
-    track->audio_end = file_size;      // Default to end of file
 
-    // Check for a 128-byte ID3v1 tag at the end of the file
+    // Attempt to extract bitrate/duration from the MPEG header
+    get_mp3_header(&fil, track);
+    
+    uint32_t file_size = f_size(&fil);
+    track->audio_end = file_size;
+
+    // ID3v1 Check: Look for the 128-byte "TAG" block at the very end of the file
     if (file_size > 128)
     {
         uint8_t tag_buf[3];
@@ -382,15 +399,14 @@ void get_mp3_metadata(const char *filename, track_info_t *track)
         {
             if (memcmp(tag_buf, "TAG", 3) == 0)
             {
-                track->audio_end = file_size - 128; // Audio ends before the ID3v1 tag
+                // If ID3v1 exists, the actual audio data ends 128 bytes before EOF
+                track->audio_end = file_size - 128;
             }
         }
     }
 
 out:
-    f_close(&fil);
-
-    dprint("end of get_mp3_metadata heartbeat");
+    f_close(&fil); // Ensure file is closed even if an error occurs (via goto)
 }
 
 // Helper for qsort

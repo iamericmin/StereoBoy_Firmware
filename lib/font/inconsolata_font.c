@@ -1,10 +1,9 @@
-int font_width = 11;
-int font_height = 20;
+#ifndef FONT_FONT
+#define FONT_FONT
 
-struct Font {
-    char letter;
-    bool code[11*20];
-};
+#include "font.h"
+#include "stddef.h"
+
 struct Font font[] = {
 {' ', {
 0,0,0,0,0,0,0,0,0,0,0,
@@ -2002,9 +2001,4 @@ struct Font font[] = {
 0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0}}};
 
-const struct Font* find_font_char(char c) {
-	for (int i = 0; font[i].letter != 0; i++) {
-		if (font[i].letter == c) return &font[i];
-	}
-	return NULL;
-}
+#endif

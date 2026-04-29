@@ -3,7 +3,7 @@
 #include "hardware/spi.h"   
 #include "pico/stdlib.h"
 #include "lib/sb_util/global_vars.h"
-    
+#include "lib/sb_util/sb_util.h"
 
 ////////////////LISSAJOUS///////////////////////////
 
@@ -42,6 +42,8 @@ void draw_line_hot(int x0, int y0, int x1, int y1, uint16_t color)
     }
 }
 
+extern bool enableIcons;
+
 void draw_lissajous()
 {
     // 1. Instead of clearing to black, "fade" the previous frame
@@ -79,8 +81,8 @@ void draw_lissajous()
         frame_buffer[(239 - y) * SCREEN_WIDTH + x] = 0xFFFF;
         frame_buffer[(239 - y) * SCREEN_WIDTH + (239 - x)] = 0xFFFF;
     }
-
     // 5. Push to Display
+    addIcons(frame_buffer, enableIcons);
     st7789_set_cursor(0, 0);
     st7789_ramwr();
     spi_set_format(spi0, 16, SPI_CPOL_0, SPI_CPHA_0, SPI_MSB_FIRST);
@@ -118,7 +120,7 @@ void draw_lissajous_connected()
         last_x = x;
         last_y = y;
     }
-
+    addIcons(frame_buffer, enableIcons);
     st7789_set_cursor(0, 0);
     st7789_ramwr();
     spi_set_format(spi0, 16, SPI_CPOL_0, SPI_CPHA_0, SPI_MSB_FIRST);

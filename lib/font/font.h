@@ -13,15 +13,17 @@
 #define FONT_H
 
 #include "stdbool.h"
+// #include "font_font.h"
 
-extern int font_width;
-extern int font_height;
+#define font_width 11
+#define font_height 20
 
+// struct Font;
 struct Font {
     char letter;
-    bool code[7*5];
-	char width;
-	char height;
+    bool code[font_width*font_height];
+	// char width;
+	// char height;
 };
 
 const struct Font * find_font_char(char c);

@@ -1,8 +1,6 @@
 #include "global_vars.h"
-#include "firmware.h"
 
-#include "lib/sb_util/core1_entry.h"
-#include "lib/sb_util/filehelper.h"
+#include "lib/sb_util/sb_util.h"
 
 static FATFS fs;
 
@@ -126,10 +124,9 @@ void sb_display_init(st7789_t *display)
 
 int sb_scan_tracks(track_info_t *tracks, int max_tracks)
 {
-    dprint("start of nsb_scan_tracks heartbeat");
     DIR dir;
     FILINFO fno;
-    int count = 0;
+    count = 0;
 
     f_opendir(&dir, "0:/");
 
@@ -143,7 +140,7 @@ int sb_scan_tracks(track_info_t *tracks, int max_tracks)
         {
             get_mp3_metadata(fno.fname, &tracks[count]);
             count++;
-            dprint("Read song %d", count);
+            // dprint("Read song %d", count);
         }
     }
 
@@ -158,7 +155,6 @@ int sb_scan_tracks(track_info_t *tracks, int max_tracks)
 
     qsort(tracks, count, sizeof(track_info_t), compare_filenames);
 
-    dprint("end of sb_scan_tracks heartbeat");
     return count;
 }
 
@@ -236,6 +232,8 @@ void sb_hw_init(vs1053_t *player, st7789_t *display)
     printf("Oscope ADC initialized!\r\n");
     dprint("Oscope ADC initialized!");
 
+    sleep_ms(100); // seems to help flaky display issues
+
     sb_display_init(display);
     printf("test point 1");
 
@@ -261,8 +259,6 @@ void sb_hw_init(vs1053_t *player, st7789_t *display)
 
     printf("Audio init complete.\r\n");
     dprint("Audio init complete.");
-    printf("\r\nScanning directory...\r\n");
-    dprint("Scanning directory...");
 
     // Initialize buttons with a 10ms scan rate
     buttons_init(10);

@@ -1,18 +1,12 @@
 #include "lib/sb_util/global_vars.h"
-#include "lib/sb_util/sb_init.h"
+
 #include "lib/sb_util/sb_util.h"
 #include "lib/buttons/buttons.h"
-#include "lib/sb_util/core1_entry.h"
 #include "lib/pot/pot.h"
 #include "lib/radiomag/radiomag_util.h"
 
 #include "pico/stdlib.h"
 #include "hardware/vreg.h"
-
-// #define DEBUG // print all dprints to terminal
-
-#define MAX_FILENAME_LEN 256 // max filaname character length
-#define MAX_TRACKS 128 // max number of mp3 files in sd card
 
 // SPI1 configuration for codec & sd card
 #define PIN_SCK  30
@@ -50,8 +44,15 @@ struct st7789_t display = {
 
 #define LCD_WIDTH  240
 #define LCD_HEIGHT 240
+
+track_info_t tracks[MAX_TRACKS];
+int song_choice = 0;
+int count;
+float x_brightness = 0.5;
+
 int main()
 {
+    set_visualizer(7);
     // Lower RP2350 core voltage to 1V
     // P = V^2 * f, so 0.1V drop results in quadratic change
     // Before: 1.1 ^ 2 * 150 = 181.5
@@ -63,6 +64,7 @@ int main()
     // sleep_ms(3000);
 
     sb_hw_init(&player, &display);
+    
     // Boot-up banner
 
     sleep_ms(250);
@@ -83,11 +85,9 @@ int main()
 
     dprint("Starting Track Scan");
     // pause_core1();
-    track_info_t tracks[MAX_TRACKS];
-    int count = sb_scan_tracks(tracks, MAX_TRACKS);
+    sb_scan_tracks(tracks, MAX_TRACKS); //Implicitly sets count now
     // resume_core1();
     int exitCode = 0;
-    int choice = 0;
     int prev_choice = 0;
     bool selected = 0;
     bool inRadio = 0;
@@ -95,38 +95,18 @@ int main()
     dprint("Debug print test %d", 1); //Trigger Core 2 Print
     printf("Debug print test %s\r\n", "2");
     
+    song_choice = 0;
     
     while(1) {
         read_lwbt();
         //Return to main menu with list selection:
         if (exitCode == 0) {
             selected = false; 
-            set_visualizer(5);
-            choice = 0;
+            set_visualizer(6);
             bool confirmed = 0;
-            printf("\r\nAvailable tracks:\r\n");
-            for (int i = 0; i < count; i++) {
-                // dprint("[%d] %s - %s", i + 1, tracks[i].artist, tracks[i].title);
-                printf("\r\n[%d] %s - %s\r\n", i + 1, tracks[i].artist, tracks[i].title);
-                // dprint("     Album: %s", tracks[i].album);
-                printf("     Album: %s\r\n", tracks[i].album);
-                // dprint("     Bit Rate: %d Kbps", tracks[i].bitrate);
-                printf("     Bit Rate: %d Kbps\r\n", tracks[i].bitrate);
-                // dprint("     Sample Rate: %d Hz", tracks[i].samplespeed);
-                printf("     Sample Rate: %d Hz\r\n", tracks[i].samplespeed);
-                // dprint("     Channels : %s", tracks[i].channels == 1 ? "Mono" : "Stereo");
-                printf("     Channels : %s\r\n", tracks[i].channels == 1 ? "Mono" : "Stereo");
-                // dprint("     Header: %X", tracks[i].header);
-                printf("     Header: %X\r\n", tracks[i].header);
-            }
-
             clear_framebuffer();
-            dprint("Song %d/%d: ", choice+1, count);
-            printf("\r\nSong %d/%d: ", choice+1, count);
-
-            dprint("%s", tracks[choice].title);
-            dprint("%s", tracks[choice].artist);
-            prev_choice = choice;
+            printf("\r\nSong %d/%d: ", song_choice+1, count);
+            prev_choice = song_choice;
             while (selected == false) {
                 uint8_t pressed = buttons_get_just_pressed();
                 if (pressed > 0){
@@ -146,6 +126,17 @@ int main()
                     dprint("%s", tracks[choice].title);
                     dprint("%s", tracks[choice].artist);
                     prev_choice = choice;
+                uint8_t maped_btn = buttons_map_menu_navigation();
+                uint8_t btn = get_button_repeat(maped_btn);
+                    if (btn == 'd')      song_choice = (song_choice + 1) % count;
+                    if (btn == 'u')      song_choice = (song_choice - 1 + count) % count; //added roll-over
+                    if (btn == 'r')      song_choice = (song_choice + 10) % count;
+                    if (btn == 'l')      song_choice = (song_choice - 10 + count) % count;
+                    if (btn == 'p')      selected = true;
+                    if (btn == 'm')      song_choice = (rand() % count);   
+                if (prev_choice != song_choice){
+                    printf("\r\nSong %d/%d: ", song_choice+1, count);
+                    prev_choice = song_choice;
                 }
                 if (inRadio){
                     clear_framebuffer();
@@ -160,49 +151,37 @@ int main()
                 sleep_ms(10);
             }
         }
-        printf("outside loop");
-        track_info_t *track = &tracks[choice];
+        track_info_t *track = &tracks[song_choice];
 
-        dprint("NOW PLAYING:");
         printf("\r\n\rNOW PLAYING:\r\n");
-        dprint("  Title : %s", track->title);
         printf("  Title : %s\r\n", track->title);
-        dprint("  Artist: %s", track->artist);
         printf("  Artist: %s\r\n", track->artist);
-        dprint("  Album : %s", track->album);
         printf("  Album : %s\r\n", track->album);
-        dprint("  Bitrate : %d Kbps", track->bitrate);
         printf("  Bitrate : %d Kbps\r\n", track->bitrate);
-        dprint("  Sample rate : %d Hz", track->samplespeed);
         printf("  Sample rate : %d Hz\r\n", track->samplespeed);
-        dprint("  Channels : %s", track->channels == 1 ? "Mono" : "Stereo");
         printf("  Channels : %s\r\n", track->channels == 1 ? "Mono" : "Stereo");
-        dprint("  Header: %X", track->header);
         printf("  Header: %X\r\n", track->header);
         printf("  Start: %X\r\n", track->audio_start);
         printf("  Start: %X\r\n", track->audio_end);
 
         set_visualizer(1);
-        exitCode = sb_play_track(&player, track, &display);
+        exitCode = jukebox(&player, track, &display);
 
         if (exitCode == 1){
-            if (choice + 1 > count)
-                choice = 1;
+            if (song_choice + 1 > count)
+                song_choice = 1;
             else
-                choice += 1;
+                song_choice += 1;
             printf("\r\n Next song!\r\n");
             dprint("Next song!");
         }
         if (exitCode == 2){
-            if (choice - 1 < 1)
-                choice = count;
+            if (song_choice - 1 < 1)
+                song_choice = count;
             else
-                choice -= 1;
+                song_choice -= 1;
             dprint("Prev Song!");
             printf("\r\nPrev Song!\r\n");
         }
-
-        // dprint("Playback finished!");
-        // printf("\r\nPlayback finished!\r\n");
     }
 }
