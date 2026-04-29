@@ -112,7 +112,7 @@ int main()
                     if (btn == 'u')      song_choice = (song_choice - 1 + count) % count; //added roll-over
                     if (btn == 'r')      song_choice = (song_choice + 10) % count;
                     if (btn == 'l')      song_choice = (song_choice - 10 + count) % count;
-                    if (btn == 's')      selected = true;
+                    if (btn == 'p')      selected = true;
                     if (btn == 'm')      song_choice = (rand() % count);   
                 if (prev_choice != song_choice){
                     printf("\r\nSong %d/%d: ", song_choice+1, count);

@@ -217,10 +217,13 @@ void st7789_set_brightness(uint16_t brightness) {
 }
 
 void st7789_update_brightness(float x){
+    int calc = MAX_BRIGHTNESS * (x * x);
     if (x == 0) display_brightness = 0;
-    else if (display_brightness > MAX_BRIGHTNESS) display_brightness = MAX_BRIGHTNESS;
-    else display_brightness * (x * x);
+    else if (calc > MAX_BRIGHTNESS) display_brightness = MAX_BRIGHTNESS;
+    else display_brightness = calc;
+
     st7789_set_brightness(display_brightness);
+    printf("display_b: %d\n", display_brightness);
 }
 
 

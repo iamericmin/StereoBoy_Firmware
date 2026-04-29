@@ -22,9 +22,9 @@
 #define MODE2_INVRT   0x10  // Invert logic: 1 = High duty cycle is Sink (GND)
 #define MODE2_OUTDRV  0x04  // 0 = Open-Drain, 1 = Totem-Pole
 
-#define MAX_BRIGHTNESS 2048 // Standardize on full 12-bit range
+#define MAX_BRIGHTNESS 200 // Standardize on full 12-bit range
 
-int brightness = 64;
+int brightness = 50;
 
 static void write8(pca9685_t *dev, uint8_t reg, uint8_t val) {
     uint8_t buf[2] = {reg, val};
@@ -204,7 +204,9 @@ void pca9685_increase_brightness(float x){
     else brightness = brightness * (x * x);
 }
 void pca9685_update_brightness(float x){
+    int calc = MAX_BRIGHTNESS * (x * x * x) + 1;
     if (x == 0) brightness = 0;
-    else if (brightness > MAX_BRIGHTNESS) brightness = MAX_BRIGHTNESS;
-    else brightness * (x * x);
+    else if (calc > MAX_BRIGHTNESS) brightness = MAX_BRIGHTNESS;
+    else brightness = calc;
+    printf("led_b: %d\n", brightness);
 }
