@@ -159,6 +159,7 @@ void core1_entry()
                     mutex_exit(&text_buff_mtx);
                     continue;
                 }
+
                 printf("core 1: %s | %d\r\n", head->str, strlen(text_buff_temp));
                 st7789_draw_string(1, SCREEN_HEIGHT - font_height - 5, head->str, WHITE);
                 struct Node *n = head;
@@ -182,12 +183,12 @@ void core1_entry()
             start =  (song_choice < 6) ? 0 : song_choice - 5;
             track_info_t *track;
             track_info_t *selected_track;
-            char buf[256]; // buffer for string to write to display
-            char marquee_title[32]; // buffer for scrolling title marquee
-            char md_artist[128]; // artist metadata of currently selected track
-            char md_album[128]; // album metadata of currently selected track
-            char marquee_artist[32]; // buffer for scrolling album marquee
-            char marquee_album[32]; // // buffer for scrolling album marquee
+            static char buf[256]; // buffer for string to write to display
+            static char marquee_title[32]; // buffer for scrolling title marquee
+            static char md_artist[128]; // artist metadata of currently selected track
+            static char md_album[128]; // album metadata of currently selected track
+            static char marquee_artist[32]; // buffer for scrolling album marquee
+            static char marquee_album[32]; // // buffer for scrolling album marquee
             uint16_t marquee_delay = 1000;
 
             static uint32_t marquee_delay_start_ms = 0;
@@ -378,26 +379,14 @@ void core1_entry()
                     // Now, tack on however many characters we can from the beginning of string
                     memcpy(marquee_artist + (artistLen - marquee_artist_start) + numSpaces, selected_track-> artist, window - ((artistLen - marquee_artist_start) + numSpaces));
                 } else {
-                    // Now, all text of the marquee has passed. All that remains are 8 spaces and the begnning of the text tacked behind.
-                    // So we decrement the number of spaces in the front, and drag in the beginning of the marquee text.
-                    // To do this, we need a counter to track the spaces. We will use the marquee pointer for this.
-                    // At this point, the marquee pointer is 20 to 27. I think.
-
-                    // uint8_t numSpaces = (20 + 8) - marquee_artist_start; // this way, we get 8 to 1 spaces
                     uint8_t numSpaces = gap - (marquee_artist_start - artistLen);
-
                     if (numSpaces > window) numSpaces = window;
-
-                    // Fill leading spaces
                     for (int i = 0; i < numSpaces; i++) {
                         marquee_artist[i] = ' ';
                     }
-
-                    // Fill remaining with artist text
                     memcpy(marquee_artist + numSpaces,
                         selected_track->artist,
                         window - numSpaces);
-
                     marquee_artist[window] = '\0';
                 }
             } else {

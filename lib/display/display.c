@@ -133,7 +133,7 @@ void st7789_fill(uint16_t pixel)
 void st7789_set_cursor(uint16_t x, uint16_t y)
 {
     st7789_caset(x, st7789_width);
-    st7789_raset(y+80, st7789_height+80);
+    st7789_raset(y, st7789_height+80);
 }
 
 void st7789_vertical_scroll(uint16_t row)

@@ -311,7 +311,14 @@ void dac_init() {
 
     // 7. DAC Data Path
     // Reg 0x3F: Left/Right DAC Power Up, Normal Path
-    dac_write(0, 0x3F, 0xD6);
+    // DAC left = left channel audio
+    // DAC right = right channel audio
+
+    if (dac_read(0, 0x2E) & 0x10) { // read whether headphone in or out
+        dac_write(0, 0x3F, 0b11010110); // if headphones inserted, stereo
+    } else {
+        dac_write(0, 0x3F, 0b11111110); // if speaker, mono
+    }
 
 
     // 8. Routing (Page 1)

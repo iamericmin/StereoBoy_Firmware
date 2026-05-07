@@ -65,7 +65,7 @@ void st7789_init(const struct st7789_t* config, uint16_t width, uint16_t height)
     // - Line Address Order            = LCD Refresh Top to Bottom
     // - RGB/BGR Order                 = RGB
     // - Display Data Latch Data Order = LCD Refresh Left to Right
-    st7789_cmd(0x36, (uint8_t[]){ 0xC0 }, 1);
+    st7789_cmd(0x36, (uint8_t[]){ 0x00 }, 1);
    
     st7789_caset(0, width);
     st7789_raset(0, height);
@@ -164,11 +164,6 @@ void sb_hw_init(vs1053_t *player, st7789_t *display)
     mutex_init(&text_buff_mtx);
     sem_init(&text_sem, 0, 255);
 
-    // set SPI1 for codec and SD card
-    gpio_set_function(PIN_SCK, GPIO_FUNC_SPI);
-    gpio_set_function(PIN_MOSI, GPIO_FUNC_SPI);
-    gpio_set_function(PIN_MISO, GPIO_FUNC_SPI);
-
     // set I2C0 for DAC at 400KHz
     gpio_set_function(PIN_I2C0_SCL, GPIO_FUNC_I2C);
     gpio_set_function(PIN_I2C0_SDA, GPIO_FUNC_I2C);
@@ -196,18 +191,50 @@ void sb_hw_init(vs1053_t *player, st7789_t *display)
         printf("WARNING: PCA9685 Init Failed!\r\n");
     }
 
-    if (!sd_init_driver())
-    {
-        while (1)
+    adc_init();        // Inside sb_hw_init
+    adc_gpio_init(46); // Left
+    adc_gpio_init(45); // Right
+
+    printf("Oscope ADC initialized!\r\n");
+    dprint("Oscope ADC initialized!");
+
+    sleep_ms(100); // seems to help flaky display issues
+
+    sb_display_init(display);
+    printf("test point 1");
+
+    // initialize DAC
+    dac_init(i2c0);
+    dac_interrupt_init();
+    printf("DAC intialized.\r\n");
+    dprint("DAC intialized.");
+
+    printf("Audio init complete.\r\n");
+    dprint("Audio init complete.");
+
+    // Initialize buttons with a 10ms scan rate
+    buttons_init(50);
+    printf("\r\nButtons intializedr\n");
+
+    pot_init();
+    printf("\r\npot intialized\r\n");
+
+    // set SPI1 for codec and SD card
+    gpio_set_function(PIN_SCK, GPIO_FUNC_SPI);
+    gpio_set_function(PIN_MOSI, GPIO_FUNC_SPI);
+    gpio_set_function(PIN_MISO, GPIO_FUNC_SPI);
+    
+    for (int i=0; i<10; i++) {
+        if (!sd_init_driver())
         {
             dprint("SD init failed");
             printf("SD init failed\r\n");
         }
-    }
-    else
-    {
-        dprint("SD card initialized!");
-        printf("SD card initialized!\r\n");
+        else
+        {
+            dprint("SD card initialized!");
+            printf("SD card initialized!\r\n");
+        }
     }
 
     FRESULT fr = f_mount(&fs, "0:", 1);
@@ -225,18 +252,6 @@ void sb_hw_init(vs1053_t *player, st7789_t *display)
         printf("SD card mounted!\r\n");
     }
 
-    adc_init();        // Inside sb_hw_init
-    adc_gpio_init(46); // Left
-    adc_gpio_init(45); // Right
-
-    printf("Oscope ADC initialized!\r\n");
-    dprint("Oscope ADC initialized!");
-
-    sleep_ms(100); // seems to help flaky display issues
-
-    sb_display_init(display);
-    printf("test point 1");
-
     vs1053_init(player);
     printf("test point 2");
 
@@ -250,23 +265,7 @@ void sb_hw_init(vs1053_t *player, st7789_t *display)
     vs1053_enable_i2s(player);
     printf("VS1053 I2S enabled.\r\n");
     dprint("VS1053 I2S enabled.");
-
-    // initialize DAC
-    dac_init(i2c0);
-    dac_interrupt_init();
-    printf("DAC intialized.\r\n");
-    dprint("DAC intialized.");
-
-    printf("Audio init complete.\r\n");
-    dprint("Audio init complete.");
-
-    // Initialize buttons with a 10ms scan rate
-    buttons_init(10);
-    printf("\r\nButtons intializedr\n");
-
-    pot_init();
-    printf("\r\npot intialized\r\n");
-
+    
     dprint("Finished sb_hw_init");
     printf("\r\nFinished sb_hw_init\r\n");
 
