@@ -28,11 +28,11 @@ static spi_t spi = {
     .sck_gpio = 30,    // GPIO number (not Pico pin number)
     .mosi_gpio = 31,
     .miso_gpio = 28,
-    // .baud_rate = 125 * 1000 * 1000 / 8  // 15625000 Hz
+    .baud_rate = 125 * 1000 * 1000 / 8  // 15625000 Hz
     // .baud_rate = 125 * 1000 * 1000 / 6  // 20833333 Hz
     // .baud_rate = 125 * 1000 * 1000 / 4  // 31250000 Hz -> Use this for vs1053 breakout integrated card slot
     // .baud_rate = 70000000
-    .baud_rate = 125 * 1000 * 1000 / 2  // 62500000 Hz -> use this for standalone card slot
+    // .baud_rate = 125 * 1000 * 1000 / 2  // 62500000 Hz -> use this for standalone card slot
 };
 
 /* SPI Interface */
