@@ -157,7 +157,7 @@ int sb_get_raw_tracks(char raw_tracks[][256], int max_tracks) {
         return 0;
     }
 
-    qsort(raw_tracks, count, 256, compare_filenames);
+    qsort(raw_tracks, count, 256, compare_filenames_raw);
     return count;
 }
 

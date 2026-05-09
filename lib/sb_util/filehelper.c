@@ -10,103 +10,87 @@ void read_text_frame(FIL *fil, uint32_t frame_size, char *out, size_t out_size)
 {
     UINT br;
     uint8_t encoding;
+    
+    if (frame_size == 0) return;
 
-    f_read(fil, &encoding, 1, &br);
+    // Read the encoding byte
+    if (f_read(fil, &encoding, 1, &br) != FR_OK || br == 0) return;
     frame_size--;
 
-    memset(out, 0, out_size);
+    // Use a local buffer to avoid byte-by-byte f_read calls.
+    // 256 bytes is usually enough for titles/artists.
+    uint8_t buffer[256]; 
+    uint32_t to_read = (frame_size > sizeof(buffer)) ? sizeof(buffer) : frame_size;
+    
+    if (f_read(fil, buffer, to_read, &br) != FR_OK) return;
 
-    // ---------------- UTF-8 ----------------
+    memset(out, 0, out_size);
+    size_t oi = 0;
+    size_t max_oi = out_size - 1;
+
+    // ---------------- UTF-8 (Encoding 3) ----------------
     if (encoding == 3)
     {
-        uint32_t n = (frame_size < out_size - 1) ? frame_size : out_size - 1;
-        f_read(fil, out, n, &br);
+        size_t n = (br < max_oi) ? br : max_oi;
+        memcpy(out, buffer, n);
         out[n] = '\0';
-        return;
     }
-
-    // ---------------- ISO-8859-1 → UTF-8 ----------------
-    if (encoding == 0)
+    // ---------------- ISO-8859-1 → UTF-8 (Encoding 0) ----------------
+    else if (encoding == 0)
     {
-        uint8_t b;
-        size_t oi = 0;
-
-        for (uint32_t i = 0; i < frame_size && oi < out_size - 1; i++)
+        for (uint32_t i = 0; i < br && oi < max_oi; i++)
         {
-            f_read(fil, &b, 1, &br);
-            if (b < 0x80)
-            {
+            uint8_t b = buffer[i];
+            if (b < 0x80) {
                 out[oi++] = b;
-            }
-            else
-            {
-                if (oi + 2 >= out_size)
-                    break;
+            } else if (oi + 1 < max_oi) {
                 out[oi++] = 0xC0 | (b >> 6);
                 out[oi++] = 0x80 | (b & 0x3F);
             }
         }
         out[oi] = '\0';
-        return;
     }
-
-    // ---------------- UTF-16 → UTF-8 ----------------
-    if (encoding == 1 || encoding == 2)
+    // ---------------- UTF-16 → UTF-8 (Encoding 1 or 2) ----------------
+    else if (encoding == 1 || encoding == 2)
     {
-        bool little_endian = true;
-        uint8_t bom[2];
+        bool little_endian = (encoding == 2) ? false : true;
+        uint32_t start_idx = 0;
 
-        // Read BOM if present
-        f_read(fil, bom, 2, &br);
-        frame_size -= 2;
-
-        if (encoding == 1)
-        {
-            if (bom[0] == 0xFE && bom[1] == 0xFF)
+        // Handle BOM for Encoding 1
+        if (encoding == 1 && br >= 2) {
+            if (buffer[0] == 0xFE && buffer[1] == 0xFF) {
                 little_endian = false;
-            else if (bom[0] == 0xFF && bom[1] == 0xFE)
+                start_idx = 2;
+            } else if (buffer[0] == 0xFF && buffer[1] == 0xFE) {
                 little_endian = true;
-        }
-        else
-        {
-            // UTF-16BE without BOM
-            little_endian = false;
-        }
-
-        size_t oi = 0;
-        for (uint32_t i = 0; i + 1 < frame_size && oi < out_size - 1; i += 2)
-        {
-            uint8_t b1, b2;
-            f_read(fil, &b1, 1, &br);
-            f_read(fil, &b2, 1, &br);
-
-            uint16_t ch = little_endian ? (b1 | (b2 << 8)) : ((b1 << 8) | b2);
-            if (ch == 0x0000)
-                break;
-
-            if (ch < 0x80)
-            {
-                out[oi++] = ch;
+                start_idx = 2;
             }
-            else if (ch < 0x800 && oi + 2 < out_size)
-            {
+        }
+
+        for (uint32_t i = start_idx; i + 1 < br && oi < max_oi; i += 2)
+        {
+            uint16_t ch = little_endian ? (buffer[i] | (buffer[i+1] << 8)) 
+                                        : ((buffer[i] << 8) | buffer[i+1]);
+            if (ch == 0) break;
+
+            if (ch < 0x80) {
+                out[oi++] = (char)ch;
+            } else if (ch < 0x800 && oi + 1 < max_oi) {
                 out[oi++] = 0xC0 | (ch >> 6);
                 out[oi++] = 0x80 | (ch & 0x3F);
-            }
-            else if (oi + 3 < out_size)
-            {
+            } else if (oi + 2 < max_oi) {
                 out[oi++] = 0xE0 | (ch >> 12);
                 out[oi++] = 0x80 | ((ch >> 6) & 0x3F);
                 out[oi++] = 0x80 | (ch & 0x3F);
             }
         }
-
         out[oi] = '\0';
-        return;
     }
 
-    // Unknown encoding → skip
-    f_lseek(fil, f_tell(fil) + frame_size);
+    // Always seek to the end of the frame if it was larger than our buffer
+    if (frame_size > br) {
+        f_lseek(fil, f_tell(fil) + (frame_size - br));
+    }
 }
 
 uint32_t find_audio_start(FIL *fil)
@@ -411,7 +395,7 @@ out:
 
 void get_mp3_metadata_fast(const char *filename, track_info_t *track)
 {
-    // Initialize only the requested fields
+    // Initialize only filename, title, and artist
     strcpy(track->filename, filename);
     strcpy(track->title, "(unknown)");
     strcpy(track->artist, "(unknown)");
@@ -481,4 +465,9 @@ int compare_filenames(const void *a, const void *b)
     const track_info_t *ta = (const track_info_t *)a;
     const track_info_t *tb = (const track_info_t *)b;
     return strcasecmp(ta->filename, tb->filename);
+}
+
+int compare_filenames_raw(const void *a, const void *b)
+{
+    return strcasecmp(a, b);
 }

@@ -20,6 +20,7 @@ void get_mp3_header(FIL *fil, track_info_t *track);
 void get_mp3_metadata(const char *filename, track_info_t *track);
 void get_mp3_metadata_fast(const char *filename, track_info_t *track);
 int compare_filenames(const void *a, const void *b);
+int compare_filenames_raw(const void *a, const void *b);
 
 /* ======== Init ==============*/
 void sb_hw_init(vs1053_t *player, st7789_t *display);

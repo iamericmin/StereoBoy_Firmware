@@ -85,14 +85,14 @@ int main() {
     // pause_core1();
 
     // generate list of mp3 filenames found in drive
-    // count = sb_get_raw_tracks(raw_tracks, MAX_TRACKS);
+    count = sb_get_raw_tracks(raw_tracks, MAX_TRACKS);
 
-    // printf("--- Found %d MP3 Files ---\n", count);
-    // for (int i = 0; i < count; i++) {
-    //     // %02d pads the index with a zero (00, 01, 02...) for better alignment
-    //     printf("[%02d]: %s\n", i, raw_tracks[i]);
-    // }
-    // printf("--- End of List ---\n");
+    printf("--- Found %d MP3 Files ---\n", count);
+    for (int i = 0; i < count; i++) {
+        // %02d pads the index with a zero (00, 01, 02...) for better alignment
+        printf("[%02d]: %s\n", i, raw_tracks[i]);
+    }
+    printf("--- End of List ---\n");
 
     sb_scan_tracks(tracks, MAX_TRACKS);
 
@@ -120,11 +120,10 @@ int main() {
                 uint8_t pressed = buttons_get_just_pressed();
                 if (pressed > 0){
                     if (pressed & BTN_D) {
-                        // shift songs up by one and insert new song in bottom
-                        // memmove(&tracks[0], &tracks[1], sizeof(track_info_t) * 9); // shift tracklist left by 1
-                        // memset(&tracks[9], 0, sizeof(track_info_t)); // delete last track
-                        // get_mp3_metadata(fno.fname, &tracks[10]);
                         song_choice = (song_choice + 1) % count;
+                        if (song_choice >= 7) {
+                            
+                        }
                     }
                     if (pressed & BTN_U)      song_choice = (song_choice - 1 + count) % count; //added roll-over
                         // shift songs down by one and insert new song on top
@@ -157,7 +156,7 @@ int main() {
         printf("  Start: %X\r\n", track->audio_end);
 
         set_visualizer(1);
-        get_mp3_metadata(track->filename, track);
+        get_mp3_metadata(track->filename, track); // fetch rest of the metadata before playing file
         exitCode = jukebox(&player, track, &display);
 
         if (exitCode == 1){
