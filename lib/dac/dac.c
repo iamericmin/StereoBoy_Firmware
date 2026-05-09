@@ -362,7 +362,7 @@ void dac_init() {
     dac_write(0, 0x33, 0b00010100); // GPIO1 as INT1 output
 
 
-    dac_set_volume(dac_volume);
+    dac_set_volume((uint32_t)potVal * 0x60 / 4096);
     
     // Give the amp a tiny moment to attempt power-up before checking faults
     sleep_ms(10); 

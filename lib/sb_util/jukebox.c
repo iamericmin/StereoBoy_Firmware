@@ -95,11 +95,7 @@ int jukebox(vs1053_t *player, track_info_t *track, st7789_t *display)
         if (vol_check == 10) {
             uint16_t vol = (uint32_t)potVal * 0x60 / 4096;
             ff_rew_status = empty_icon; //update ff/rew icon every 10 as well
-            // Only update DAC if the change is larger than the noise (hysteresis)
-            if (abs((int)vol - (int)old_volume) >= 2) { 
-                dac_set_volume(vol);
-                old_volume = vol; // Only update "old" when the DAC actually changes
-            }
+            dac_set_volume(vol);
             vol_check = 0;
         } else {
             vol_check++;
