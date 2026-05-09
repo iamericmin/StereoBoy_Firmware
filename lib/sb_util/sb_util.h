@@ -21,6 +21,7 @@ void get_mp3_metadata(const char *filename, track_info_t *track);
 void get_mp3_metadata_fast(const char *filename, track_info_t *track);
 int compare_filenames(const void *a, const void *b);
 int compare_filenames_raw(const void *a, const void *b);
+int compare_folders(const void *a, const void *b);
 
 /* ======== Init ==============*/
 void sb_hw_init(vs1053_t *player, st7789_t *display);
@@ -28,7 +29,8 @@ void sb_hw_init(vs1053_t *player, st7789_t *display);
 /* ========= Audio ========= */
 void sb_audio_init(vs1053_t *player);
 
-/* ========= MP3 / Metadata ========= */
+/* ========= Filesystem / MP3 / Metadata ========= */
+int sb_scan_folders(folder_info_t *folders, int max_folders);
 int  sb_scan_tracks(track_info_t *tracks, int max_tracks);
 int  sb_get_raw_tracks(char raw_tracks[][256], int max_tracks);
 void sb_print_track(track_info_t *t);

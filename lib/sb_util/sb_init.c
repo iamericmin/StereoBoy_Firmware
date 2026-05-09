@@ -122,6 +122,57 @@ void sb_display_init(st7789_t *display)
     printf("CORE 1 LAUNCHED!\r\n");
 }
 
+// scans for folders in root dir
+// also parses their name and # of items as metadata
+int sb_scan_folders(folder_info_t *folders, int max_folders) {
+    DIR dir;
+    FILINFO fno;
+    int folder_count = 0;
+
+    if (f_opendir(&dir, "0:/") != FR_OK) {
+        return 0; 
+    }
+
+    while (f_readdir(&dir, &fno) == FR_OK && fno.fname[0] != 0) {
+        // Filter for directories, skipping hidden/system ones
+        if ((fno.fattrib & AM_DIR) && (fno.fname[0] != '.')) {
+            if (folder_count < max_folders) {
+                // Populate Name
+                strncpy(folders[folder_count].foldername, fno.fname, 63);
+                folders[folder_count].foldername[63] = '\0';
+                folders[folder_count].num_mp3s = 0;
+
+                // Count MP3s inside
+                DIR sub_dir;
+                FILINFO sub_fno;
+                char path[128];
+                snprintf(path, sizeof(path), "0:/%s", fno.fname);
+
+                if (f_opendir(&sub_dir, path) == FR_OK) {
+                    while (f_readdir(&sub_dir, &sub_fno) == FR_OK && sub_fno.fname[0] != 0) {
+                        if (!(sub_fno.fattrib & AM_DIR)) {
+                            char *ext = strrchr(sub_fno.fname, '.');
+                            if (ext && !strcasecmp(ext, ".mp3")) {
+                                folders[folder_count].num_mp3s++;
+                            }
+                        }
+                    }
+                    f_closedir(&sub_dir);
+                }
+                folder_count++;
+            }
+        }
+    }
+    f_closedir(&dir);
+
+    // --- Internal Sort ---
+    if (folder_count > 1) {
+        qsort(folders, folder_count, sizeof(folder_info_t), compare_folders);
+    }
+
+    return folder_count;
+}
+
 // This function scans the current directory for all MP3 files
 // and quickly generates an array of all their filenames
 int sb_get_raw_tracks(char raw_tracks[][256], int max_tracks) {

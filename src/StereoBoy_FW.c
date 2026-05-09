@@ -47,6 +47,11 @@ struct st7789_t display = {
 track_info_t tracks[MAX_TRACKS];
 char raw_tracks[MAX_TRACKS][256];
 
+folder_info_t folders[MAX_FOLDERS];
+
+char folder_names[20][64];
+int folder_file_counts[20];
+
 int song_choice = 0;
 int count;
 int main() {
@@ -80,6 +85,18 @@ int main() {
     printf("\r\n\r\n");
 
     // sleep_ms(750); // pause for dramatic effect
+
+    dprint("Starting Folder Scan");
+
+    uint8_t total_folders = sb_scan_folders(folders, 20);
+    printf("--- Found %d Folders ---\n", total_folders);
+    for (int i = 0; i < total_folders; i++) {
+        printf("[%02d] %-16s (%d songs)\n", 
+                i, 
+                folders[i].foldername, 
+                folders[i].num_mp3s);
+    }
+
 
     dprint("Starting Track Scan");
     // pause_core1();

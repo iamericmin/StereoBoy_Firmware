@@ -471,3 +471,9 @@ int compare_filenames_raw(const void *a, const void *b)
 {
     return strcasecmp(a, b);
 }
+
+int compare_folders(const void *a, const void *b) {
+    folder_info_t *folderA = (folder_info_t *)a;
+    folder_info_t *folderB = (folder_info_t *)b;
+    return strcasecmp(folderA->foldername, folderB->foldername);
+}
