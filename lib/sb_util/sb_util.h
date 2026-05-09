@@ -28,6 +28,7 @@ void sb_audio_init(vs1053_t *player);
 
 /* ========= MP3 / Metadata ========= */
 int  sb_scan_tracks(track_info_t *tracks, int max_tracks);
+int  sb_get_raw_tracks(char raw_tracks[][256], int max_tracks);
 void sb_print_track(track_info_t *t);
 
 /* ========= Playback ========= */

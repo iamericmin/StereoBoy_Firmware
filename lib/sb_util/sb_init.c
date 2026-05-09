@@ -122,6 +122,45 @@ void sb_display_init(st7789_t *display)
     printf("CORE 1 LAUNCHED!\r\n");
 }
 
+// This function scans the current directory for all MP3 files
+// and quickly generates an array of all their filenames
+int sb_get_raw_tracks(char raw_tracks[][256], int max_tracks) {
+    DIR dir;
+    FILINFO fno;
+    int count = 0;
+
+    if (f_opendir(&dir, "0:/") != FR_OK) {
+        return 0; 
+    }
+
+    while (f_readdir(&dir, &fno) == FR_OK && fno.fname[0] != 0)
+    {
+        // Skip directories
+        if (fno.fattrib & AM_DIR)
+            continue;
+
+        char *ext = strrchr(fno.fname, '.');
+        if (ext && !strcasecmp(ext, ".mp3") && count < max_tracks)
+        {
+            // Copy filename into the current slot, then increment
+            strncpy(raw_tracks[count], fno.fname, 255);
+            raw_tracks[count][255] = '\0'; // Safety null-terminator
+            count++;
+        }
+    }
+
+    f_closedir(&dir);
+
+    if (count == 0)
+    {
+        printf("No MP3 files found.\r\n");
+        return 0;
+    }
+
+    qsort(raw_tracks, count, 256, compare_filenames);
+    return count;
+}
+
 int sb_scan_tracks(track_info_t *tracks, int max_tracks)
 {
     DIR dir;
@@ -136,11 +175,11 @@ int sb_scan_tracks(track_info_t *tracks, int max_tracks)
             continue;
 
         char *ext = strrchr(fno.fname, '.');
-        if (ext && !strcasecmp(ext, ".mp3") && count < MAX_TRACKS)
+        if (ext && !strcasecmp(ext, ".mp3") && count < max_tracks)
         {
             get_mp3_metadata(fno.fname, &tracks[count]);
             count++;
-            // dprint("Read song %d", count);
+            dprint("Read song %d", count);
         }
     }
 
@@ -160,6 +199,8 @@ int sb_scan_tracks(track_info_t *tracks, int max_tracks)
 
 void sb_hw_init(vs1053_t *player, st7789_t *display)
 {
+
+    sleep_ms(3000);
 
     mutex_init(&text_buff_mtx);
     sem_init(&text_sem, 0, 255);
