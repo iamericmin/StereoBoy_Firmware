@@ -409,6 +409,72 @@ out:
     f_close(&fil); // Ensure file is closed even if an error occurs (via goto)
 }
 
+void get_mp3_metadata_fast(const char *filename, track_info_t *track)
+{
+    // Initialize only the requested fields
+    strcpy(track->filename, filename);
+    strcpy(track->title, "(unknown)");
+    strcpy(track->artist, "(unknown)");
+    strcpy(track->album, "(unknown)");
+
+    FIL fil;
+    UINT br;
+    uint8_t header[10];
+    uint8_t frame_header[10];
+
+    if (f_open(&fil, filename, FA_READ) != FR_OK)
+        return;
+
+    // Check for ID3v2 header
+    if (f_read(&fil, header, 10, &br) != FR_OK || br != 10 || memcmp(header, "ID3", 3) != 0)
+    {
+        f_close(&fil);
+        return;
+    }
+
+    uint32_t tag_size = syncsafe_to_uint(&header[6]);
+    uint32_t bytes_read = 0;
+
+    // Iterate through frames
+    while (bytes_read < tag_size)
+    {
+        if (f_read(&fil, frame_header, 10, &br) != FR_OK || br != 10)
+            break;
+
+        bytes_read += 10;
+        
+        if (frame_header[0] == 0) // Padding reached
+            break;
+
+        // Big-endian size conversion
+        uint32_t size = (frame_header[4] << 24) | (frame_header[5] << 16) | 
+                        (frame_header[6] << 8)  | frame_header[7];
+
+        // Only process the three requested text frames
+        if (memcmp(frame_header, "TIT2", 4) == 0) 
+        {
+            read_text_frame(&fil, size, track->title, sizeof(track->title));
+        }
+        else if (memcmp(frame_header, "TPE1", 4) == 0) 
+        {
+            read_text_frame(&fil, size, track->artist, sizeof(track->artist));
+        }
+        else if (memcmp(frame_header, "TALB", 4) == 0) 
+        {
+            read_text_frame(&fil, size, track->album, sizeof(track->album));
+        }
+        else 
+        {
+            // Quickly skip over everything else (including large APIC frames)
+            f_lseek(&fil, f_tell(&fil) + size);
+        }
+
+        bytes_read += size;
+    }
+
+    f_close(&fil);
+}
+
 // Helper for qsort
 int compare_filenames(const void *a, const void *b)
 {

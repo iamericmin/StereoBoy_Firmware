@@ -85,19 +85,16 @@ int main() {
     // pause_core1();
 
     // generate list of mp3 filenames found in drive
-    count = sb_get_raw_tracks(raw_tracks, MAX_TRACKS);
+    // count = sb_get_raw_tracks(raw_tracks, MAX_TRACKS);
 
-    printf("--- Found %d MP3 Files ---\n", count);
-    for (int i = 0; i < count; i++) {
-        // %02d pads the index with a zero (00, 01, 02...) for better alignment
-        printf("[%02d]: %s\n", i, raw_tracks[i]);
-    }
-    printf("--- End of List ---\n");
+    // printf("--- Found %d MP3 Files ---\n", count);
+    // for (int i = 0; i < count; i++) {
+    //     // %02d pads the index with a zero (00, 01, 02...) for better alignment
+    //     printf("[%02d]: %s\n", i, raw_tracks[i]);
+    // }
+    // printf("--- End of List ---\n");
 
-    // then generate a 10-long list of metadata
-    for (int i=0; i<10; i++) {
-        
-    }
+    sb_scan_tracks(tracks, MAX_TRACKS);
 
     // resume_core1();
     int exitCode = 0;
@@ -160,6 +157,7 @@ int main() {
         printf("  Start: %X\r\n", track->audio_end);
 
         set_visualizer(1);
+        get_mp3_metadata(track->filename, track);
         exitCode = jukebox(&player, track, &display);
 
         if (exitCode == 1){

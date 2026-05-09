@@ -18,6 +18,7 @@ void read_text_frame(FIL *fil, uint32_t frame_size, char *out, size_t out_size);
 uint32_t find_audio_start(FIL *fil);
 void get_mp3_header(FIL *fil, track_info_t *track);
 void get_mp3_metadata(const char *filename, track_info_t *track);
+void get_mp3_metadata_fast(const char *filename, track_info_t *track);
 int compare_filenames(const void *a, const void *b);
 
 /* ======== Init ==============*/

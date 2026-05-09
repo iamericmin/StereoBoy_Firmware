@@ -177,7 +177,7 @@ int sb_scan_tracks(track_info_t *tracks, int max_tracks)
         char *ext = strrchr(fno.fname, '.');
         if (ext && !strcasecmp(ext, ".mp3") && count < max_tracks)
         {
-            get_mp3_metadata(fno.fname, &tracks[count]);
+            get_mp3_metadata_fast(fno.fname, &tracks[count]);
             count++;
             dprint("Read song %d", count);
         }
@@ -200,7 +200,7 @@ int sb_scan_tracks(track_info_t *tracks, int max_tracks)
 void sb_hw_init(vs1053_t *player, st7789_t *display)
 {
 
-    sleep_ms(3000);
+    // sleep_ms(3000);
 
     mutex_init(&text_buff_mtx);
     sem_init(&text_sem, 0, 255);
