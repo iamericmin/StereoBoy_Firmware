@@ -169,8 +169,8 @@ int jukebox(vs1053_t *player, track_info_t *track, st7789_t *display)
             case 'O':
                 uint8_t seconds_into_song = (f_tell(&fil) - track->audio_start) / (track->bitrate * 125);
                 if (seconds_into_song >= 5){
-                    pos = 0;
-                    f_lseek(&fil, pos);
+                    uint32_t audio_start = find_audio_start(&fil);
+                    f_lseek(&fil, audio_start);
                     break;
                 } else {
                     exitType = 2;
