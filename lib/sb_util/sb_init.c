@@ -1,11 +1,34 @@
 #include "global_vars.h"
 
 #include "lib/sb_util/sb_util.h"
+#include "hardware/pwm.h"
 
 static FATFS fs;
 
 static int dma_chan = -1;
 static dma_channel_config dcc;
+
+void set_backlight_brightness(uint gpio, uint16_t brightness_percent) {
+    // Ensure percent is clamped between 0 and 100
+    if (brightness_percent > 100) brightness_percent = 100;
+
+    uint slice_num = pwm_gpio_to_slice_num(gpio);
+    uint chan = pwm_gpio_to_channel(gpio);
+    
+    // Initial setup (only needs to be done once, but safe to repeat)
+    gpio_set_function(gpio, GPIO_FUNC_PWM);
+    
+    // Using a wrap of 255 for 8-bit-like resolution, 
+    // or 10000 for finer control. Let's use 1000.
+    uint16_t wrap = 1000;
+    pwm_set_wrap(slice_num, wrap);
+    
+    // Calculate level based on percentage
+    uint16_t level = (brightness_percent * wrap) / 100;
+    
+    pwm_set_chan_level(slice_num, chan, level);
+    pwm_set_enabled(slice_num, true);
+}
 
 void st7789_init(const struct st7789_t* config, uint16_t width, uint16_t height)
 {
@@ -82,7 +105,7 @@ void st7789_init(const struct st7789_t* config, uint16_t width, uint16_t height)
     st7789_cmd(0x29, NULL, 0);
     sleep_ms(10);
 
-    gpio_put(st7789_cfg.gpio_bl, 1);
+    set_backlight_brightness(st7789_cfg.gpio_bl, 50);
 }
 
 void sb_display_init(st7789_t *display)

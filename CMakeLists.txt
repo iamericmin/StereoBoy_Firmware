@@ -173,6 +173,7 @@ target_link_libraries(StereoBoy_FW
         hardware_pio
         hardware_adc
         hardware_dma
+        hardware_pwm
         pico_multicore
         )
 

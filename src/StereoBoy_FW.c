@@ -97,7 +97,6 @@ int main() {
                 folders[i].num_mp3s);
     }
 
-
     dprint("Starting Track Scan");
     // pause_core1();
 

@@ -34,8 +34,7 @@ uint8_t buttons_get_raw_state(void);
  */
 uint8_t buttons_get_just_pressed(void);
 
-
-char buttons_map_to_char_jukebox(int currentEq);
+char buttons_map_to_char_jukebox(uint8_t edge, int currentEq);
 
 char get_button_jukebox(int currentEq);
 

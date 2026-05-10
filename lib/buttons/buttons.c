@@ -1,6 +1,8 @@
 #include "lib/sb_util/global_vars.h"
 #include "buttons.h"
 
+#define HOLD_TIME 50
+
 // --- Pin Definitions ---
 static const uint PIN_LATCH = 11;
 static const uint PIN_CLOCK = 23;
@@ -70,37 +72,26 @@ uint8_t buttons_get_just_pressed(void) {
 }
 
 
-//CHAT MADE THESE FUNCTIONS BELOW!!!
-//maps buttons to characters for use in jukebox, allows for multibutton presses
-char buttons_map_to_char_jukebox(int currentEq) {
-    uint8_t edge = ~buttons_get_raw_state();       // Is a button HELD
-    // uint8_t edge = buttons_get_just_pressed();   // Was a button CLICKED
-
-    // Identify if the modifier (SELECT) is currently being held
-    bool select_held = (edge & BTN_SELECT);
-    // Process the "Just Pressed" buttons based on the modifier
-    if (edge == 0) return 0; // No new press detected
+char buttons_map_to_char_jukebox(uint8_t edge, int currentEq) {
+    bool select_held = (~buttons_get_raw_state() & BTN_SELECT);
 
     if (!select_held) {
-        // --- Standard actions (just button) ---
-        if (edge & BTN_A)     return 'p'; // B = pause
-        if (edge & BTN_B)     return 's'; // A = stop
-        if (edge & BTN_U)     return 'u'; // Up = Volume Up
-        if (edge & BTN_D)     return 'd'; // Down = Volume Down
-        if (edge & BTN_R)     return 'n'; // Right = next song
-        if (edge & BTN_L)     return 'o'; // Left = prev song
-        if (edge & BTN_START) return 'v'; //change visualizer
+        if (edge & BTN_A)     return 'p';
+        if (edge & BTN_B)     return 's';
+        if (edge & BTN_U)     return 'u';
+        if (edge & BTN_D)     return 'd';
+        if (edge & BTN_R)     return 'n';
+        if (edge & BTN_L)     return 'o';
+        if (edge & BTN_START) return 'v';
     } else {
-        // --- modifier actions (buton + select) ---
-        if (edge & BTN_R) return 'f'; // Select + Right = Fast Forward
-        if (edge & BTN_L) return 'r'; // Select + Left = Rewind
-        if (edge & BTN_U) return '+';
-        if (edge & BTN_D) return '-';
-        if (edge & BTN_A) return (char) (((currentEq + 1) % 6) + '0'); //need to check this
-        if (edge & BTN_START) return 'm';
-        if (edge & BTN_B) return 'l'; // turn off VU meter
+        // Fast Forward and Rewind are handled by the repeat logic above,
+        // but you can keep them here as a fallback for the first click.
+        if (edge & BTN_U)     return '+';
+        if (edge & BTN_D)     return '-';
+        if (edge & BTN_B)     return 'L';
+        if (edge & BTN_A)     return (char)(((currentEq + 1) % 6) + '0');
     }
-    return 0; // No match found
+    return 0;
 }
 
 /**
@@ -127,38 +118,29 @@ void buttons_sync_state(void) {
     last_button_states = current_button_states;
 }
 
-#define TIME_TO_REPEAT 1000
-#define REPEAT_TIME 100
-char prev_char;
-absolute_time_t timeout;
-    //REPEAT_TIME is in milliseconds (10^-3)
-char get_button_jukebox(int currentEq){
-    
-    char c;
-    absolute_time_t t;
-    // Pair * p = malloc(sizeof(Pair));
+static uint32_t next_repeat_time = 0;
 
-    c = buttons_map_to_char_jukebox(currentEq);
-    if (prev_char != c){
-        prev_char = c;
-        timeout = make_timeout_time_ms(TIME_TO_REPEAT);
-        return c;
-    }
-    else{
-        //if nothing pressed stop
-        if (c == 0) {
-            return 0;
-        }
-        //special keys to not repeat
-        if ((c >= '0' && c <= '5') || c == 'p' || c == 's' || c == 'v') {
-            return 0; 
-        }
-        if (absolute_time_min(t, timeout) == timeout){
-            timeout = make_timeout_time_ms(REPEAT_TIME);
-            return c;
-        }
-        else{
-            return 0;
+char get_button_jukebox(int currentEq) {
+    uint8_t raw = ~buttons_get_raw_state(); // Current physical state
+    uint32_t now = to_ms_since_boot(get_absolute_time());
+
+    // 1. CHECK FOR HELD REPEAT (Fast Forward / Rewind)
+    // Only triggers if SELECT is held and either LEFT or RIGHT is held
+    if (raw & BTN_SELECT) {
+        if ((raw & BTN_R) || (raw & BTN_L)) {
+            if (now >= next_repeat_time) {
+                next_repeat_time = now + HOLD_TIME;
+                return (raw & BTN_R) ? 'f' : 'r';
+            }
+            return 0; // Still waiting for the next "tick"
         }
     }
+
+    // 2. CHECK FOR SINGLE PRESSES (Everything else)
+    // We call this to get buttons that were JUST clicked
+    uint8_t edge = buttons_get_just_pressed();
+    if (edge == 0) return 0;
+
+    // Reuse your existing mapping logic but pass the 'edge' to it
+    return buttons_map_to_char_jukebox(edge, currentEq);
 }
