@@ -339,17 +339,19 @@ void sb_hw_init(vs1053_t *player, st7789_t *display)
     gpio_set_function(PIN_MOSI, GPIO_FUNC_SPI);
     gpio_set_function(PIN_MISO, GPIO_FUNC_SPI);
     
-    for (int i=0; i<10; i++) {
-        if (!sd_init_driver())
-        {
-            dprint("SD init failed");
-            printf("SD init failed\r\n");
+    bool sd_success = false;
+    for (int i = 0; i < 50; i++) {
+        if (sd_init_driver()) {
+            sd_success = true;
+            printf("SD card initialized on attempt %d!\r\n", i + 1);
+            break; 
         }
-        else
-        {
-            dprint("SD card initialized!");
-            printf("SD card initialized!\r\n");
-        }
+        sleep_ms(100); // Give the card a moment before retrying
+    }
+
+    if (!sd_success) {
+        dprint("SD init failed");
+        printf("SD init failed\r\n");
     }
 
     FRESULT fr = f_mount(&fs, "0:", 1);
