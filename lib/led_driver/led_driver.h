@@ -30,4 +30,5 @@ void pca9685_set_pwm(pca9685_t *dev, uint8_t channel, uint16_t on, uint16_t off)
 void pca9685_set_pin(pca9685_t *dev, uint8_t channel, uint16_t value);
 void pca9685_write_microseconds(pca9685_t *dev, uint8_t channel, uint16_t us);
 void pca9685_update_vu(pca9685_t *dev, uint16_t adc_left, uint16_t adc_right);
+void pca9685_all_off(pca9685_t *dev);
 #endif

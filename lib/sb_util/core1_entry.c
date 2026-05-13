@@ -85,6 +85,8 @@ void core1_entry()
 {
     while (1)
     {
+        adc_select_input(POT_CH);
+        potVal = adc_read();
         switch (visualizer)
         {
         case 0: // Album Art
@@ -557,8 +559,8 @@ static void process_audio_batch()
 
 //Adds icons and samples ADC
 void addIcons(uint16_t* frame_buffer, bool enabled){
-    adc_select_input(POT_CH);
-    potVal = adc_read();
+    // adc_select_input(POT_CH);
+    // potVal = adc_read();
     if (enabled){
 
         //Place pause Icon on screen

@@ -300,6 +300,7 @@ void sb_hw_init(vs1053_t *player, st7789_t *display)
     if (pca9685_init(&vu_meter, i2c1, 0x40))
     {
         printf("PCA9685 LED Driver initialized!\r\n");
+        pca9685_sleep(&vu_meter);
     }
     else
     {
@@ -385,6 +386,4 @@ void sb_hw_init(vs1053_t *player, st7789_t *display)
     
     dprint("Finished sb_hw_init");
     printf("\r\nFinished sb_hw_init\r\n");
-
-    // pca9685_sleep(&vu_meter, 1);
 }

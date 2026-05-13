@@ -22,7 +22,8 @@
 #define MODE2_INVRT   0x10  // Invert logic: 1 = High duty cycle is Sink (GND)
 #define MODE2_OUTDRV  0x04  // 0 = Open-Drain, 1 = Totem-Pole
 
-#define MAX_BRIGHTNESS 32 // Standardize on full 12-bit range
+#define MAX_BRIGHTNESS 4095
+#define DESIRED_BRIGHTNESS 32
 
 static void write8(pca9685_t *dev, uint8_t reg, uint8_t val) {
     uint8_t buf[2] = {reg, val};
@@ -164,22 +165,37 @@ void pca9685_update_vu(pca9685_t *dev, uint16_t adc_left, uint16_t adc_right) {
 
         // Left Bank Logic
         if (peak_l >= threshold) {
-            pca9685_set_pin(dev, pin_l, MAX_BRIGHTNESS);
+            pca9685_set_pin(dev, pin_l, DESIRED_BRIGHTNESS);
         } else if (peak_l > prev_threshold) {
             float fraction = (peak_l - prev_threshold) * 8.0f;
-            pca9685_set_pin(dev, pin_l, (uint16_t)(fraction * MAX_BRIGHTNESS));
+            pca9685_set_pin(dev, pin_l, (uint16_t)(fraction * DESIRED_BRIGHTNESS));
         } else {
             pca9685_set_pin(dev, pin_l, 0);
         }
 
         // Right Bank Logic
         if (peak_r >= threshold) {
-            pca9685_set_pin(dev, pin_r, MAX_BRIGHTNESS);
+            pca9685_set_pin(dev, pin_r, DESIRED_BRIGHTNESS);
         } else if (peak_r > prev_threshold) {
             float fraction = (peak_r - prev_threshold) * 8.0f;
-            pca9685_set_pin(dev, pin_r, (uint16_t)(fraction * MAX_BRIGHTNESS));
+            pca9685_set_pin(dev, pin_r, (uint16_t)(fraction * DESIRED_BRIGHTNESS));
         } else {
             pca9685_set_pin(dev, pin_r, 0);
         }
     }
+}
+
+void pca9685_all_off(pca9685_t *dev) {
+    peak_l = 0.0f;
+    peak_r = 0.0f;
+
+    // Use the ALL_LED registers to force everything off in one I2C transaction
+    uint8_t buf[5] = {
+        ALL_LED_ON_L,
+        0x00, 
+        0x00, 
+        0x00, 
+        0x10  // Bit 4 of OFF_H = Full OFF
+    };
+    i2c_write_blocking(dev->i2c, dev->addr, buf, 5, false);
 }

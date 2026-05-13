@@ -64,7 +64,7 @@ int main() {
 
     stdio_init_all();
 
-    sleep_ms(3000);
+    // sleep_ms(3000);
 
     sb_hw_init(&player, &display);
     
@@ -126,6 +126,7 @@ int main() {
         read_lwbt();
         //Return to main menu with list selection:
         if (exitCode == 0) {
+            // pca9685_all_off(&vu_meter);
             selected = false; 
             set_visualizer(6);
             bool confirmed = 0;
