@@ -23,7 +23,7 @@
 #define MODE2_OUTDRV  0x04  // 0 = Open-Drain, 1 = Totem-Pole
 
 #define MAX_BRIGHTNESS 4095
-#define DESIRED_BRIGHTNESS 32
+#define DESIRED_BRIGHTNESS 64
 
 static void write8(pca9685_t *dev, uint8_t reg, uint8_t val) {
     uint8_t buf[2] = {reg, val};
@@ -104,6 +104,21 @@ void pca9685_sleep(pca9685_t *dev) {
 }
 
 void pca9685_wakeup(pca9685_t *dev) {
+
+    // 2. Set MODE2: Open-Drain (0) and Inverted Polarity (1)
+    // This makes 4095 = LED Full Bright for cathode-wired setups
+    write8(dev, MODE2, MODE2_INVRT);
+
+    // 3. Set PWM frequency
+    pca9685_set_pwm_freq(dev, 1000);
+
+    // 4. Wake up and enable Auto-Increment
+    write8(dev, MODE1, MODE1_AI);
+    sleep_ms(5);
+
+    // 5. Clear restart bit
+    write8(dev, MODE1, MODE1_AI | MODE1_RESTART);
+
     uint8_t mode = read8(dev, MODE1);
     write8(dev, MODE1, mode & ~MODE1_SLEEP);
     sleep_ms(1);

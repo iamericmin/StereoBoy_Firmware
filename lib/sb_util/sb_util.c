@@ -176,29 +176,26 @@ void dac_int_callback(uint gpio, uint32_t events)
     // Read 0x2C to clear the sticky interrupt
     dac_read(0, 0x2C); // THIS NEEDS TO BE HERE!!!! DO NOT REMOVE THIS LINE
     playStatus = pause_icon;
-    if (dac_read(0, 0x2E) & 0x10) // read whether headphone in or out
-    { // Bit 5
-        dac_write(1, 0x20, 0b00000110); // shut down speaker driver
+    if (dac_read(0, 0x2E) & 0x10) { // read whether headphone in or out
+        printf("Headphones plugged in! Paused and switching to stereo headphones.\n");
         // pause without warping
         paused = 1;
         warping = 0;
+        dac_write(1, 0x20, 0b00000110); // shut down speaker driver
         dac_write(0, 0x3F, 0b11010110); // set audio output to stereo
         // Reg 0x1F: HP Drivers power up
         dac_write(1, 0x1F, 0xC0);
         // Reg 0x28/0x29: HPL/R Driver unmute
         dac_write(1, 0x28, 0x06);
         dac_write(1, 0x29, 0x06);
-        printf("Headphones plugged in! Paused and switching to stereo headphones.\n");
-    }
-    else
-    {
+    } else {
         printf("Headphones pulled out! Paused and switching to mono speakers.\n");
-        dac_write(1, 0x1F, 0x00); // Reg 0x1F: HP Drivers power down
-        dac_write(0, 0x3F, 0b11111110); // set audio output to mono
-        dac_write(1, 0x20, 0b10000110); // power up speaker driver
         // pause without warping
         paused = 1;
         warping = 0;
+        dac_write(1, 0x1F, 0x00); // Reg 0x1F: HP Drivers power down
+        dac_write(0, 0x3F, 0b11111110); // set audio output to mono
+        dac_write(1, 0x20, 0b10000110); // power up speaker driver
     }
 }
 

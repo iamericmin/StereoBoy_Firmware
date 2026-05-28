@@ -108,6 +108,7 @@ typedef struct {
 extern track_info_t tracks[MAX_TRACKS];
 extern char raw_tracks[MAX_TRACKS][256];
 extern int count;
+extern int song_choice;
 
 //CODEC
 typedef struct {
@@ -133,7 +134,6 @@ extern uint16_t* playStatus;
 extern uint16_t* ff_rew_status;
 extern int progress_bar;
 extern bool enableIcons;
-extern int song_choice;
 
 // ST7789 uses 16-bit RGB565 colors
 extern uint16_t played_progres_color;

@@ -105,7 +105,7 @@ void st7789_init(const struct st7789_t* config, uint16_t width, uint16_t height)
     st7789_cmd(0x29, NULL, 0);
     sleep_ms(10);
 
-    set_backlight_brightness(st7789_cfg.gpio_bl, 50);
+    set_backlight_brightness(st7789_cfg.gpio_bl, 100);
 }
 
 void sb_display_init(st7789_t *display)

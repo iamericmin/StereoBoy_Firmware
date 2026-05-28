@@ -130,18 +130,13 @@ int main() {
             selected = false; 
             set_visualizer(6);
             bool confirmed = 0;
-            clear_framebuffer();
+            // clear_framebuffer(); // Seemed completely unnecessary so commented out, but not deleting it
             printf("\r\nSong %d/%d: ", song_choice+1, count);
             prev_choice = song_choice;
             while (selected == false) {
                 uint8_t pressed = buttons_get_just_pressed();
                 if (pressed > 0){
-                    if (pressed & BTN_D) {
-                        song_choice = (song_choice + 1) % count;
-                        if (song_choice >= 7) {
-                            
-                        }
-                    }
+                    if (pressed & BTN_D)      song_choice = (song_choice + 1) % count;
                     if (pressed & BTN_U)      song_choice = (song_choice - 1 + count) % count; //added roll-over
                         // shift songs down by one and insert new song on top
                     if (pressed & BTN_R)      song_choice = (song_choice + 10) % count;
@@ -172,18 +167,20 @@ int main() {
         printf("  Start: %X\r\n", track->audio_start);
         printf("  Start: %X\r\n", track->audio_end);
 
-        set_visualizer(1);
+        set_visualizer(visualizer);
         get_mp3_metadata(track->filename, track); // fetch rest of the metadata before playing file
         exitCode = jukebox(&player, track, &display);
 
+        // play next song
         if (exitCode == 1){
             if (song_choice + 1 > count)
-                song_choice = 1;
+                song_choice = 0;
             else
                 song_choice += 1;
             printf("\r\n Next song!\r\n");
             dprint("Next song!");
         }
+        // play previous song
         if (exitCode == 2){
             if (song_choice - 1 < 1)
                 song_choice = count;
@@ -191,6 +188,11 @@ int main() {
                 song_choice -= 1;
             dprint("Prev Song!");
             printf("\r\nPrev Song!\r\n");
+        }
+        // play selected song in menu (visualizer 6)
+        if (exitCode == 3){
+            dprint("Playing picked Song!");
+            printf("\r\nPlaying picked Song!\r\n");
         }
     }
 }

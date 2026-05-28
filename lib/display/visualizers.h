@@ -2,8 +2,10 @@
 #include "fft.h"
 #include "lissajous.h"
 
-#define WAVE_L_COLOR 0x07f8
-#define WAVE_R_COLOR 0x053f
+// #define WAVE_L_COLOR 0x07f8
+// #define WAVE_R_COLOR 0x053f
+#define WAVE_L_COLOR 0xFFFF
+#define WAVE_R_COLOR 0xFFFF
 #define FFT_L_COLOR_DARK 0x0600
 #define FFT_R_COLOR_DARK 0x05FF
 #define FFT_L_COLOR_LIGHT 0x8FF1

@@ -8,7 +8,7 @@ semaphore_t text_sem;
 
 char text_buff_temp[120];
 struct Node *head = NULL;
-int visualizer = 5;
+int visualizer = 1;
 
 uint8_t marquee_title_start = 0;
 uint8_t marquee_artist_start = 0;

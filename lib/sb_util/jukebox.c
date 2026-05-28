@@ -32,7 +32,7 @@ int prev_progress_bar = 0;
 cplx audio_history_l[HISTORY_SIZE];
 cplx audio_history_r[HISTORY_SIZE];
 int history_index = 0;
-int num_visualizations = 6;
+int num_visualizations = 8;
 bool album_art_ready = false;
 
 int jukebox(vs1053_t *player, track_info_t *track, st7789_t *display)
@@ -183,20 +183,28 @@ int jukebox(vs1053_t *player, track_info_t *track, st7789_t *display)
             // not new below
             case 'p':
             case 'P':
-                paused = !paused;                      // set paused flag
-                warp_start_time = get_absolute_time(); // get timestamp for warp start
-                warp_start_transport = transport;      //
-                warp_target = paused ? 0.0f : 1.0f;
-                warping = true;
-                if (paused) playStatus = pause_icon;
-                else playStatus = play_icon;
+                if (visualizer == 6) {
+                    paused = 0;
+                    warping = 0;
+                    playStatus = play_icon;
+                    exitType = 3;
+                    return exitType;
+                } else {
+                    paused = !paused;                      // set paused flag
+                    warp_start_time = get_absolute_time(); // get timestamp for warp start
+                    warp_start_transport = transport;      //
+                    warp_target = paused ? 0.0f : 1.0f;
+                    warping = true;
+                    if (paused) playStatus = pause_icon;
+                    else playStatus = play_icon;
 
-                // select duration based on pause/resume
-                warp_duration = paused ? PAUSE_WARP_US : RESUME_WARP_US;
+                    // select duration based on pause/resume
+                    warp_duration = paused ? PAUSE_WARP_US : RESUME_WARP_US;
 
-                printf(paused ? "\r\nTape slowing...\r\n"
-                              : "\r\nTape resuming...\r\n");
-                break;
+                    printf(paused ? "\r\nTape slowing...\r\n"
+                                : "\r\nTape resuming...\r\n");
+                    break;
+                }
             case 'f':
             case 'F':
                 if (absolute_time_diff_us(last_skip_time, now) >= SKIP_INTERVAL_MS * 1000)
@@ -225,13 +233,46 @@ int jukebox(vs1053_t *player, track_info_t *track, st7789_t *display)
                 break;
             case 'u':
             case 'U':
-                dac_increase_volume(3);
-                printf("\r\nVolume up!\r\n");
+                if (visualizer == 6) { // scroll through menu without actually changing the track
+                    if (song_choice - 1 < 1) {
+                        song_choice = count - 1;
+                    } else {
+                        song_choice -= 1;
+                    }
+                    printf("\r\nUp pressed! Song: %d\r\n", song_choice);
+                } else {
+                    uint8_t seconds_into_song = (f_tell(&fil) - track->audio_start) / (track->bitrate * 125);
+                    if (seconds_into_song >= 5){
+                        uint32_t audio_start = find_audio_start(&fil);
+                        f_lseek(&fil, audio_start);
+                        break;
+                    } else {
+                        exitType = 2;
+                        vs1053_set_play_speed(player, 0); // hard pause
+                        printf("\r\n Going to next song....\r\n");
+                        f_close(&fil);
+                        vs1053_stop(player);
+                        return exitType;
+                    }
+                }
                 break;
             case 'd':
             case 'D':
-                dac_decrease_volume(3);
-                printf("\r\nVolume down!\r\n");
+                if (visualizer == 6) {
+                    if (song_choice + 1 > count) {
+                        song_choice = 0;
+                    } else {
+                        song_choice += 1;
+                    }
+                    printf("\r\nDown pressed! Song: %d\r\n", song_choice);
+                } else {
+                    exitType = 1;
+                    vs1053_set_play_speed(player, 0); // hard pause
+                    printf("\r\n Going to next song....\r\n");
+                    f_close(&fil);
+                    vs1053_stop(player);
+                    return exitType;
+                }
                 break;
             case 'l':
             case 'L':
