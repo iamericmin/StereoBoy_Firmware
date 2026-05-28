@@ -281,14 +281,12 @@ int jukebox(vs1053_t *player, track_info_t *track, st7789_t *display)
             case 'v':
             case 'V':
                 visualizer = (visualizer + 1) % (num_visualizations - 1);
-                if (visualizer == 0 && !album_art_ready && track->album_art_size > 0)
-                {
+                if (visualizer == 0 && !album_art_ready && track->album_art_size > 0) {
                     process_image(track, filename, 160);
                     album_art_ready = true;
                     printf("changing visualizer");
                 }
-                switch (visualizer)
-                {
+                switch (visualizer) {
                 case 0:
                     printf("\r\nAlbum Art Visualization\r\n");
                     break;
@@ -347,17 +345,7 @@ int jukebox(vs1053_t *player, track_info_t *track, st7789_t *display)
                 warp_duration = PAUSE_WARP_US;
                 warping = true;
                 album_art_ready = false;
-                printf("Stopping...\r\n");
                 break;
-                if (paused)
-                {
-                    exitType = 0;
-                    vs1053_set_play_speed(player, 0); // hard pause
-                    printf("\r\nStopping....\r\n");
-                    f_close(&fil);
-                    vs1053_stop(player);
-                    return exitType;
-                }
             }
         }
 

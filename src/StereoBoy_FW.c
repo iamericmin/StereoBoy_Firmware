@@ -54,6 +54,9 @@ int folder_file_counts[20];
 
 int song_choice = 0;
 int count;
+
+int temp_visualizer = 1;
+
 int main() {
     set_visualizer(7);
     // Lower RP2350 core voltage to 1V
@@ -124,12 +127,12 @@ int main() {
     
     while(1) {
         read_lwbt();
+        temp_visualizer = (visualizer == 7) ? 1 : visualizer;
         //Return to main menu with list selection:
         if (exitCode == 0) {
             // pca9685_all_off(&vu_meter);
-            selected = false; 
+            selected = false;
             set_visualizer(6);
-            bool confirmed = 0;
             // clear_framebuffer(); // Seemed completely unnecessary so commented out, but not deleting it
             printf("\r\nSong %d/%d: ", song_choice+1, count);
             prev_choice = song_choice;
@@ -167,7 +170,7 @@ int main() {
         printf("  Start: %X\r\n", track->audio_start);
         printf("  Start: %X\r\n", track->audio_end);
 
-        set_visualizer(visualizer);
+        set_visualizer(temp_visualizer);
         get_mp3_metadata(track->filename, track); // fetch rest of the metadata before playing file
         exitCode = jukebox(&player, track, &display);
 

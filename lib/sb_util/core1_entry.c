@@ -87,8 +87,7 @@ void core1_entry()
     {
         adc_select_input(POT_CH);
         potVal = adc_read();
-        switch (visualizer)
-        {
+        switch (visualizer) {
         case 0: // Album Art
             if (album_art_ready)
             {
@@ -119,7 +118,6 @@ void core1_entry()
                 }
             }
             break;
-
         case 1: // Oscilloscope
             update_scope_core1();
             break;
