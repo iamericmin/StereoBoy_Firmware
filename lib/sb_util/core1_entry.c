@@ -181,6 +181,7 @@ void core1_entry()
             break;
         
         case 6:
+            process_audio_batch();
             clear_framebuffer();
             start =  (song_choice < 6) ? 0 : song_choice - 5;
             track_info_t *track;
@@ -511,7 +512,7 @@ void update_scope_core1()
         st7789_ramwr();
         spi_set_format(spi0, 16, SPI_CPOL_0, SPI_CPHA_0, SPI_MSB_FIRST);
         spi_write16_blocking(spi0, frame_buffer, 240 * 240);
-        pca9685_update_vu(&vu_meter, raw_l, raw_r);
+        process_audio_batch();
     }
 }
 
