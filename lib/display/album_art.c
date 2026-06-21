@@ -173,6 +173,7 @@ bool load_album_cover(uint16_t *img_buffer, uint32_t pointer) {
     // 1. Open the file from the root directory
     fr = f_open(&file, "/artwork.bin", FA_READ);
     if (fr != FR_OK) {
+        printf("Error: Could not open artwork.bin (Code: %d)\n", fr);
         // Missing file or SD card unmounted
         return false; 
     }
@@ -197,6 +198,9 @@ bool load_album_cover(uint16_t *img_buffer, uint32_t pointer) {
     if (fr == FR_OK && bytes_read == total_image_bytes) {
         printf("artwork loaded!\n");
         return true; // Array populated with perfect 16-bit RGB565 pixels!
+    } else {
+        // Change your error print to capture the 'fr' variable:
+        printf("[Art Error] Hash found, but f_read failed! FatFs Code: %d\n", fr);
     }
 
     return false; // Read operation failed mid-stream

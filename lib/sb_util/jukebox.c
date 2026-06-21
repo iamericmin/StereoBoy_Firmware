@@ -282,6 +282,7 @@ int jukebox(vs1053_t *player, track_info_t *track, st7789_t *display)
                 visualizer = (visualizer + 1) % (num_visualizations - 1);
                 if (visualizer == 0 && !album_art_ready && track->album_art_size > 0) {
                     // process_image(track, filename, 160);
+                    display_album_art(img_buffer, track->artist, track->album, track->title);
                     album_art_ready = true;
                     printf("changing visualizer");
                 }

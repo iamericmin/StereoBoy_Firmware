@@ -63,7 +63,7 @@ def process_raw_image_data(raw_img_bytes, target_size=160):
         for r, g, b in pixels:
             pixel_16 = convert_to_rgb565(r, g, b)
             # Big-Endian ('>H'). Change to '<H' if your DAP screen demands Little-Endian
-            binary_data.extend(struct.pack('>H', pixel_16))
+            binary_data.extend(struct.pack('<H', pixel_16))
             
         return binary_data
 
@@ -179,7 +179,7 @@ def extract_and_verify(target_index, total_images):
     pixels = []
     
     for i in range(0, len(raw_bytes), 2):
-        pixel_16 = struct.unpack('>H', raw_bytes[i:i+2])[0]
+        pixel_16 = struct.unpack('<H', raw_bytes[i:i+2])[0]
         pixels.append(rgb565_to_rgb888(pixel_16))
         
     img.putdata(pixels)

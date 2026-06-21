@@ -94,7 +94,6 @@ void core1_entry()
             track = &tracks[song_choice];
             // uint64_t hash = generate_FNV(track->title, track->artist, track->album);
             // uint32_t pointer = lookup_LUT(hash);
-            display_album_art(img_buffer, track->artist, track->album, track->title);
             st7789_set_cursor(0, 0);
             st7789_ramwr();
             spi_set_format(spi0, 16, SPI_CPOL_0, SPI_CPHA_0, SPI_MSB_FIRST);
