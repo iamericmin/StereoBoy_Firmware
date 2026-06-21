@@ -160,6 +160,7 @@ void process_image(track_info_t *track, const char *filename, float output_size)
     }
 out:
     f_close(&fil);
+    album_art_ready = true;
 }
 
 ////////////////////IMAGE////////////////////////////

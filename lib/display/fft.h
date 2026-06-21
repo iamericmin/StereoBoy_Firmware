@@ -8,7 +8,6 @@
 
 typedef float complex cplx;
 
-#define PI 3.141592653589793
 #define SCREEN_WIDTH 240
 #define SCREEN_HEIGHT 240
 #define FFT_L_COLOR_DARK  0x0600

@@ -18,7 +18,7 @@
 #endif
 
 #ifndef HISTORY_SIZE
-#define HISTORY_SIZE 256
+#define HISTORY_SIZE 1024
 #endif
 
 // ADC Mapping Constants needed for scaling the Lissajous figures

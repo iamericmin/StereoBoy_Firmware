@@ -1,5 +1,5 @@
-#include "lib/sb_util/global_vars.h"
-#include "lib/sb_util/sb_util.h"
+#include "global_vars.h"
+#include "sb_util.h"
 
 /* Text Display Stuff */
 mutex_t text_buff_mtx;
@@ -13,6 +13,8 @@ int visualizer = 1;
 uint8_t marquee_title_start = 0;
 uint8_t marquee_artist_start = 0;
 uint8_t marquee_album_start = 0;
+
+track_info_t *track;
 
 void set_visualizer(int num)
 {
@@ -89,33 +91,32 @@ void core1_entry()
         potVal = adc_read();
         switch (visualizer) {
         case 0: // Album Art
-            if (album_art_ready)
+            track = &tracks[song_choice];
+            // uint64_t hash = generate_FNV(track->title, track->artist, track->album);
+            // uint32_t pointer = lookup_LUT(hash);
+            display_album_art(img_buffer, track->artist, track->album, track->title);
+            st7789_set_cursor(0, 0);
+            st7789_ramwr();
+            spi_set_format(spi0, 16, SPI_CPOL_0, SPI_CPHA_0, SPI_MSB_FIRST);
+            spi_write16_blocking(spi0, frame_buffer, 240 * 240);
+
+            // Lock into an LED-only
+            while (visualizer == 0)
             {
-                // Draw art once
-                album_art_centered();
+                adc_select_input(ADC_CH_L);
+                uint16_t raw_l = adc_read();
+
+                adc_select_input(ADC_CH_R);
+                uint16_t raw_r = adc_read();
+
+                pca9685_update_vu(&vu_meter, raw_l, raw_r);
+
+                addIcons(frame_buffer, enableIcons);
                 st7789_set_cursor(0, 0);
                 st7789_ramwr();
                 spi_set_format(spi0, 16, SPI_CPOL_0, SPI_CPHA_0, SPI_MSB_FIRST);
                 spi_write16_blocking(spi0, frame_buffer, 240 * 240);
-
-                // Lock into an LED-only
-                while (visualizer == 0)
-                {
-                    adc_select_input(ADC_CH_L);
-                    uint16_t raw_l = adc_read();
-
-                    adc_select_input(ADC_CH_R);
-                    uint16_t raw_r = adc_read();
-
-                    pca9685_update_vu(&vu_meter, raw_l, raw_r);
-
-                    addIcons(frame_buffer, enableIcons);
-                    st7789_set_cursor(0, 0);
-                    st7789_ramwr();
-                    spi_set_format(spi0, 16, SPI_CPOL_0, SPI_CPHA_0, SPI_MSB_FIRST);
-                    spi_write16_blocking(spi0, frame_buffer, 240 * 240);
-                    // sleep_ms(16); // Throttle to ~60FPS
-                }
+                // sleep_ms(16); // Throttle to ~60FPS
             }
             break;
         case 1: // Oscilloscope
@@ -182,7 +183,7 @@ void core1_entry()
             process_audio_batch();
             clear_framebuffer();
             start =  (song_choice < 6) ? 0 : song_choice - 5;
-            track_info_t *track;
+            // track_info_t *track;
             track_info_t *selected_track;
             static char buf[256]; // buffer for string to write to display
             static char marquee_title[32]; // buffer for scrolling title marquee

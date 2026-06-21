@@ -121,7 +121,7 @@ if (EXISTS ${picoVscode})
     include(${picoVscode})
 endif()
 # ====================================================================================
-set(PICO_BOARD pico2 CACHE STRING "Board type")
+# set(PICO_BOARD pico2 CACHE STRING "Board type")
 
 # Pull in Raspberry Pi Pico SDK (must be before project)
 include(pico_sdk_import.cmake)
@@ -182,7 +182,7 @@ target_include_directories(StereoBoy_FW PRIVATE
         ${CMAKE_CURRENT_LIST_DIR}
 )
 
-set(PICO_FLASH_SIZE_BYTES 2097152 CACHE STRING "RP2350 flash size")
+# set(PICO_FLASH_SIZE_BYTES 2097152 CACHE STRING "RP2350 flash size")
 
 # Generate memory usage report
 target_link_options(StereoBoy_FW PRIVATE

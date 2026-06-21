@@ -73,12 +73,11 @@ int jukebox(vs1053_t *player, track_info_t *track, st7789_t *display)
 
     uint16_t stereo_bit = sampleSpeed & 1;     // LSB indicates mono or stereo (not exactly sure what but this is pretty much always 1)
     uint16_t base_rate = sampleSpeed & 0xFFFE; // sampling speed in upper 15 bits
-    album_art_ready = false;
-    if (track->album_art_size > 0 && visualizer == 0)
-    {
-        process_image(track, filename, 160); // fills frame_buffer
-        album_art_ready = true;
-    }
+    // if (track->album_art_size > 0 && visualizer == 0)
+    // {
+    //     process_image(track, filename, 160); // fetch album artwork from cache
+    //     album_art_ready = true;
+    // }
     uint32_t start = find_audio_start(&fil);
     f_lseek(&fil, start);
     absolute_time_t last_skip_time = get_absolute_time();
@@ -282,7 +281,7 @@ int jukebox(vs1053_t *player, track_info_t *track, st7789_t *display)
             case 'V':
                 visualizer = (visualizer + 1) % (num_visualizations - 1);
                 if (visualizer == 0 && !album_art_ready && track->album_art_size > 0) {
-                    process_image(track, filename, 160);
+                    // process_image(track, filename, 160);
                     album_art_ready = true;
                     printf("changing visualizer");
                 }

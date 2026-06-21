@@ -40,6 +40,7 @@ extern bool warping;
 
 //DISPLAY
 #define HISTORY_SIZE 256
+#define PI 3.14159f
 
 #define SCREEN_WIDTH 240
 #define SCREEN_HEIGHT 240
@@ -104,6 +105,16 @@ typedef struct {
     char foldername[64];
     uint8_t num_mp3s;
 } folder_info_t;
+
+#pragma pack(push, 1)
+typedef struct {
+    uint64_t hash;
+    uint32_t pointer;
+} LUT_entry_t;
+#pragma pack(pop)
+
+extern LUT_entry_t *artCache_LUT;
+extern uint32_t lut_entry_count;
 
 extern track_info_t tracks[MAX_TRACKS];
 extern char raw_tracks[MAX_TRACKS][256];

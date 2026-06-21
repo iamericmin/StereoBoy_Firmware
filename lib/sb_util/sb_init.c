@@ -8,6 +8,9 @@ static FATFS fs;
 static int dma_chan = -1;
 static dma_channel_config dcc;
 
+LUT_entry_t *artCache_LUT = NULL;
+uint32_t lut_entry_count = 0;
+
 void set_backlight_brightness(uint gpio, uint16_t brightness_percent) {
     // Ensure percent is clamped between 0 and 100
     if (brightness_percent > 100) brightness_percent = 100;
@@ -105,7 +108,7 @@ void st7789_init(const struct st7789_t* config, uint16_t width, uint16_t height)
     st7789_cmd(0x29, NULL, 0);
     sleep_ms(10);
 
-    set_backlight_brightness(st7789_cfg.gpio_bl, 100);
+    set_backlight_brightness(st7789_cfg.gpio_bl, 50);
 }
 
 void sb_display_init(st7789_t *display)
@@ -198,6 +201,7 @@ int sb_scan_folders(folder_info_t *folders, int max_folders) {
 
 // This function scans the current directory for all MP3 files
 // and quickly generates an array of all their filenames
+// Made this to make initial directory parsing faster
 int sb_get_raw_tracks(char raw_tracks[][256], int max_tracks) {
     DIR dir;
     FILINFO fno;
@@ -235,8 +239,7 @@ int sb_get_raw_tracks(char raw_tracks[][256], int max_tracks) {
     return count;
 }
 
-int sb_scan_tracks(track_info_t *tracks, int max_tracks)
-{
+int sb_scan_tracks(track_info_t *tracks, int max_tracks) {
     DIR dir;
     FILINFO fno;
     count = 0;
@@ -256,6 +259,61 @@ int sb_scan_tracks(track_info_t *tracks, int max_tracks)
             dprint("Read song %d", count);
         }
     }
+
+    FIL file;
+    FRESULT fr;
+    UINT bytes_read;
+
+    // 1. Open the file from the root directory ("/" or "0:/")
+    fr = f_open(&file, "/artwork.lut", FA_READ);
+    if (fr != FR_OK) {
+        printf("Error: Could not open artwork.lut (Code: %d)\n", fr);
+        return false;
+    }
+
+    // 2. Determine file size and calculate total entries
+    DWORD file_size = f_size(&file);
+    lut_entry_count = file_size / sizeof(LUT_entry_t);
+
+    if (lut_entry_count == 0) {
+        f_close(&file);
+        return false;
+    }
+
+    // 3. Allocate a precise chunk of RAM heap memory for the array
+    // 5000 tracks * 12 bytes = ~60KB allocated dynamically
+    artCache_LUT = (LUT_entry_t*)malloc(file_size);
+    if (artCache_LUT == NULL) {
+        printf("Error: Out of RAM! Could not allocate memory for LUT.\n");
+        f_close(&file);
+        return false;
+    }
+
+    // 4. Read the ENTIRE file into RAM in one fast block operation
+    fr = f_read(&file, artCache_LUT, file_size, &bytes_read);
+    
+    // Close the file handle since we don't need the SD card for lookups anymore
+    f_close(&file);
+
+    if (fr == FR_OK && bytes_read == file_size) {
+        printf("Successfully loaded %lu LUT entries into RAM (%lu bytes).\n", lut_entry_count, file_size);
+        // Insert this right after a successful f_read:
+        printf("\n--- Printing %lu RAM LUT Entries ---\n", lut_entry_count);
+        for (uint32_t i = 0; i < lut_entry_count; i++) {
+            printf("Entry [%04lu] -> Hash (Dec): %llu | Hash (Hex): 0x%016llX | Image Index: %lu\n", 
+                i, 
+                artCache_LUT[i].hash, 
+                artCache_LUT[i].hash, 
+                artCache_LUT[i].pointer);
+        }
+        printf("------------------------------------\n\n");
+        return true;
+    } else {
+        printf("Error reading LUT file data.\n");
+        free(artCache_LUT); // Free memory if reading failed
+        artCache_LUT = NULL;
+        return false;
+    }    
 
     f_closedir(&dir);
 
@@ -383,6 +441,9 @@ void sb_hw_init(vs1053_t *player, st7789_t *display)
     vs1053_enable_i2s(player);
     printf("VS1053 I2S enabled.\r\n");
     dprint("VS1053 I2S enabled.");
+
+    // load artwork LUT
+    // load_LUT();
     
     dprint("Finished sb_hw_init");
     printf("\r\nFinished sb_hw_init\r\n");
