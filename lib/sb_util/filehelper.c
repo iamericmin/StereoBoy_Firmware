@@ -236,10 +236,6 @@ void get_mp3_metadata(const char *filename, track_info_t *track)
     strcpy(track->title, "(unknown)");
     strcpy(track->artist, "(unknown)");
     strcpy(track->album, "(unknown)");
-    strcpy(track->mime_type, "unknown");
-    track->album_art_size = 0;
-    track->album_art_offset = 0;
-    track->album_art_type = 0;
 
     FIL fil;
     UINT br;
@@ -305,56 +301,6 @@ void get_mp3_metadata(const char *filename, track_info_t *track)
         {
             // Note the position exactly after the frame header
             FSIZE_t frame_start_pos = f_tell(&fil);
-            UINT br;
-            uint8_t encoding;
-
-            // 1. Read Text Encoding (0=ISO-8859-1, 1=UTF-16, etc.)
-            f_read(&fil, &encoding, 1, &br);
-
-            // 2. Read MIME Type (e.g., "image/jpeg") - Handled byte-by-byte
-            char temp_mime[32];
-            int i = 0;
-            do
-            {
-                f_read(&fil, &temp_mime[i], 1, &br);
-            } while (temp_mime[i++] != '\0' && i < 31);
-
-            // 3. Read Picture Type (e.g., 0x03 is Front Cover)
-            uint8_t pic_type;
-            f_read(&fil, &pic_type, 1, &br);
-
-            // Logic: Prioritize Front Cover (0x03), otherwise take the first image found
-            if (pic_type == 0x03 || track->album_art_offset == 0)
-            {
-                track->album_art_type = pic_type;
-                strncpy(track->mime_type, temp_mime, sizeof(track->mime_type));
-
-                // 4. Skip the Description string (variable length, null-terminated)
-                char dummy;
-                if (encoding == 0)
-                { 
-                    // Single null terminator for standard ASCII/ISO strings
-                    do
-                    {
-                        f_read(&fil, &dummy, 1, &br);
-                    } while (dummy != '\0');
-                }
-                else
-                { 
-                    // Double null terminator for UTF-16 strings
-                    uint16_t dummy16;
-                    do
-                    {
-                        f_read(&fil, &dummy16, 2, &br);
-                    } while (dummy16 != 0x0000);
-                }
-
-                // 5. Store the file pointer location where the actual image binary starts
-                track->album_art_offset = f_tell(&fil);
-
-                // 6. Calculate image size by subtracting metadata overhead from total frame size
-                track->album_art_size = size - (track->album_art_offset - frame_start_pos);
-            }
 
             // 7. Seek to the absolute end of the frame to keep the loop aligned
             f_lseek(&fil, frame_start_pos + size);

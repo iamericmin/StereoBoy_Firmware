@@ -67,7 +67,7 @@ int main() {
 
     stdio_init_all();
 
-    sleep_ms(3000);
+    // sleep_ms(3000);
 
     sb_hw_init(&player, &display);
     

@@ -6,9 +6,10 @@ from mutagen.mp3 import MP3
 from mutagen.id3 import ID3, APIC
 
 # --- CONFIGURATION ---
-SOURCE_MUSIC_DIR = "/media/iamericmin/SONGS/"
-OUTPUT_BIN = "./artwork.bin"
-OUTPUT_LUT = "./artwork.lut"
+WORKING_DIR = "/media/iamericmin/BEATLES"
+SOURCE_MUSIC_DIR = WORKING_DIR
+OUTPUT_BIN = WORKING_DIR + "/artwork.bin"
+OUTPUT_LUT = WORKING_DIR + "/artwork.lut"
 TARGET_SIZE = 160
 IMG_SIZE_BYTES = TARGET_SIZE * TARGET_SIZE * 2  # 51,200 bytes
 

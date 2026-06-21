@@ -20,7 +20,6 @@
 #include "hardware/pio.h"
 #include "hardware/spi.h"
 
-#include "lib/display/picojpeg.h"
 #include "lib/font/font.h"
 
 
@@ -84,8 +83,6 @@ extern bool album_art_ready;
 extern uint16_t img_buffer[IMG_WIDTH * IMG_HEIGHT];
 
 typedef struct {
-    uint32_t album_art_size;
-    uint32_t album_art_offset;
     uint32_t audio_start; 
     uint32_t audio_end;   
     uint32_t header;
@@ -93,8 +90,6 @@ typedef struct {
     uint16_t samplespeed;
     uint8_t mpegID;
     uint8_t channels;
-    uint8_t album_art_type;
-    char mime_type[32];
     char filename[256];
     char title[128];
     char artist[128];

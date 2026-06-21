@@ -73,7 +73,7 @@ int jukebox(vs1053_t *player, track_info_t *track, st7789_t *display)
 
     uint16_t stereo_bit = sampleSpeed & 1;     // LSB indicates mono or stereo (not exactly sure what but this is pretty much always 1)
     uint16_t base_rate = sampleSpeed & 0xFFFE; // sampling speed in upper 15 bits
-    if (track->album_art_size > 0 && visualizer == 0) {
+    if (visualizer == 0) {
         display_album_art(img_buffer, track->artist, track->album, track->title);
     }
     uint32_t start = find_audio_start(&fil);
@@ -278,7 +278,7 @@ int jukebox(vs1053_t *player, track_info_t *track, st7789_t *display)
             case 'v':
             case 'V':
                 visualizer = (visualizer + 1) % (num_visualizations - 1);
-                if (visualizer == 0 && !album_art_ready && track->album_art_size > 0) {
+                if (visualizer == 0) {
                     display_album_art(img_buffer, track->artist, track->album, track->title);
                     printf("changing visualizer");
                 }
@@ -315,8 +315,6 @@ int jukebox(vs1053_t *player, track_info_t *track, st7789_t *display)
                 printf("  Bitrate : %d Kbps\r\n", track->bitrate);
                 printf("  Sample rate : %d Hz\r\n", track->samplespeed);
                 printf("  Channels : %s\r\n", track->channels == 1 ? "Mono" : "Stereo");
-                printf("  Album Art Size: %lu\r\n", (unsigned long)track->album_art_size);
-                printf("  Mime Type: %s\r\n", track->mime_type);
                 printf("  Header: %X\r\n", track->header);
                 break;
             case 'm':

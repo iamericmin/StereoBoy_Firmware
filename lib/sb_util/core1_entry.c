@@ -99,23 +99,20 @@ void core1_entry()
             // spi_set_format(spi0, 16, SPI_CPOL_0, SPI_CPHA_0, SPI_MSB_FIRST);
             // spi_write16_blocking(spi0, frame_buffer, 240 * 240);
             // Lock into an LED-only
-            while (visualizer == 0)
-            {
-                adc_select_input(ADC_CH_L);
-                uint16_t raw_l = adc_read();
+            process_audio_batch();
+            adc_select_input(ADC_CH_L);
+            uint16_t raw_l = adc_read();
 
-                adc_select_input(ADC_CH_R);
-                uint16_t raw_r = adc_read();
+            adc_select_input(ADC_CH_R);
+            uint16_t raw_r = adc_read();
 
-                pca9685_update_vu(&vu_meter, raw_l, raw_r);
+            pca9685_update_vu(&vu_meter, raw_l, raw_r);
 
-                addIcons(frame_buffer, enableIcons);
-                st7789_set_cursor(0, 0);
-                st7789_ramwr();
-                spi_set_format(spi0, 16, SPI_CPOL_0, SPI_CPHA_0, SPI_MSB_FIRST);
-                spi_write16_blocking(spi0, frame_buffer, 240 * 240);
-                // sleep_ms(16); // Throttle to ~60FPS
-            }
+            addIcons(frame_buffer, enableIcons);
+            st7789_set_cursor(0, 0);
+            st7789_ramwr();
+            spi_set_format(spi0, 16, SPI_CPOL_0, SPI_CPHA_0, SPI_MSB_FIRST);
+            spi_write16_blocking(spi0, frame_buffer, 240 * 240);
             break;
         case 1: // Oscilloscope
             update_scope_core1();
@@ -145,37 +142,37 @@ void core1_entry()
             draw_lissajous_connected();
             break;
 
-        case 5:
-            if (sem_acquire_timeout_ms(&text_sem, 10)) {
-                printf(" core1: aquired lock\r\n");
+        // case 5:
+            // if (sem_acquire_timeout_ms(&text_sem, 10)) {
+            //     printf(" core1: aquired lock\r\n");
 
-                memmove(&frame_buffer, &frame_buffer[SCREEN_WIDTH * (font_height)], sizeof(uint16_t) * (SCREEN_WIDTH) * (SCREEN_HEIGHT - font_height));
-                memset(&frame_buffer[SCREEN_WIDTH * (SCREEN_HEIGHT - font_height)], 0, sizeof(uint16_t) * (SCREEN_WIDTH) * (font_height));
-                mutex_enter_blocking(&text_buff_mtx);
+            //     memmove(&frame_buffer, &frame_buffer[SCREEN_WIDTH * (font_height)], sizeof(uint16_t) * (SCREEN_WIDTH) * (SCREEN_HEIGHT - font_height));
+            //     memset(&frame_buffer[SCREEN_WIDTH * (SCREEN_HEIGHT - font_height)], 0, sizeof(uint16_t) * (SCREEN_WIDTH) * (font_height));
+            //     mutex_enter_blocking(&text_buff_mtx);
 
-                if (head == NULL) {
-                    printf("Err! Core 1 head is NULL");
-                    mutex_exit(&text_buff_mtx);
-                    continue;
-                }
+            //     if (head == NULL) {
+            //         printf("Err! Core 1 head is NULL");
+            //         mutex_exit(&text_buff_mtx);
+            //         continue;
+            //     }
 
-                printf("core 1: %s | %d\r\n", head->str, strlen(text_buff_temp));
-                st7789_draw_string(1, SCREEN_HEIGHT - font_height - 5, head->str, WHITE);
-                struct Node *n = head;
-                head = head->next;
-                if (n != NULL)
-                {
-                    free(n);
-                }
-                mutex_exit(&text_buff_mtx);
-                st7789_set_cursor(0, 0);
-                st7789_ramwr();
-                spi_set_format(spi0, 16, SPI_CPOL_0, SPI_CPHA_0, SPI_MSB_FIRST);
-                spi_write16_blocking(spi0, frame_buffer, 240 * 240);
-                // sleep_ms(1000);
-                printf(" core 1 finished print\r\n");
-            }
-            break;
+            //     printf("core 1: %s | %d\r\n", head->str, strlen(text_buff_temp));
+            //     st7789_draw_string(1, SCREEN_HEIGHT - font_height - 5, head->str, WHITE);
+            //     struct Node *n = head;
+            //     head = head->next;
+            //     if (n != NULL)
+            //     {
+            //         free(n);
+            //     }
+            //     mutex_exit(&text_buff_mtx);
+            //     st7789_set_cursor(0, 0);
+            //     st7789_ramwr();
+            //     spi_set_format(spi0, 16, SPI_CPOL_0, SPI_CPHA_0, SPI_MSB_FIRST);
+            //     spi_write16_blocking(spi0, frame_buffer, 240 * 240);
+            //     // sleep_ms(1000);
+            //     printf(" core 1 finished print\r\n");
+            // }
+            // break;
         
         case 6:
             process_audio_batch();
@@ -430,7 +427,7 @@ void core1_entry()
             break;
 
         default:
-            visualizer = 0;
+            visualizer = (visualizer == 5) ? 6 : 0;
             break;
         }
     }
