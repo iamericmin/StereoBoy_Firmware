@@ -206,8 +206,9 @@ bool load_album_cover(uint16_t *img_buffer, uint32_t pointer) {
     return false; // Read operation failed mid-stream
 }
 
-void display_album_art(uint16_t *img_buffer, const char* artist, const char* album, const char* title)
-{
+void display_album_art(uint16_t *img_buffer, const char* artist, const char* album, const char* title) {
+    memset(frame_buffer, 0, sizeof(frame_buffer));
+
     // 1. Calculate the hash right here locally
     uint64_t runtime_hash = generate_FNV(artist, album, title);
     
@@ -216,8 +217,6 @@ void display_album_art(uint16_t *img_buffer, const char* artist, const char* alb
     
     printf("[Art Debug] Hashing: Target=\"%s%s%s\"\n", artist, album, title);
     printf("[Art Debug] Generated Hash: 0x%016llX -> Lookup Result: %lu\n", runtime_hash, pointer);
-
-    memset(frame_buffer, 0, sizeof(frame_buffer));
     
     if (pointer == 0xFFFFFFFF) {
         printf("[Art Error] Hash was NOT found in the RAM LUT table!\n");

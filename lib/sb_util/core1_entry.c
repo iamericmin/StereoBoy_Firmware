@@ -91,14 +91,13 @@ void core1_entry()
         potVal = adc_read();
         switch (visualizer) {
         case 0: // Album Art
-            track = &tracks[song_choice];
+            // track = &tracks[song_choice];
             // uint64_t hash = generate_FNV(track->title, track->artist, track->album);
             // uint32_t pointer = lookup_LUT(hash);
-            st7789_set_cursor(0, 0);
-            st7789_ramwr();
-            spi_set_format(spi0, 16, SPI_CPOL_0, SPI_CPHA_0, SPI_MSB_FIRST);
-            spi_write16_blocking(spi0, frame_buffer, 240 * 240);
-
+            // st7789_set_cursor(0, 0);
+            // st7789_ramwr();
+            // spi_set_format(spi0, 16, SPI_CPOL_0, SPI_CPHA_0, SPI_MSB_FIRST);
+            // spi_write16_blocking(spi0, frame_buffer, 240 * 240);
             // Lock into an LED-only
             while (visualizer == 0)
             {
