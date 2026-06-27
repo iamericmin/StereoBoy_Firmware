@@ -41,7 +41,7 @@ int jukebox(vs1053_t *player, track_info_t *track, st7789_t *display)
 
     FIL fil;             // file object
     UINT br;             // pointer to number of bytes read
-    uint8_t buffer[512]; // buffer read from file
+    uint8_t buffer[2048]; // buffer read from file
 
     char *filename = track->filename;
     uint16_t sampleSpeed = track->samplespeed;
@@ -76,8 +76,8 @@ int jukebox(vs1053_t *player, track_info_t *track, st7789_t *display)
     if (visualizer == 0) {
         display_album_art(img_buffer, track->artist, track->album, track->title);
     }
-    uint32_t start = find_audio_start(&fil);
-    f_lseek(&fil, start);
+
+    f_lseek(&fil, find_audio_start(&fil));
     absolute_time_t last_skip_time = get_absolute_time();
 
     selected_band = 0;
@@ -98,10 +98,6 @@ int jukebox(vs1053_t *player, track_info_t *track, st7789_t *display)
             vol_check++;
         }
         
-        
-
-        // --- 2. MUSIC FEEDING (Priority) ---
-        // The rest of your jukebox logic remains here...
         int c = getchar_timeout_us(0); // nonblocking getchar
 
         // get value from buttons
@@ -112,7 +108,7 @@ int jukebox(vs1053_t *player, track_info_t *track, st7789_t *display)
                 c = (int)btn_char; // Inject the button character into the logic
         }
 
-        //progress bar (should make seperate function)
+        //progress bar (should make separate function)
         long song_pos = f_tell(&fil);
         float progress = (float)(song_pos - track->audio_start) / (float)(track->audio_end - track->audio_start);
         if (progress < 0.0f)
@@ -166,8 +162,8 @@ int jukebox(vs1053_t *player, track_info_t *track, st7789_t *display)
             case 'O':
                 uint8_t seconds_into_song = (f_tell(&fil) - track->audio_start) / (track->bitrate * 125);
                 if (seconds_into_song >= 5){
-                    uint32_t audio_start = find_audio_start(&fil);
-                    f_lseek(&fil, audio_start);
+                    // uint32_t audio_start = find_audio_start(&fil);
+                    f_lseek(&fil, track->audio_start);
                     break;
                 } else {
                     exitType = 2;
@@ -177,7 +173,6 @@ int jukebox(vs1053_t *player, track_info_t *track, st7789_t *display)
                     vs1053_stop(player);
                     return exitType;
                 }
-            // not new below
             case 'p':
             case 'P':
                 if (visualizer == 6) {
@@ -240,8 +235,8 @@ int jukebox(vs1053_t *player, track_info_t *track, st7789_t *display)
                 } else {
                     uint8_t seconds_into_song = (f_tell(&fil) - track->audio_start) / (track->bitrate * 125);
                     if (seconds_into_song >= 5){
-                        uint32_t audio_start = find_audio_start(&fil);
-                        f_lseek(&fil, audio_start);
+                        // uint32_t audio_start = find_audio_start(&fil);
+                        f_lseek(&fil, track->audio_start);
                         break;
                     } else {
                         exitType = 2;

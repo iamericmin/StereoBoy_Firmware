@@ -279,7 +279,7 @@ int sb_scan_tracks(track_info_t *tracks, int max_tracks) {
 void sb_hw_init(vs1053_t *player, st7789_t *display)
 {
 
-    // sleep_ms(3000);
+    // sleep_ms(100);
 
     mutex_init(&text_buff_mtx);
     sem_init(&text_sem, 0, 255);
@@ -341,11 +341,13 @@ void sb_hw_init(vs1053_t *player, st7789_t *display)
     printf("\r\npot intialized\r\n");
 
     // set SPI1 for codec and SD card
-    gpio_set_function(PIN_SCK, GPIO_FUNC_SPI);
-    gpio_set_function(PIN_MOSI, GPIO_FUNC_SPI);
-    gpio_set_function(PIN_MISO, GPIO_FUNC_SPI);
+    // gpio_set_function(PIN_SCK, GPIO_FUNC_SPI);
+    // gpio_set_function(PIN_MOSI, GPIO_FUNC_SPI);
+    // gpio_set_function(PIN_MISO, GPIO_FUNC_SPI);
     
     bool sd_success = false;
+    gpio_put(2, 0);
+    sleep_ms(100);
     for (int i = 0; i < 50; i++) {
         if (sd_init_driver()) {
             sd_success = true;

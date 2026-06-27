@@ -6,7 +6,8 @@ from mutagen.mp3 import MP3
 from mutagen.id3 import ID3, APIC
 
 # --- CONFIGURATION ---
-WORKING_DIR = "/media/iamericmin/BEATLES"
+# WORKING_DIR = "/mnt/01DB55D582C33DB0/Users/iamer/Music/MUSIC"
+WORKING_DIR = "/media/iamericmin/SB_BEATLES"
 SOURCE_MUSIC_DIR = WORKING_DIR
 OUTPUT_BIN = WORKING_DIR + "/artwork.bin"
 OUTPUT_LUT = WORKING_DIR + "/artwork.lut"
