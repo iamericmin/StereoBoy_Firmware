@@ -82,6 +82,10 @@ void dprint(char *fmt, ...)
 
 // This is the main loop for Core 1
 
+void music_menu() {
+    
+}
+
 int start;
 void core1_entry()
 {
@@ -118,29 +122,29 @@ void core1_entry()
             update_scope_core1();
             break;
 
-        case 2: // FFT
-            process_audio_batch();
+        // case 2: // FFT
+        //     process_audio_batch();
 
-            memset(frame_buffer, 0, sizeof(frame_buffer));
-            draw_bins(60);
+        //     memset(frame_buffer, 0, sizeof(frame_buffer));
+        //     draw_bins(60);
 
-            //Place pause Icon on screen
-            addIcons(frame_buffer, enableIcons);
-            st7789_set_cursor(0, 0);
-            st7789_ramwr();
-            spi_set_format(spi0, 16, SPI_CPOL_0, SPI_CPHA_0, SPI_MSB_FIRST);
-            spi_write16_blocking(spi0, frame_buffer, 240 * 240);
-            break;
+        //     //Place pause Icon on screen
+        //     addIcons(frame_buffer, enableIcons);
+        //     st7789_set_cursor(0, 0);
+        //     st7789_ramwr();
+        //     spi_set_format(spi0, 16, SPI_CPOL_0, SPI_CPHA_0, SPI_MSB_FIRST);
+        //     spi_write16_blocking(spi0, frame_buffer, 240 * 240);
+        //     break;
 
-        case 3: // Lissajous
-            process_audio_batch();
-            draw_lissajous();
-            break;
+        // case 3: // Lissajous
+        //     process_audio_batch();
+        //     draw_lissajous();
+        //     break;
 
-        case 4: // Lissajous connected
-            process_audio_batch();
-            draw_lissajous_connected();
-            break;
+        // case 4: // Lissajous connected
+        //     process_audio_batch();
+        //     draw_lissajous_connected();
+        //     break;
 
         // case 5:
             // if (sem_acquire_timeout_ms(&text_sem, 10)) {
@@ -413,7 +417,7 @@ void core1_entry()
                 sprintf(buf, "%d", start+i+1); //Index at 1 for users
                 strcat(buf, " ");
                 strcat(buf, track->title);
-                if (start + i == song_choice){
+                if (start + i == song_choice) {
                     st7789_draw_string(1, 5 + i * font_height, buf, HIGHLIGHT_COLOR_PRIMARY);
                 }
                 else{
@@ -427,7 +431,7 @@ void core1_entry()
             break;
 
         default:
-            visualizer = (visualizer == 5) ? 6 : 0;
+            visualizer = (visualizer == 2 || 3 || 4 || 5) ? 6 : 0;
             break;
         }
     }

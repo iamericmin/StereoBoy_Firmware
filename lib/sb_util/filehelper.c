@@ -339,6 +339,7 @@ out:
     f_close(&fil); // Ensure file is closed even if an error occurs (via goto)
 }
 
+// Only fetch title, artist, album
 void get_mp3_metadata_fast(const char *filename, track_info_t *track)
 {
     // Initialize only filename, title, and artist
@@ -403,6 +404,135 @@ void get_mp3_metadata_fast(const char *filename, track_info_t *track)
     }
 
     f_close(&fil);
+}
+
+/**
+ * Extracts metadata from an MP3 file and appends a track_info_t record
+ * to a flat binary database file (.tracklib) on the SD card.
+ */
+void get_mp3_metadata_and_generate_tracklib(const char *filename, const char *cache_filename, track_info_t *track)
+{
+    // Initialize track structure with default values to avoid garbage data
+    strcpy(track->filename, filename);
+    strcpy(track->title, "(unknown)");
+    strcpy(track->artist, "(unknown)");
+    strcpy(track->album, "(unknown)");
+
+    FIL fil;
+    UINT br;
+    uint8_t header[10];
+    uint8_t frame_header[10];
+
+    // Attempt to open the file using FatFs
+    if (f_open(&fil, filename, FA_READ) != FR_OK)
+        return;
+
+    // Read the first 10 bytes to check for the ID3v2 header
+    if (f_read(&fil, header, 10, &br) != FR_OK || br != 10)
+        goto out;
+
+    // Verify 'ID3' identifier; if not found, it's not a standard ID3v2 file
+    if (memcmp(header, "ID3", 3) != 0)
+        goto out;
+
+    // Convert the 4-byte syncsafe integer to a standard uint32
+    // Syncsafe integers ignore the 7th bit of every byte (0xxxxxxx)
+    uint32_t tag_size = syncsafe_to_uint(&header[6]);
+    uint32_t bytes_read = 0;
+
+    // Iterate through frames until we've parsed the entire ID3 header block
+    while (bytes_read < tag_size)
+    {
+        // Read the 10-byte frame header (ID, Size, Flags)
+        if (f_read(&fil, frame_header, 10, &br) != FR_OK || br != 10)
+            break;
+
+        bytes_read += 10;
+        
+        // ID3 padding: if the first byte of a frame ID is 0, we've hit the end of the tags
+        if (frame_header[0] == 0)
+            break;
+
+        // Extract the 4-character Frame ID (e.g., "TIT2", "APIC")
+        char id[5];
+        memcpy(id, frame_header, 4);
+        id[4] = 0;
+
+        // Calculate frame size (Note: ID3v2.3 uses normal bytes, v2.4 uses syncsafe here)
+        uint32_t size =
+            (frame_header[4] << 24) |
+            (frame_header[5] << 16) |
+            (frame_header[6] << 8) |
+            frame_header[7];
+
+        // Route specific frames to their respective handlers
+        if (!strcmp(id, "TIT2")) // Title
+        {
+            read_text_frame(&fil, size, track->title, sizeof(track->title));
+        }
+        else if (!strcmp(id, "TPE1")) // Artist
+        {
+            read_text_frame(&fil, size, track->artist, sizeof(track->artist));
+        }
+        else if (!strcmp(id, "TALB")) // Album
+        {
+            read_text_frame(&fil, size, track->album, sizeof(track->album));
+        }
+        else if (!strcmp(id, "APIC")) // Attached Picture
+        {
+            // Note the position exactly after the frame header
+            FSIZE_t frame_start_pos = f_tell(&fil);
+
+            // 7. Seek to the absolute end of the frame to keep the loop aligned
+            f_lseek(&fil, frame_start_pos + size);
+        }
+        else
+        {
+            // Skip unknown/unsupported frames
+            f_lseek(&fil, f_tell(&fil) + size);
+        }
+
+        bytes_read += size;
+    }
+
+    // Attempt to extract bitrate/duration from the MPEG header
+    get_mp3_header(&fil, track);
+    
+    uint32_t file_size = f_size(&fil);
+    track->audio_end = file_size;
+
+    // ID3v1 Check: Look for the 128-byte "TAG" block at the very end of the file
+    if (file_size > 128)
+    {
+        uint8_t tag_buf[3];
+        f_lseek(&fil, file_size - 128);
+        if (f_read(&fil, tag_buf, 3, &br) == FR_OK && br == 3)
+        {
+            if (memcmp(tag_buf, "TAG", 3) == 0)
+            {
+                // If ID3v1 exists, the actual audio data ends 128 bytes before EOF
+                track->audio_end = file_size - 128;
+            }
+        }
+    }
+
+out:
+    f_close(&fil); // Ensure file is closed even if an error occurs (via goto)
+
+    write_to_cache:;
+    FIL db_fil;
+    UINT bw;
+    
+    // 2. Open/Create the .tracklib file. 
+    // FA_OPEN_APPEND moves the file pointer to the end of the file automatically if it exists.
+    if (f_open(&db_fil, cache_filename, FA_WRITE | FA_OPEN_APPEND) == FR_OK)
+    {
+        // 3. Dump the memory block of the struct directly into the database file.
+        // This naturally extends the binary array layout: [Track 0][Track 1][Track 2]...
+        f_write(&db_fil, track, sizeof(track_info_t), &bw);
+        printf("Wrote ''%s'' to tracklib!\n", track->title);
+        f_close(&db_fil);
+    }
 }
 
 // Helper for qsort

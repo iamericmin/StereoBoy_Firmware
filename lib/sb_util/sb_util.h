@@ -19,6 +19,7 @@ uint32_t find_audio_start(FIL *fil);
 void get_mp3_header(FIL *fil, track_info_t *track);
 void get_mp3_metadata(const char *filename, track_info_t *track);
 void get_mp3_metadata_fast(const char *filename, track_info_t *track);
+void get_mp3_metadata_and_generate_tracklib(const char *filename, const char *cache_filename, track_info_t *track);
 int compare_filenames(const void *a, const void *b);
 int compare_filenames_raw(const void *a, const void *b);
 int compare_folders(const void *a, const void *b);

@@ -77,7 +77,7 @@ int jukebox(vs1053_t *player, track_info_t *track, st7789_t *display)
         display_album_art(img_buffer, track->artist, track->album, track->title);
     }
 
-    f_lseek(&fil, find_audio_start(&fil));
+    f_lseek(&fil, track->audio_start);
     absolute_time_t last_skip_time = get_absolute_time();
 
     selected_band = 0;

@@ -45,7 +45,6 @@ struct st7789_t display = {
 #define LCD_HEIGHT 240
 
 track_info_t tracks[MAX_TRACKS];
-char raw_tracks[MAX_TRACKS][256];
 
 folder_info_t folders[MAX_FOLDERS];
 
@@ -67,13 +66,9 @@ int main() {
 
     stdio_init_all();
 
-    // sleep_ms(3000);
-
     sb_hw_init(&player, &display);
     
     // Boot-up banner
-
-    // sleep_ms(250);
 
     // printf("\033c"); // clear screen
 
@@ -97,23 +92,42 @@ int main() {
         printf("[%02d] %-16s (%d songs)\n", 
                 i, 
                 folders[i].foldername, 
-                folders[i].num_mp3s);
+                folders[i].num_tracks);
     }
 
     dprint("Starting Track Scan");
     // pause_core1();
 
-    // generate list of mp3 filenames found in drive
-    count = sb_get_raw_tracks(raw_tracks, MAX_TRACKS);
-
-    printf("--- Found %d MP3 Files ---\n", count);
-    for (int i = 0; i < count; i++) {
-        // %02d pads the index with a zero (00, 01, 02...) for better alignment
-        printf("[%02d]: %s\n", i, raw_tracks[i]);
-    }
-    printf("--- End of List ---\n");
-
     sb_scan_tracks(tracks, MAX_TRACKS);
+    
+    printf("--- Found %d MP3 Files ---\n", count);
+
+    FIL db_fil;
+    UINT br;
+
+    if (f_open(&db_fil, "0:/.tracklib", FA_READ) == FR_OK)
+    {
+        for (int i = 0; i < count && i < MAX_TRACKS; i++) 
+        {
+            // CHANGE THIS: Read directly into your global menu array!
+            if (f_read(&db_fil, &tracks[i], sizeof(track_info_t), &br) != FR_OK || br != sizeof(track_info_t))
+            {
+                printf("[%02d] Error reading track data from cache.\n", i);
+                break; 
+            }
+
+            // Print using the tracks array element
+            printf("[%02d] Title:  %s\n", i, tracks[i].title);
+            printf("     Artist:   %s\n", tracks[i].artist);
+            printf("     Album:   %s\n", tracks[i].album);
+            printf("----------------------------------------\n");
+        }
+        f_close(&db_fil);
+    } else {
+        printf("Error: Could not open library.tracklib for reading.\n");
+    }
+
+    printf("--- End of List ---\n");
 
     // resume_core1();
     int exitCode = 0;
@@ -157,6 +171,7 @@ int main() {
                 sleep_ms(10);
             }
         }
+
         track_info_t *track = &tracks[song_choice];
 
         printf("\r\n\rNOW PLAYING:\r\n");
@@ -171,7 +186,7 @@ int main() {
         printf("  Start: %X\r\n", track->audio_end);
 
         set_visualizer(temp_visualizer);
-        get_mp3_metadata(track->filename, track); // fetch rest of the metadata before playing file
+        // get_mp3_metadata(track->filename, track); // fetch rest of the metadata before playing file
         exitCode = jukebox(&player, track, &display);
 
         // play next song

@@ -70,7 +70,7 @@ typedef struct st7789_t {
 
 //SB_UTIL
 #define MAX_FILENAME_LEN 256 // max filaname character length
-#define MAX_TRACKS 128 // max number of tracks to hold in metadata buffer
+#define MAX_TRACKS 256 // max number of tracks to hold in metadata buffer
 #define MAX_FOLDERS 32
 
 extern mutex_t text_buff_mtx;
@@ -98,7 +98,7 @@ typedef struct {
 
 typedef struct {
     char foldername[64];
-    uint8_t num_mp3s;
+    uint8_t num_tracks;
 } folder_info_t;
 
 #pragma pack(push, 1)
@@ -112,7 +112,6 @@ extern LUT_entry_t *artCache_LUT;
 extern uint32_t lut_entry_count;
 
 extern track_info_t tracks[MAX_TRACKS];
-extern char raw_tracks[MAX_TRACKS][256];
 extern int count;
 extern int song_choice;
 

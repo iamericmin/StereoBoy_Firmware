@@ -166,9 +166,9 @@ int sb_scan_folders(folder_info_t *folders, int max_folders) {
                 // Populate Name
                 strncpy(folders[folder_count].foldername, fno.fname, 63);
                 folders[folder_count].foldername[63] = '\0';
-                folders[folder_count].num_mp3s = 0;
+                folders[folder_count].num_tracks = 0;
 
-                // Count MP3s inside
+                // Count audio files inside
                 DIR sub_dir;
                 FILINFO sub_fno;
                 char path[128];
@@ -178,8 +178,8 @@ int sb_scan_folders(folder_info_t *folders, int max_folders) {
                     while (f_readdir(&sub_dir, &sub_fno) == FR_OK && sub_fno.fname[0] != 0) {
                         if (!(sub_fno.fattrib & AM_DIR)) {
                             char *ext = strrchr(sub_fno.fname, '.');
-                            if (ext && !strcasecmp(ext, ".mp3")) {
-                                folders[folder_count].num_mp3s++;
+                            if (ext && (!strcasecmp(ext, ".mp3") || !strcasecmp(ext, ".flac") || !strcasecmp(ext, ".wav"))) {
+                                folders[folder_count].num_tracks++;
                             }
                         }
                     }
@@ -244,7 +244,13 @@ int sb_scan_tracks(track_info_t *tracks, int max_tracks) {
     FILINFO fno;
     count = 0;
 
-    f_opendir(&dir, "0:/");
+    // 1. Delete the old stale cache file before starting a new scan
+    f_unlink("0:/.tracklib");
+
+    if (f_opendir(&dir, "0:/") != FR_OK) {
+        printf("Error: Could not open root directory.\r\n");
+        return 0;
+    }
 
     while (f_readdir(&dir, &fno) == FR_OK && fno.fname[0])
     {
@@ -254,24 +260,39 @@ int sb_scan_tracks(track_info_t *tracks, int max_tracks) {
         char *ext = strrchr(fno.fname, '.');
         if (ext && !strcasecmp(ext, ".mp3") && count < max_tracks)
         {
-            get_mp3_metadata_fast(fno.fname, &tracks[count]);
+            // 2. Construct the absolute file path safely
+            char full_path[256];
+            snprintf(full_path, sizeof(full_path), "0:/%s", fno.fname);
+
+            // 3. Just parse the metadata directly into the RAM array element
+            // Change your function to get_mp3_metadata_fast (no incremental caching inside)
+            get_mp3_metadata(full_path, &tracks[count]);
+            
             count++;
             dprint("Read song %d", count);
         }
     }
-
-    load_LUT();
-
     f_closedir(&dir);
 
     if (count == 0)
     {
         printf("No MP3 files found.\r\n");
-        while (1)
-            ;
+        return 0;
     }
 
     qsort(tracks, count, sizeof(track_info_t), compare_filenames);
+
+    // 5. Commit the completely pre-sorted array to .tracklib in ONE clean operation
+    FIL db_fil;
+    UINT bw;
+    if (f_open(&db_fil, "0:/.tracklib", FA_WRITE | FA_CREATE_ALWAYS) == FR_OK) {
+        f_write(&db_fil, tracks, count * sizeof(track_info_t), &bw);
+        f_close(&db_fil);
+    } else {
+        printf("Error creating cache file!\r\n");
+    }
+
+    load_LUT();
 
     return count;
 }
@@ -279,7 +300,7 @@ int sb_scan_tracks(track_info_t *tracks, int max_tracks) {
 void sb_hw_init(vs1053_t *player, st7789_t *display)
 {
 
-    // sleep_ms(1000);
+    sleep_ms(1000);
 
     mutex_init(&text_buff_mtx);
     sem_init(&text_sem, 0, 255);
@@ -366,9 +387,8 @@ void sb_hw_init(vs1053_t *player, st7789_t *display)
             sleep_ms(50);
         }
     }
-
     if (fr != FR_OK) {
-        // Only hang if it fails 5 times in a row
+        // Only hang if it fails 50 times in a row
         while (1) {
             printf("SD Mount permanently failed: %d\n", fr);
             sleep_ms(1000);

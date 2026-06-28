@@ -206,7 +206,7 @@ bool load_album_cover(uint16_t *img_buffer, uint32_t pointer) {
     return false; // Read operation failed mid-stream
 }
 
-void display_album_art(uint16_t *img_buffer, const char* artist, const char* album, const char* title) {
+int display_album_art(uint16_t *img_buffer, const char* artist, const char* album, const char* title) {
     memset(frame_buffer, 0, sizeof(frame_buffer));
 
     // 1. Calculate the hash right here locally
@@ -220,7 +220,7 @@ void display_album_art(uint16_t *img_buffer, const char* artist, const char* alb
     
     if (pointer == 0xFFFFFFFF) {
         printf("[Art Error] Hash was NOT found in the RAM LUT table!\n");
-        return;
+        return -1;
     }
 
     if (load_album_cover(img_buffer, pointer)) {
@@ -232,7 +232,9 @@ void display_album_art(uint16_t *img_buffer, const char* artist, const char* alb
             memcpy(dst, src, 160 * sizeof(uint16_t));
         }
         printf("[Art Success] Pixels copied to frame buffer cleanly.\n");
+        return 0;
     } else {
         printf("[Art Error] Hash found, but reading 51200 bytes from artwork.bin failed!\n");
+        return -1;
     }
 }
