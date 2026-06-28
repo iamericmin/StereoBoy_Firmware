@@ -28,10 +28,10 @@ static spi_t spi = {
     .sck_gpio = 30,    // GPIO number (not Pico pin number)
     .mosi_gpio = 31,
     .miso_gpio = 28,
-    .baud_rate = 12500000,              // Normal operational speed (12.5 MHz)
+    // .baud_rate = 12500000,              // Normal operational speed (12.5 MHz)
     // .baud_rate = 125 * 1000 * 1000 / 8  // 15625000 Hz
     // .baud_rate = 125 * 1000 * 1000 / 6  // 20833333 Hz
-    // .baud_rate = 125 * 1000 * 1000 / 4  // 31250000 Hz -> Use this for vs1053 breakout integrated card slot
+    .baud_rate = 125 * 1000 * 1000 / 4  // 31250000 Hz -> Use this for vs1053 breakout integrated card slot
     // .baud_rate = 70000000
     // .baud_rate = 125 * 1000 * 1000 / 2  // 62500000 Hz -> use this for standalone card slot
 };
@@ -45,7 +45,12 @@ static sd_spi_if_t spi_if = {
 /* Configuration of the SD Card socket object */
 static sd_card_t sd_card = {
     .type = SD_IF_SPI,
-    .spi_if_p = &spi_if  // Pointer to the SPI interface driving this card
+    .spi_if_p = &spi_if,  // Pointer to the SPI interface driving this card
+    .use_card_detect = false,
+    .card_detect_gpio = 41,  
+    .card_detected_true = 0, // What the GPIO read returns when a card is present.
+    .card_detect_use_pull = true,
+    .card_detect_pull_hi = true   
 };
 
 /* ********************************************************************** */

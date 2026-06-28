@@ -68,21 +68,21 @@ void st7789_init(const struct st7789_t* config, uint16_t width, uint16_t height)
     }
     gpio_put(st7789_cfg.gpio_dc, 1);
     gpio_put(st7789_cfg.gpio_rst, 1);
-    sleep_ms(100);
+    // sleep_ms(10);
     
     // SWRESET (01h): Software Reset
     st7789_cmd(0x01, NULL, 0);
-    sleep_ms(150);
+    // sleep_ms(15);
 
     // SLPOUT (11h): Sleep Out
     st7789_cmd(0x11, NULL, 0);
-    sleep_ms(50);
+    // sleep_ms(10);
 
     // COLMOD (3Ah): Interface Pixel Format
     // - RGB interface color format     = 65K of RGB interface
     // - Control interface color format = 16bit/pixel
     st7789_cmd(0x3a, (uint8_t[]){ 0x55 }, 1);
-    sleep_ms(10);
+    // sleep_ms(10);
 
     // MADCTL (36h): Memory Data Access Control
     // - Page Address Order            = Top to Bottom
@@ -98,15 +98,15 @@ void st7789_init(const struct st7789_t* config, uint16_t width, uint16_t height)
 
     // INVON (21h): Display Inversion On
     st7789_cmd(0x21, NULL, 0);
-    sleep_ms(10);
+    // sleep_ms(10);
 
     // NORON (13h): Normal Display Mode On
     st7789_cmd(0x13, NULL, 0);
-    sleep_ms(10);
+    // sleep_ms(10);
 
     // DISPON (29h): Display On
     st7789_cmd(0x29, NULL, 0);
-    sleep_ms(10);
+    // sleep_ms(10);
 
     set_backlight_brightness(st7789_cfg.gpio_bl, 50);
 }
@@ -279,7 +279,7 @@ int sb_scan_tracks(track_info_t *tracks, int max_tracks) {
 void sb_hw_init(vs1053_t *player, st7789_t *display)
 {
 
-    // sleep_ms(100);
+    // sleep_ms(1000);
 
     mutex_init(&text_buff_mtx);
     sem_init(&text_sem, 0, 255);
@@ -319,7 +319,7 @@ void sb_hw_init(vs1053_t *player, st7789_t *display)
     printf("Oscope ADC initialized!\r\n");
     dprint("Oscope ADC initialized!");
 
-    sleep_ms(100); // seems to help flaky display issues
+    // sleep_ms(10); // seems to help flaky display issues
 
     sb_display_init(display);
     printf("test point 1");
@@ -339,15 +339,8 @@ void sb_hw_init(vs1053_t *player, st7789_t *display)
 
     pot_init();
     printf("\r\npot intialized\r\n");
-
-    // set SPI1 for codec and SD card
-    // gpio_set_function(PIN_SCK, GPIO_FUNC_SPI);
-    // gpio_set_function(PIN_MOSI, GPIO_FUNC_SPI);
-    // gpio_set_function(PIN_MISO, GPIO_FUNC_SPI);
     
     bool sd_success = false;
-    gpio_put(2, 0);
-    sleep_ms(100);
     for (int i = 0; i < 50; i++) {
         if (sd_init_driver()) {
             sd_success = true;
@@ -362,19 +355,24 @@ void sb_hw_init(vs1053_t *player, st7789_t *display)
         printf("SD init failed\r\n");
     }
 
-    FRESULT fr = f_mount(&fs, "0:", 1);
-    if (fr != FR_OK)
-    {
-        while (1)
-        {
-            dprint("SD Mount failed: %d", fr);
-            printf("SD Mount failed: %d\n", fr);
+    FRESULT fr;
+    for (int retry = 0; retry < 50; retry++) {
+        fr = f_mount(&fs, "0:", 1);
+        if (fr == FR_OK) {
+            printf("SD Card successfully mounted on try %d!\n", retry);
+            break;
+        } else {
+            printf("Mount failed on try %d. Retrying...\n", retry);
+            sleep_ms(50);
         }
     }
-    else
-    {
-        dprint("SD card mounted!");
-        printf("SD card mounted!\r\n");
+
+    if (fr != FR_OK) {
+        // Only hang if it fails 5 times in a row
+        while (1) {
+            printf("SD Mount permanently failed: %d\n", fr);
+            sleep_ms(1000);
+        }
     }
 
     vs1053_init(player);

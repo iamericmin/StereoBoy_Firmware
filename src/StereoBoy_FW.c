@@ -73,7 +73,7 @@ int main() {
     
     // Boot-up banner
 
-    sleep_ms(250);
+    // sleep_ms(250);
 
     // printf("\033c"); // clear screen
 
@@ -87,7 +87,7 @@ int main() {
    ENGINEERING PROTOTYPE UNIT 001)");
     printf("\r\n\r\n");
 
-    // sleep_ms(750); // pause for dramatic effect
+    sleep_ms(750); // pause for dramatic effect
 
     dprint("Starting Folder Scan");
 
