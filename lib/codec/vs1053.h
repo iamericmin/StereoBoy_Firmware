@@ -9,7 +9,7 @@
 #define PIN_MISO 31
 #define PIN_CS 32
 
-#define MAX_FILENAME_LEN 256
+#define MAX_FILENAME_LEN 128
 
 void sci_write(vs1053_t *v, uint8_t addr, uint16_t data);
 uint16_t sci_read(vs1053_t *v, uint8_t addr);

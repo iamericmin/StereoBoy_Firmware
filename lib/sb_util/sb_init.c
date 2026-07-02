@@ -11,6 +11,13 @@ static dma_channel_config dcc;
 LUT_entry_t *artCache_LUT = NULL;
 uint32_t lut_entry_count = 0;
 
+// Define the variables cleanly (no extern here!)
+artist_info_t *global_artists = NULL;
+album_info_t  *global_albums  = NULL;
+
+uint16_t global_artist_count = 0;
+uint16_t global_album_count  = 0;
+
 void set_backlight_brightness(uint gpio, uint16_t brightness_percent) {
     // Ensure percent is clamped between 0 and 100
     if (brightness_percent > 100) brightness_percent = 100;
@@ -144,7 +151,7 @@ void sb_display_init(st7789_t *display)
     );
     // sleep_ms(500);
 
-    multicore_launch_core1(core1_entry);
+    // multicore_launch_core1(core1_entry);
     printf("CORE 1 LAUNCHED!\r\n");
 }
 
@@ -239,62 +246,67 @@ int sb_get_raw_tracks(char raw_tracks[][256], int max_tracks) {
     return count;
 }
 
-int sb_scan_tracks(track_info_t *tracks, int max_tracks) {
-    DIR dir;
+/**
+ * @brief Zero-overhead binary loader for pre-compiled DAP index files.
+ * @return int 1 on success, 0 on failure.
+ */
+int sb_load_library(void) {
     FILINFO fno;
-    count = 0;
+    FIL fil;
+    UINT br;
 
-    // 1. Delete the old stale cache file before starting a new scan
-    f_unlink("0:/.tracklib");
+    // Safety clean reset
+    if (global_artists != NULL) { free(global_artists); global_artists = NULL; }
+    if (global_albums != NULL)  { free(global_albums);  global_albums = NULL;  }
+    global_artist_count = 0;
+    global_album_count = 0;
 
-    if (f_opendir(&dir, "0:/") != FR_OK) {
-        printf("Error: Could not open root directory.\r\n");
+    printf("Loading music indexes into RAM...\r\n");
+
+    // --- LOAD ARTISTS ---
+    if (f_stat("0:/.artists", &fno) != FR_OK) {
+        printf("[Error] 0:/.artists file missing.\r\n");
         return 0;
     }
+    global_artist_count = fno.fsize / sizeof(artist_info_t);
+    global_artists = (artist_info_t *)malloc(fno.fsize);
+    if (global_artists == NULL) return 0;
 
-    while (f_readdir(&dir, &fno) == FR_OK && fno.fname[0])
-    {
-        if (fno.fattrib & AM_DIR)
-            continue;
-
-        char *ext = strrchr(fno.fname, '.');
-        if (ext && !strcasecmp(ext, ".mp3") && count < max_tracks)
-        {
-            // 2. Construct the absolute file path safely
-            char full_path[256];
-            snprintf(full_path, sizeof(full_path), "0:/%s", fno.fname);
-
-            // 3. Just parse the metadata directly into the RAM array element
-            // Change your function to get_mp3_metadata_fast (no incremental caching inside)
-            get_mp3_metadata(full_path, &tracks[count]);
-            
-            count++;
-            dprint("Read song %d", count);
+    if (f_open(&fil, "0:/.artists", FA_READ) == FR_OK) {
+        FRESULT res = f_read(&fil, global_artists, fno.fsize, &br);
+        f_close(&fil);
+        if (res != FR_OK || br != fno.fsize) {
+            free(global_artists); global_artists = NULL;
+            return 0;
         }
     }
-    f_closedir(&dir);
 
-    if (count == 0)
-    {
-        printf("No MP3 files found.\r\n");
+    // --- LOAD ALBUMS ---
+    if (f_stat("0:/.albums", &fno) != FR_OK) {
+        printf("[Error] 0:/.albums file missing.\r\n");
+        free(global_artists); global_artists = NULL;
+        return 0;
+    }
+    global_album_count = fno.fsize / sizeof(album_info_t);
+    global_albums = (album_info_t *)malloc(fno.fsize);
+    if (global_albums == NULL) {
+        free(global_artists); global_artists = NULL;
         return 0;
     }
 
-    qsort(tracks, count, sizeof(track_info_t), compare_filenames);
-
-    // 5. Commit the completely pre-sorted array to .tracklib in ONE clean operation
-    FIL db_fil;
-    UINT bw;
-    if (f_open(&db_fil, "0:/.tracklib", FA_WRITE | FA_CREATE_ALWAYS) == FR_OK) {
-        f_write(&db_fil, tracks, count * sizeof(track_info_t), &bw);
-        f_close(&db_fil);
-    } else {
-        printf("Error creating cache file!\r\n");
+    if (f_open(&fil, "0:/.albums", FA_READ) == FR_OK) {
+        FRESULT res = f_read(&fil, global_albums, fno.fsize, &br);
+        f_close(&fil);
+        if (res != FR_OK || br != fno.fsize) {
+            free(global_artists); global_artists = NULL;
+            free(global_albums);  global_albums = NULL;
+            return 0;
+        }
     }
 
-    load_LUT();
-
-    return count;
+    printf("[Success] Loaded %d Packed Artists and %d Packed Albums into RAM.\r\n", 
+           global_artist_count, global_album_count);
+    return 1;
 }
 
 void sb_hw_init(vs1053_t *player, st7789_t *display)

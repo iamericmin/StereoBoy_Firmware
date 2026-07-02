@@ -14,7 +14,9 @@ uint8_t marquee_title_start = 0;
 uint8_t marquee_artist_start = 0;
 uint8_t marquee_album_start = 0;
 
-track_info_t *track;
+// In your main C file (global scope)
+// track_info_t runtime_playing_track; 
+// track_info_t *current_track = &runtime_playing_track;
 
 void set_visualizer(int num)
 {
@@ -200,8 +202,8 @@ void core1_entry()
                 if (start + i >= count) {
                     break;
                 }
-                track = &tracks[start+i];
-                selected_track = &tracks[song_choice];
+                // track = &tracks[start+i];
+                // selected_track = &tracks[song_choice];
                 sprintf(buf, "%d", start+i+1); //Index at 1 for users
                 strcat(buf, " ");
                 if (start + i == song_choice) {
@@ -209,7 +211,7 @@ void core1_entry()
                     st7789_draw_string(1, 0 + i * font_height, buf, HIGHLIGHT_COLOR_SECONDARY);
                 }
                 else{
-                    strcat(buf, track->title);
+                    strcat(buf, current_track->title);
                     st7789_draw_string(1, 0 + i * font_height, buf, WHITE);
                 }
             }
@@ -412,11 +414,10 @@ void core1_entry()
                 if (start + i >= count){
                     break;
                 }
-                track_info_t *track = &tracks[start+i];
                 char buf[256];
                 sprintf(buf, "%d", start+i+1); //Index at 1 for users
                 strcat(buf, " ");
-                strcat(buf, track->title);
+                strcat(buf, current_track->title);
                 if (start + i == song_choice) {
                     st7789_draw_string(1, 5 + i * font_height, buf, HIGHLIGHT_COLOR_PRIMARY);
                 }

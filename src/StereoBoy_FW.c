@@ -5,6 +5,8 @@
 #include "lib/pot/pot.h"
 
 #include "pico/stdlib.h"
+#include "stdio.h"
+#include "ff.h"
 #include "hardware/vreg.h"
 
 // SPI1 configuration for codec & sd card
@@ -44,9 +46,13 @@ struct st7789_t display = {
 #define LCD_WIDTH  240
 #define LCD_HEIGHT 240
 
-track_info_t tracks[MAX_TRACKS];
+// track_info_t tracks[MAX_TRACKS];
 
 folder_info_t folders[MAX_FOLDERS];
+
+// Allocate a single instance on the stack frame workspace
+track_info_t runtime_playing_track;
+track_info_t *current_track = &runtime_playing_track;
 
 char folder_names[20][64];
 int folder_file_counts[20];
@@ -55,6 +61,50 @@ int song_choice = 0;
 int count;
 
 int temp_visualizer = 1;
+
+/**
+ * @brief Seeks the cache file on disk and extracts a specific track profile.
+ * @param song_choice The entry index selected in your UI loop.
+ * @param out_track Pointer to the track container used by your jukebox.
+ * @return int 1 on success, 0 on disk read failure.
+ */
+int sb_get_track_by_index(int song_choice, track_info_t *out_track) {
+    FIL db_fil;
+    UINT br;
+    track_cache_t cache;
+
+    // Open the flat index cache file
+    if (f_open(&db_fil, "0:/.tracks", FA_READ) != FR_OK) {
+        printf("[Error] Failed to open .tracks cache file for lookup.\n");
+        return 0;
+    }
+
+    // Direct O(1) mathematical jump to the exact byte row on disk
+    uint32_t byte_offset = (uint32_t)song_choice * sizeof(track_cache_t);
+    f_lseek(&db_fil, byte_offset);
+
+    // Read the single fixed-width record
+    if (f_read(&db_fil, &cache, sizeof(track_cache_t), &br) == FR_OK && br == sizeof(track_cache_t)) {
+        f_close(&db_fil);
+
+        // Copy strings directly into your target track workspace structure
+        strncpy(out_track->title,    cache.title,    127);
+        strncpy(out_track->album,    cache.album,    127);
+        strncpy(out_track->artist,   cache.artist,   127);
+        strncpy(out_track->filename, cache.filename, 127); // Ready for your metadata parser!
+        
+        // Ensure string safety bounds termination
+        out_track->title[127]    = '\0';
+        out_track->album[127]    = '\0';
+        out_track->artist[127]   = '\0';
+        out_track->filename[127] = '\0';
+
+        return 1;
+    }
+
+    f_close(&db_fil);
+    return 0;
+}
 
 int main() {
     set_visualizer(7);
@@ -98,49 +148,98 @@ int main() {
     dprint("Starting Track Scan");
     // pause_core1();
 
-    sb_scan_tracks(tracks, MAX_TRACKS);
+    // Load your main relational pointers into RAM first
+    sb_load_library();
     
-    printf("--- Found %d MP3 Files ---\n", count);
-
     FIL db_fil;
     UINT br;
+    int index = 0;
 
-    if (f_open(&db_fil, "0:/.tracklib", FA_READ) == FR_OK)
+    printf("\n--- VERIFYING HOST-SIDE CACHE GENERATION ---\n");
+    printf("\nPRESS ANY KEY TO CONTINUE...\n");
+    while (buttons_get_just_pressed() <= 0);
+    printf("\nLISTING ALL ALBUMS\n\n");
+    // Open the updated .tracks file created by your Python script
+    if (f_open(&db_fil, "0:/.albums", FA_READ) == FR_OK)
     {
-        for (int i = 0; i < count && i < MAX_TRACKS; i++) 
-        {
-            // CHANGE THIS: Read directly into your global menu array!
-            if (f_read(&db_fil, &tracks[i], sizeof(track_info_t), &br) != FR_OK || br != sizeof(track_info_t))
-            {
-                printf("[%02d] Error reading track data from cache.\n", i);
-                break; 
-            }
+        
+        // Single 384-byte container allocated locally on the CPU stack frame
+        album_info_t t; 
 
-            // Print using the tracks array element
-            printf("[%02d] Title:  %s\n", i, tracks[i].title);
-            printf("     Artist:   %s\n", tracks[i].artist);
-            printf("     Album:   %s\n", tracks[i].album);
-            printf("----------------------------------------\n");
+        // Read sequentially until we reach the End-of-File boundary
+        while (f_read(&db_fil, &t, sizeof(album_info_t), &br) == FR_OK && br == sizeof(album_info_t))
+        {
+            printf("[%03d] %s - %d songs. Starting track index: %d\n", index, t.album_name, t.num_tracks, t.start_track);
+            index++;
         }
         f_close(&db_fil);
-    } else {
-        printf("Error: Could not open library.tracklib for reading.\n");
+        printf("--- End of List (%d tracks validated clean) ---\n\n", index);
+    } 
+    else 
+    {
+        printf("[Fatal Error] Could not open 0:/.albums for validation readout.\n");
+    }
+    printf("\nPRESS ANY KEY TO CONTINUE...\n");
+    while (buttons_get_just_pressed() <= 0);
+    printf("\nLISTING ALL ARTISTS\n\n");
+    index = 0;
+    // Open the updated .tracks file created by your Python script
+    if (f_open(&db_fil, "0:/.artists", FA_READ) == FR_OK)
+    {
+        
+        // Single 384-byte container allocated locally on the CPU stack frame
+        artist_info_t t; 
+
+        // Read sequentially until we reach the End-of-File boundary
+        while (f_read(&db_fil, &t, sizeof(artist_info_t), &br) == FR_OK && br == sizeof(artist_info_t))
+        {
+            printf("[%03d] %s - %d songs. Starting album index: %d\n", index, t.artist_name, t.num_albums, t.start_album);
+            index++;
+        }
+        f_close(&db_fil);
+        printf("--- End of List (%d tracks validated clean) ---\n\n", index);
+    } 
+    else 
+    {
+        printf("[Fatal Error] Could not open 0:/.artists for validation readout.\n");
+    }
+    printf("\nPRESS ANY KEY TO CONTINUE...\n");
+    while (buttons_get_just_pressed() <= 0);
+    printf("\nLISTING ALL TRACKS\n");
+    index = 0;
+    // Open the updated .tracks file created by your Python script
+    if (f_open(&db_fil, "0:/.tracks", FA_READ) == FR_OK)
+    {
+        
+        // Single 384-byte container allocated locally on the CPU stack frame
+        track_cache_t t; 
+
+        // Read sequentially until we reach the End-of-File boundary
+        while (f_read(&db_fil, &t, sizeof(track_cache_t), &br) == FR_OK && br == sizeof(track_cache_t))
+        {
+            printf("[%03d] %s by %s\n", index, t.title, t.artist);
+            printf("  Album : %s\r\n", t.album);
+            printf("  Filename : %s\r\n", t.filename);
+            printf("  ============================================\r\n");
+            index++;
+        }
+        f_close(&db_fil);
+        printf("--- End of List (%d tracks validated clean) ---\n\n", index);
+    } 
+    else 
+    {
+        printf("[Fatal Error] Could not open 0:/.tracks for validation readout.\n");
     }
 
-    printf("--- End of List ---\n");
-
-    // resume_core1();
     int exitCode = 0;
     int prev_choice = 0;
     bool selected = 0;
-    // --- Print menu ---
-    dprint("Debug print test %d", 1); //Trigger Core 2 Print
-    printf("Debug print test %s\r\n", "2");
     
     song_choice = 0;
     
     while(1) {
-        read_lwbt();
+        printf("Fuck!\n");
+        // read_lwbt();
         temp_visualizer = (visualizer == 7) ? 1 : visualizer;
         //Return to main menu with list selection:
         if (exitCode == 0) {
@@ -153,6 +252,7 @@ int main() {
             while (selected == false) {
                 uint8_t pressed = buttons_get_just_pressed();
                 if (pressed > 0){
+                    printf("Fuck!\n");
                     if (pressed & BTN_D)      song_choice = (song_choice + 1) % count;
                     if (pressed & BTN_U)      song_choice = (song_choice - 1 + count) % count; //added roll-over
                         // shift songs down by one and insert new song on top
@@ -172,38 +272,34 @@ int main() {
             }
         }
 
-        track_info_t *track = &tracks[song_choice];
+        // Fetch strings directly from the SD card into our globally visible runtime tracking struct
+        if (!sb_get_track_by_index(song_choice, &runtime_playing_track)) {
+            printf("Error reading track metadata from cache table!\n");
+            continue; 
+        }
 
         printf("\r\n\rNOW PLAYING:\r\n");
-        printf("  Title : %s\r\n", track->title);
-        printf("  Artist: %s\r\n", track->artist);
-        printf("  Album : %s\r\n", track->album);
-        printf("  Bitrate : %d Kbps\r\n", track->bitrate);
-        printf("  Sample rate : %d Hz\r\n", track->samplespeed);
-        printf("  Channels : %s\r\n", track->channels == 1 ? "Mono" : "Stereo");
-        printf("  Header: %X\r\n", track->header);
-        printf("  Start: %X\r\n", track->audio_start);
-        printf("  Start: %X\r\n", track->audio_end);
+        printf("  Title : %s\r\n", runtime_playing_track.title);
+        printf("  Artist: %s\r\n", runtime_playing_track.artist);
+        printf("  Album : %s\r\n", runtime_playing_track.album);
 
         set_visualizer(temp_visualizer);
-        // get_mp3_metadata(track->filename, track); // fetch rest of the metadata before playing file
-        exitCode = jukebox(&player, track, &display);
+        
+        // Parse metadata directly into the shared global structure
+        get_mp3_metadata(runtime_playing_track.filename, &runtime_playing_track); 
+        
+        // Pass it to the playback loop
+        exitCode = jukebox(&player, &runtime_playing_track, &display);
 
         // play next song
         if (exitCode == 1){
-            if (song_choice + 1 > count)
-                song_choice = 0;
-            else
-                song_choice += 1;
+            song_choice = (song_choice + 1) % count;
             printf("\r\n Next song!\r\n");
             dprint("Next song!");
         }
         // play previous song
         if (exitCode == 2){
-            if (song_choice - 1 < 1)
-                song_choice = count;
-            else
-                song_choice -= 1;
+            song_choice = (song_choice - 1 + count) % count;
             dprint("Prev Song!");
             printf("\r\nPrev Song!\r\n");
         }

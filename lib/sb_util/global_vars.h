@@ -69,8 +69,8 @@ typedef struct st7789_t {
 //POT
 
 //SB_UTIL
-#define MAX_FILENAME_LEN 256 // max filaname character length
-#define MAX_TRACKS 256 // max number of tracks to hold in metadata buffer
+#define MAX_FILENAME_LEN 128 // max filaname character length
+#define MAX_TRACKS 128 // max number of tracks to hold in metadata buffer
 #define MAX_FOLDERS 32
 
 extern mutex_t text_buff_mtx;
@@ -82,7 +82,7 @@ extern bool album_art_ready;
 #define IMG_HEIGHT 160
 extern uint16_t img_buffer[IMG_WIDTH * IMG_HEIGHT];
 
-typedef struct {
+typedef struct __attribute__((packed)) {
     uint32_t audio_start; 
     uint32_t audio_end;   
     uint32_t header;
@@ -95,6 +95,35 @@ typedef struct {
     char artist[128];
     char album[128];
 } track_info_t;
+
+extern track_info_t *current_track;
+
+typedef struct __attribute__((packed)) {
+    char title[128];
+    char album[128];
+    char artist[128];
+    char filename[128]; // Added to match the new 512-byte compiled cache line
+} track_cache_t;
+
+typedef struct __attribute__((packed)) {
+    char artist_name[128];
+    uint16_t num_albums;
+    uint16_t start_album;
+} artist_info_t;
+
+typedef struct __attribute__((packed)) {
+    char album_name[128];
+    uint16_t num_tracks;
+    uint16_t start_track;
+} album_info_t;
+
+// Global runtime database pointers
+extern artist_info_t *global_artists;
+extern album_info_t  *global_albums;
+
+// Global counts for UI loop boundaries
+extern uint16_t global_artist_count;
+extern uint16_t global_album_count;
 
 typedef struct {
     char foldername[64];
@@ -111,7 +140,6 @@ typedef struct {
 extern LUT_entry_t *artCache_LUT;
 extern uint32_t lut_entry_count;
 
-extern track_info_t tracks[MAX_TRACKS];
 extern int count;
 extern int song_choice;
 

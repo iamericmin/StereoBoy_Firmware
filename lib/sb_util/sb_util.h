@@ -32,7 +32,8 @@ void sb_audio_init(vs1053_t *player);
 
 /* ========= Filesystem / MP3 / Metadata ========= */
 int sb_scan_folders(folder_info_t *folders, int max_folders);
-int  sb_scan_tracks(track_info_t *tracks, int max_tracks);
+// int  sb_load_library(track_info_t *tracks, int max_tracks);
+int  sb_load_library();
 int  sb_get_raw_tracks(char raw_tracks[][256], int max_tracks);
 void sb_print_track(track_info_t *t);
 
