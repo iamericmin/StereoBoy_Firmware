@@ -151,7 +151,7 @@ void sb_display_init(st7789_t *display)
     );
     // sleep_ms(500);
 
-    // multicore_launch_core1(core1_entry);
+    multicore_launch_core1(core1_entry);
     printf("CORE 1 LAUNCHED!\r\n");
 }
 
@@ -396,7 +396,7 @@ void sb_hw_init(vs1053_t *player, st7789_t *display)
             break;
         } else {
             printf("Mount failed on try %d. Retrying...\n", retry);
-            sleep_ms(50);
+            sleep_ms(200);
         }
     }
     if (fr != FR_OK) {

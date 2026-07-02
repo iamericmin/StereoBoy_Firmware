@@ -51,8 +51,7 @@ struct st7789_t display = {
 folder_info_t folders[MAX_FOLDERS];
 
 // Allocate a single instance on the stack frame workspace
-track_info_t runtime_playing_track;
-track_info_t *current_track = &runtime_playing_track;
+track_info_t current_track;
 
 char folder_names[20][64];
 int folder_file_counts[20];
@@ -272,24 +271,26 @@ int main() {
             }
         }
 
+        // track_info_t current_track;
+
         // Fetch strings directly from the SD card into our globally visible runtime tracking struct
-        if (!sb_get_track_by_index(song_choice, &runtime_playing_track)) {
+        if (!sb_get_track_by_index(song_choice, &current_track)) {
             printf("Error reading track metadata from cache table!\n");
             continue; 
         }
 
         printf("\r\n\rNOW PLAYING:\r\n");
-        printf("  Title : %s\r\n", runtime_playing_track.title);
-        printf("  Artist: %s\r\n", runtime_playing_track.artist);
-        printf("  Album : %s\r\n", runtime_playing_track.album);
+        printf("  Title : %s\r\n", current_track.title);
+        printf("  Artist: %s\r\n", current_track.artist);
+        printf("  Album : %s\r\n", current_track.album);
 
         set_visualizer(temp_visualizer);
         
         // Parse metadata directly into the shared global structure
-        get_mp3_metadata(runtime_playing_track.filename, &runtime_playing_track); 
+        get_mp3_metadata(current_track.filename, &current_track); 
         
         // Pass it to the playback loop
-        exitCode = jukebox(&player, &runtime_playing_track, &display);
+        exitCode = jukebox(&player, &current_track, &display);
 
         // play next song
         if (exitCode == 1){
