@@ -252,7 +252,7 @@ int sb_get_raw_tracks(char raw_tracks[][256], int max_tracks) {
  * @param out_track Pointer to the track container used by your jukebox.
  * @return int 1 on success, 0 on disk read failure.
  */
-int sb_get_track_by_index(int idx, track_info_t *out_track) {
+int sb_get_track_by_index(uint16_t idx, track_info_t *out_track) {
     FIL db_fil;
     UINT br;
     track_cache_t cache;

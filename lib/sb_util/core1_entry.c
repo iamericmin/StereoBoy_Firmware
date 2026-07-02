@@ -204,7 +204,7 @@ void core1_entry()
                 }
                 // track = &tracks[start+i];
                 // selected_track = &tracks[song_choice];
-                selected_track = &current_track;
+                selected_track = current_track;
                 sprintf(buf, "%d", start+i+1); //Index at 1 for users
                 strcat(buf, " ");
                 if (start + i == song_choice) {
@@ -212,7 +212,7 @@ void core1_entry()
                     st7789_draw_string(1, 0 + i * font_height, buf, HIGHLIGHT_COLOR_SECONDARY);
                 }
                 else{
-                    strcat(buf, current_track.title);
+                    strcat(buf, current_track->title);
                     st7789_draw_string(1, 0 + i * font_height, buf, WHITE);
                 }
             }
@@ -415,7 +415,7 @@ void core1_entry()
                 if (start + i >= count){
                     break;
                 }
-                track_info_t *track = &current_track;
+                track_info_t *track = current_track;
                 char buf[256];
                 sprintf(buf, "%d", start+i+1); //Index at 1 for users
                 strcat(buf, " ");

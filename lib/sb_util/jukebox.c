@@ -26,6 +26,9 @@ uint16_t *ff_rew_status = empty_icon;
 int progress_bar = 0;
 int prev_progress_bar = 0;
 
+// Allocate a single instance on the stack frame workspace
+track_info_t *current_track = NULL;
+track_info_t actual_track;
 
 /*******************visualizations not scope*******************/
 #define HISTORY_SIZE 256
@@ -37,20 +40,26 @@ bool album_art_ready = false;
 
 int jukebox(vs1053_t *player, uint16_t song_choice, st7789_t *display)
 {
-    if (!sb_get_track_by_index(song_choice, &current_track)) {
+    current_track = &actual_track;
+
+    if (!sb_get_track_by_index(song_choice, current_track)) {
         printf("Error reading track metadata from cache table!\n");
     }
-    album_art_ready = true;
 
-    get_mp3_metadata(current_track.filename, &current_track);
+    printf("\r\n\rNOW PLAYING:\r\n");
+    printf("  Title : %s\r\n", current_track->title);
+    printf("  Artist: %s\r\n", current_track->artist);
+    printf("  Album : %s\r\n", current_track->album);
+
+    // get_mp3_metadata(current_track->filename, &current_track);
 
     FIL fil;             // file object
     UINT br;             // pointer to number of bytes read
     uint8_t buffer[2048]; // buffer read from file
 
-    char *filename = current_track.filename;
-    uint16_t sampleSpeed = current_track.samplespeed;
-    uint16_t bitRate = current_track.bitrate;
+    char *filename = current_track->filename;
+    uint16_t sampleSpeed = current_track->samplespeed;
+    uint16_t bitRate = current_track->bitrate;
     uint32_t skip_bits = bitRate * 256; // bitrate * 1024 / 4 = approx. 2 seconds
     int exitType = 0;
     sci_write(player, 0x05, sampleSpeed + 1); // initialize codec sampling speed (+1 at the end for stereo)
@@ -79,10 +88,10 @@ int jukebox(vs1053_t *player, uint16_t song_choice, st7789_t *display)
     uint16_t stereo_bit = sampleSpeed & 1;     // LSB indicates mono or stereo (not exactly sure what but this is pretty much always 1)
     uint16_t base_rate = sampleSpeed & 0xFFFE; // sampling speed in upper 15 bits
     if (visualizer == 0) {
-        display_album_art(img_buffer, current_track.artist, current_track.album, current_track.title);
+        display_album_art(img_buffer, current_track->artist, current_track->album, current_track->title);
     }
 
-    f_lseek(&fil, current_track.audio_start);
+    f_lseek(&fil, current_track->audio_start);
     absolute_time_t last_skip_time = get_absolute_time();
 
     selected_band = 0;
@@ -115,7 +124,7 @@ int jukebox(vs1053_t *player, uint16_t song_choice, st7789_t *display)
 
         //progress bar (should make separate function)
         long song_pos = f_tell(&fil);
-        float progress = (float)(song_pos - current_track.audio_start) / (float)(current_track.audio_end - current_track.audio_start);
+        float progress = (float)(song_pos - current_track->audio_start) / (float)(current_track->audio_end - current_track->audio_start);
         if (progress < 0.0f)
             progress = 0.0f;
         if (progress > 1.0f)
@@ -165,10 +174,10 @@ int jukebox(vs1053_t *player, uint16_t song_choice, st7789_t *display)
                 return exitType;
             case 'o':
             case 'O':
-                uint8_t seconds_into_song = (f_tell(&fil) - current_track.audio_start) / (current_track.bitrate * 125);
+                uint8_t seconds_into_song = (f_tell(&fil) - current_track->audio_start) / (current_track->bitrate * 125);
                 if (seconds_into_song >= 5){
                     // uint32_t audio_start = find_audio_start(&fil);
-                    f_lseek(&fil, current_track.audio_start);
+                    f_lseek(&fil, current_track->audio_start);
                     break;
                 } else {
                     exitType = 2;
@@ -238,10 +247,10 @@ int jukebox(vs1053_t *player, uint16_t song_choice, st7789_t *display)
                     }
                     printf("\r\nUp pressed! Song: %d\r\n", song_choice);
                 } else {
-                    uint8_t seconds_into_song = (f_tell(&fil) - current_track.audio_start) / (current_track.bitrate * 125);
+                    uint8_t seconds_into_song = (f_tell(&fil) - current_track->audio_start) / (current_track->bitrate * 125);
                     if (seconds_into_song >= 5){
                         // uint32_t audio_start = find_audio_start(&fil);
-                        f_lseek(&fil, current_track.audio_start);
+                        f_lseek(&fil, current_track->audio_start);
                         break;
                     } else {
                         exitType = 2;
@@ -279,7 +288,7 @@ int jukebox(vs1053_t *player, uint16_t song_choice, st7789_t *display)
             case 'V':
                 visualizer = (visualizer + 1) % (num_visualizations - 1);
                 if (visualizer == 0) {
-                    display_album_art(img_buffer, current_track.artist, current_track.album, current_track.title);
+                    display_album_art(img_buffer, current_track->artist, current_track->album, current_track->title);
                     printf("changing visualizer");
                 }
                 switch (visualizer) {
@@ -309,13 +318,13 @@ int jukebox(vs1053_t *player, uint16_t song_choice, st7789_t *display)
             case 'i':
             case 'I':
                 printf("\r\n\rNOW PLAYING:\r\n");
-                printf("  Title : %s\r\n", current_track.title);
-                printf("  Artist: %s\r\n", current_track.artist);
-                printf("  Album : %s\r\n", current_track.album);
-                printf("  Bitrate : %d Kbps\r\n", current_track.bitrate);
-                printf("  Sample rate : %d Hz\r\n", current_track.samplespeed);
-                printf("  Channels : %s\r\n", current_track.channels == 1 ? "Mono" : "Stereo");
-                printf("  Header: %X\r\n", current_track.header);
+                printf("  Title : %s\r\n", current_track->title);
+                printf("  Artist: %s\r\n", current_track->artist);
+                printf("  Album : %s\r\n", current_track->album);
+                printf("  Bitrate : %d Kbps\r\n", current_track->bitrate);
+                printf("  Sample rate : %d Hz\r\n", current_track->samplespeed);
+                printf("  Channels : %s\r\n", current_track->channels == 1 ? "Mono" : "Stereo");
+                printf("  Header: %X\r\n", current_track->header);
                 break;
             case 'm':
             case 'M':

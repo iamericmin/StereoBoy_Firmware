@@ -96,7 +96,7 @@ typedef struct __attribute__((packed)) {
     char album[128];
 } track_info_t;
 
-extern track_info_t current_track;
+extern track_info_t *current_track;
 
 typedef struct __attribute__((packed)) {
     char title[128];

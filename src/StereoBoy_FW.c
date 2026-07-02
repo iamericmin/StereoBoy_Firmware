@@ -50,9 +50,6 @@ struct st7789_t display = {
 
 folder_info_t folders[MAX_FOLDERS];
 
-// Allocate a single instance on the stack frame workspace
-track_info_t current_track;
-
 char folder_names[20][64];
 int folder_file_counts[20];
 
@@ -193,7 +190,6 @@ int main() {
     song_choice = 0;
     
     while(1) {
-        printf("Fuck!\n");
         // read_lwbt();
         temp_visualizer = (visualizer == 7) ? 1 : visualizer;
         //Return to main menu with list selection:
@@ -237,11 +233,6 @@ int main() {
         // Parse metadata directly into the shared global structure
         // get_mp3_metadata(current_track.filename, &current_track); 
 
-        // printf("\r\n\rNOW PLAYING:\r\n");
-        // printf("  Title : %s\r\n", current_track.title);
-        // printf("  Artist: %s\r\n", current_track.artist);
-        // printf("  Album : %s\r\n", current_track.album);
-
         set_visualizer(temp_visualizer);
         
         // Pass it to the playback loop
@@ -251,6 +242,7 @@ int main() {
         if (exitCode == 1){
             song_choice = (song_choice + 1) % count;
             printf("\r\n Next song!\r\n");
+            printf("\r\n Fuck!\r\n");
             dprint("Next song!");
         }
         // play previous song
