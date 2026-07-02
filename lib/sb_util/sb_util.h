@@ -33,14 +33,14 @@ void sb_audio_init(vs1053_t *player);
 /* ========= Filesystem / MP3 / Metadata ========= */
 int sb_scan_folders(folder_info_t *folders, int max_folders);
 // int  sb_load_library(track_info_t *tracks, int max_tracks);
+int sb_get_track_by_index(int idx, track_info_t *out_track);
 int  sb_load_library();
 int  sb_get_raw_tracks(char raw_tracks[][256], int max_tracks);
 void sb_print_track(track_info_t *t);
 
 /* ========= Playback ========= */
 // int sb_play_track(vs1053_t *player, track_info_t *track, st7789_t *display);
-int jukebox(vs1053_t *player, track_info_t *track, st7789_t *display);
-
+int jukebox(vs1053_t *player, uint16_t song_choice, st7789_t *display);
 
 /* ====== Core 1 Entry  ======*/
 void dprint(char * str, ...);

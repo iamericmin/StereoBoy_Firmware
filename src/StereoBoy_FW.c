@@ -61,50 +61,6 @@ int count;
 
 int temp_visualizer = 1;
 
-/**
- * @brief Seeks the cache file on disk and extracts a specific track profile.
- * @param song_choice The entry index selected in your UI loop.
- * @param out_track Pointer to the track container used by your jukebox.
- * @return int 1 on success, 0 on disk read failure.
- */
-int sb_get_track_by_index(int song_choice, track_info_t *out_track) {
-    FIL db_fil;
-    UINT br;
-    track_cache_t cache;
-
-    // Open the flat index cache file
-    if (f_open(&db_fil, "0:/.tracks", FA_READ) != FR_OK) {
-        printf("[Error] Failed to open .tracks cache file for lookup.\n");
-        return 0;
-    }
-
-    // Direct O(1) mathematical jump to the exact byte row on disk
-    uint32_t byte_offset = (uint32_t)song_choice * sizeof(track_cache_t);
-    f_lseek(&db_fil, byte_offset);
-
-    // Read the single fixed-width record
-    if (f_read(&db_fil, &cache, sizeof(track_cache_t), &br) == FR_OK && br == sizeof(track_cache_t)) {
-        f_close(&db_fil);
-
-        // Copy strings directly into your target track workspace structure
-        strncpy(out_track->title,    cache.title,    127);
-        strncpy(out_track->album,    cache.album,    127);
-        strncpy(out_track->artist,   cache.artist,   127);
-        strncpy(out_track->filename, cache.filename, 127); // Ready for your metadata parser!
-        
-        // Ensure string safety bounds termination
-        out_track->title[127]    = '\0';
-        out_track->album[127]    = '\0';
-        out_track->artist[127]   = '\0';
-        out_track->filename[127] = '\0';
-
-        return 1;
-    }
-
-    f_close(&db_fil);
-    return 0;
-}
-
 int main() {
     set_visualizer(7);
     // Lower RP2350 core voltage to 1V
@@ -245,7 +201,6 @@ int main() {
             // pca9685_all_off(&vu_meter);
             selected = false;
             set_visualizer(6);
-            // clear_framebuffer(); // Seemed completely unnecessary so commented out, but not deleting it
             printf("\r\nSong %d/%d: ", song_choice+1, count);
             prev_choice = song_choice;
             while (selected == false) {
@@ -271,26 +226,26 @@ int main() {
             }
         }
 
-        // track_info_t current_track;
+        // track_info_t track_buff;
 
         // Fetch strings directly from the SD card into our globally visible runtime tracking struct
-        if (!sb_get_track_by_index(song_choice, &current_track)) {
-            printf("Error reading track metadata from cache table!\n");
-            continue; 
-        }
+        // if (!sb_get_track_by_index(song_choice, &current_track)) {
+        //     printf("Error reading track metadata from cache table!\n");
+        //     continue; 
+        // }
 
-        printf("\r\n\rNOW PLAYING:\r\n");
-        printf("  Title : %s\r\n", current_track.title);
-        printf("  Artist: %s\r\n", current_track.artist);
-        printf("  Album : %s\r\n", current_track.album);
+        // Parse metadata directly into the shared global structure
+        // get_mp3_metadata(current_track.filename, &current_track); 
+
+        // printf("\r\n\rNOW PLAYING:\r\n");
+        // printf("  Title : %s\r\n", current_track.title);
+        // printf("  Artist: %s\r\n", current_track.artist);
+        // printf("  Album : %s\r\n", current_track.album);
 
         set_visualizer(temp_visualizer);
         
-        // Parse metadata directly into the shared global structure
-        get_mp3_metadata(current_track.filename, &current_track); 
-        
         // Pass it to the playback loop
-        exitCode = jukebox(&player, &current_track, &display);
+        exitCode = jukebox(&player, song_choice, &display);
 
         // play next song
         if (exitCode == 1){

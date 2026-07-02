@@ -35,17 +35,22 @@ int history_index = 0;
 int num_visualizations = 8;
 bool album_art_ready = false;
 
-int jukebox(vs1053_t *player, track_info_t *track, st7789_t *display)
+int jukebox(vs1053_t *player, uint16_t song_choice, st7789_t *display)
 {
-    album_art_ready = false;
+    if (!sb_get_track_by_index(song_choice, &current_track)) {
+        printf("Error reading track metadata from cache table!\n");
+    }
+    album_art_ready = true;
+
+    get_mp3_metadata(current_track.filename, &current_track);
 
     FIL fil;             // file object
     UINT br;             // pointer to number of bytes read
     uint8_t buffer[2048]; // buffer read from file
 
-    char *filename = track->filename;
-    uint16_t sampleSpeed = track->samplespeed;
-    uint16_t bitRate = track->bitrate;
+    char *filename = current_track.filename;
+    uint16_t sampleSpeed = current_track.samplespeed;
+    uint16_t bitRate = current_track.bitrate;
     uint32_t skip_bits = bitRate * 256; // bitrate * 1024 / 4 = approx. 2 seconds
     int exitType = 0;
     sci_write(player, 0x05, sampleSpeed + 1); // initialize codec sampling speed (+1 at the end for stereo)
@@ -74,18 +79,18 @@ int jukebox(vs1053_t *player, track_info_t *track, st7789_t *display)
     uint16_t stereo_bit = sampleSpeed & 1;     // LSB indicates mono or stereo (not exactly sure what but this is pretty much always 1)
     uint16_t base_rate = sampleSpeed & 0xFFFE; // sampling speed in upper 15 bits
     if (visualizer == 0) {
-        display_album_art(img_buffer, track->artist, track->album, track->title);
+        display_album_art(img_buffer, current_track.artist, current_track.album, current_track.title);
     }
 
-    f_lseek(&fil, track->audio_start);
+    f_lseek(&fil, current_track.audio_start);
     absolute_time_t last_skip_time = get_absolute_time();
 
     selected_band = 0;
     int currEq = 0;
-    dac_eq_init(sampleSpeed); // init with default sample rate
+    dac_eq_init(sampleSpeed); // init with default sample rated
     uint8_t vol_check = 10;
     uint8_t old_volume = 0;
-    read_lwbt();
+    // read_lwbt();
     while (1)
     {
         // janky counter for volume sampling
@@ -110,7 +115,7 @@ int jukebox(vs1053_t *player, track_info_t *track, st7789_t *display)
 
         //progress bar (should make separate function)
         long song_pos = f_tell(&fil);
-        float progress = (float)(song_pos - track->audio_start) / (float)(track->audio_end - track->audio_start);
+        float progress = (float)(song_pos - current_track.audio_start) / (float)(current_track.audio_end - current_track.audio_start);
         if (progress < 0.0f)
             progress = 0.0f;
         if (progress > 1.0f)
@@ -160,10 +165,10 @@ int jukebox(vs1053_t *player, track_info_t *track, st7789_t *display)
                 return exitType;
             case 'o':
             case 'O':
-                uint8_t seconds_into_song = (f_tell(&fil) - track->audio_start) / (track->bitrate * 125);
+                uint8_t seconds_into_song = (f_tell(&fil) - current_track.audio_start) / (current_track.bitrate * 125);
                 if (seconds_into_song >= 5){
                     // uint32_t audio_start = find_audio_start(&fil);
-                    f_lseek(&fil, track->audio_start);
+                    f_lseek(&fil, current_track.audio_start);
                     break;
                 } else {
                     exitType = 2;
@@ -233,10 +238,10 @@ int jukebox(vs1053_t *player, track_info_t *track, st7789_t *display)
                     }
                     printf("\r\nUp pressed! Song: %d\r\n", song_choice);
                 } else {
-                    uint8_t seconds_into_song = (f_tell(&fil) - track->audio_start) / (track->bitrate * 125);
+                    uint8_t seconds_into_song = (f_tell(&fil) - current_track.audio_start) / (current_track.bitrate * 125);
                     if (seconds_into_song >= 5){
                         // uint32_t audio_start = find_audio_start(&fil);
-                        f_lseek(&fil, track->audio_start);
+                        f_lseek(&fil, current_track.audio_start);
                         break;
                     } else {
                         exitType = 2;
@@ -274,7 +279,7 @@ int jukebox(vs1053_t *player, track_info_t *track, st7789_t *display)
             case 'V':
                 visualizer = (visualizer + 1) % (num_visualizations - 1);
                 if (visualizer == 0) {
-                    display_album_art(img_buffer, track->artist, track->album, track->title);
+                    display_album_art(img_buffer, current_track.artist, current_track.album, current_track.title);
                     printf("changing visualizer");
                 }
                 switch (visualizer) {
@@ -304,13 +309,13 @@ int jukebox(vs1053_t *player, track_info_t *track, st7789_t *display)
             case 'i':
             case 'I':
                 printf("\r\n\rNOW PLAYING:\r\n");
-                printf("  Title : %s\r\n", track->title);
-                printf("  Artist: %s\r\n", track->artist);
-                printf("  Album : %s\r\n", track->album);
-                printf("  Bitrate : %d Kbps\r\n", track->bitrate);
-                printf("  Sample rate : %d Hz\r\n", track->samplespeed);
-                printf("  Channels : %s\r\n", track->channels == 1 ? "Mono" : "Stereo");
-                printf("  Header: %X\r\n", track->header);
+                printf("  Title : %s\r\n", current_track.title);
+                printf("  Artist: %s\r\n", current_track.artist);
+                printf("  Album : %s\r\n", current_track.album);
+                printf("  Bitrate : %d Kbps\r\n", current_track.bitrate);
+                printf("  Sample rate : %d Hz\r\n", current_track.samplespeed);
+                printf("  Channels : %s\r\n", current_track.channels == 1 ? "Mono" : "Stereo");
+                printf("  Header: %X\r\n", current_track.header);
                 break;
             case 'm':
             case 'M':
@@ -333,7 +338,7 @@ int jukebox(vs1053_t *player, track_info_t *track, st7789_t *display)
                 warp_target = 0.0f;
                 warp_duration = PAUSE_WARP_US;
                 warping = true;
-                album_art_ready = false;
+                // album_art_ready = false;
                 break;
             }
         }

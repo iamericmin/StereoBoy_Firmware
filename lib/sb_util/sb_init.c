@@ -247,6 +247,36 @@ int sb_get_raw_tracks(char raw_tracks[][256], int max_tracks) {
 }
 
 /**
+ * @brief Seeks the cache file on disk and extracts a specific track profile.
+ * @param idx The cache index to fetch the song from
+ * @param out_track Pointer to the track container used by your jukebox.
+ * @return int 1 on success, 0 on disk read failure.
+ */
+int sb_get_track_by_index(int idx, track_info_t *out_track) {
+    FIL db_fil;
+    UINT br;
+    track_cache_t cache;
+
+    // Open the flat index cache file
+    if (f_open(&db_fil, "0:/.tracks", FA_READ) != FR_OK) {
+        printf("[Error] Failed to open .tracks cache file for lookup.\n");
+        return 0;
+    }
+
+    uint32_t byte_offset = (uint32_t)idx * sizeof(track_cache_t);
+    f_lseek(&db_fil, byte_offset);
+
+    if (f_read(&db_fil, &cache, sizeof(track_cache_t), &br) == FR_OK && br == sizeof(track_cache_t)) {
+        get_mp3_metadata(cache.filename, out_track);
+        f_close(&db_fil);
+        return 1;
+    } else {
+        f_close(&db_fil);
+        return 0;
+    }
+}
+
+/**
  * @brief Zero-overhead binary loader for pre-compiled DAP index files.
  * @return int 1 on success, 0 on failure.
  */
