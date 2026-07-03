@@ -15,8 +15,8 @@ uint32_t lut_entry_count = 0;
 artist_info_t *global_artists = NULL;
 album_info_t  *global_albums  = NULL;
 
-uint16_t global_artist_count = 0;
-uint16_t global_album_count  = 0;
+uint16_t artist_count = 0;
+uint16_t album_count  = 0;
 
 void set_backlight_brightness(uint gpio, uint16_t brightness_percent) {
     // Ensure percent is clamped between 0 and 100
@@ -288,8 +288,8 @@ int sb_load_library(void) {
     // Safety clean reset
     if (global_artists != NULL) { free(global_artists); global_artists = NULL; }
     if (global_albums != NULL)  { free(global_albums);  global_albums = NULL;  }
-    global_artist_count = 0;
-    global_album_count = 0;
+    artist_count = 0;
+    album_count = 0;
 
     printf("Loading music indexes into RAM...\r\n");
 
@@ -298,7 +298,7 @@ int sb_load_library(void) {
         printf("[Error] 0:/.artists file missing.\r\n");
         return 0;
     }
-    global_artist_count = fno.fsize / sizeof(artist_info_t);
+    artist_count = fno.fsize / sizeof(artist_info_t);
     global_artists = (artist_info_t *)malloc(fno.fsize);
     if (global_artists == NULL) return 0;
 
@@ -317,7 +317,7 @@ int sb_load_library(void) {
         free(global_artists); global_artists = NULL;
         return 0;
     }
-    global_album_count = fno.fsize / sizeof(album_info_t);
+    album_count = fno.fsize / sizeof(album_info_t);
     global_albums = (album_info_t *)malloc(fno.fsize);
     if (global_albums == NULL) {
         free(global_artists); global_artists = NULL;
@@ -335,7 +335,7 @@ int sb_load_library(void) {
     }
 
     printf("[Success] Loaded %d Packed Artists and %d Packed Albums into RAM.\r\n", 
-           global_artist_count, global_album_count);
+           artist_count, album_count);
     return 1;
 }
 
@@ -419,14 +419,14 @@ void sb_hw_init(vs1053_t *player, st7789_t *display)
     }
 
     FRESULT fr;
-    for (int retry = 0; retry < 50; retry++) {
+    for (int retry = 0; retry < 100; retry++) {
         fr = f_mount(&fs, "0:", 1);
         if (fr == FR_OK) {
             printf("SD Card successfully mounted on try %d!\n", retry);
             break;
         } else {
             printf("Mount failed on try %d. Retrying...\n", retry);
-            sleep_ms(200);
+            sleep_ms(50);
         }
     }
     if (fr != FR_OK) {

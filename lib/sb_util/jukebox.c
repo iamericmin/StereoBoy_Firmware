@@ -27,8 +27,6 @@ int progress_bar = 0;
 int prev_progress_bar = 0;
 
 // Allocate a single instance on the stack frame workspace
-track_info_t *current_track = NULL;
-track_info_t actual_track;
 
 /*******************visualizations not scope*******************/
 #define HISTORY_SIZE 256
@@ -40,11 +38,11 @@ bool album_art_ready = false;
 
 int jukebox(vs1053_t *player, uint16_t song_choice, st7789_t *display)
 {
-    current_track = &actual_track;
 
     if (!sb_get_track_by_index(song_choice, current_track)) {
         printf("Error reading track metadata from cache table!\n");
     }
+    
 
     printf("\r\n\rNOW PLAYING:\r\n");
     printf("  Title : %s\r\n", current_track->title);

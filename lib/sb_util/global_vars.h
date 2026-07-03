@@ -122,8 +122,9 @@ extern artist_info_t *global_artists;
 extern album_info_t  *global_albums;
 
 // Global counts for UI loop boundaries
-extern uint16_t global_artist_count;
-extern uint16_t global_album_count;
+extern uint16_t artist_count;
+extern uint16_t album_count;
+extern uint16_t track_count;
 
 typedef struct {
     char foldername[64];

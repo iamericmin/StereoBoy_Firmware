@@ -46,9 +46,12 @@ struct st7789_t display = {
 #define LCD_WIDTH  240
 #define LCD_HEIGHT 240
 
-// track_info_t tracks[MAX_TRACKS];
-
 folder_info_t folders[MAX_FOLDERS];
+
+track_info_t *current_track = NULL;
+track_info_t current_track_holder;
+
+uint16_t track_count;
 
 char folder_names[20][64];
 int folder_file_counts[20];
@@ -98,96 +101,101 @@ int main() {
     }
 
     dprint("Starting Track Scan");
-    // pause_core1();
 
     // Load your main relational pointers into RAM first
     sb_load_library();
+
+    track_count = 64;
+    printf("%d Artists\n", artist_count);
+    printf("%d Albums\n", album_count);
+    printf("%d Tracks\n", track_count);
     
-    FIL db_fil;
-    UINT br;
-    int index = 0;
+    // FIL db_fil;
+    // UINT br;
+    // int index = 0;
 
-    printf("\n--- VERIFYING HOST-SIDE CACHE GENERATION ---\n");
-    printf("\nPRESS ANY KEY TO CONTINUE...\n");
-    while (buttons_get_just_pressed() <= 0);
-    printf("\nLISTING ALL ALBUMS\n\n");
-    // Open the updated .tracks file created by your Python script
-    if (f_open(&db_fil, "0:/.albums", FA_READ) == FR_OK)
-    {
+    // printf("\n--- VERIFYING HOST-SIDE CACHE GENERATION ---\n");
+    // printf("\nPRESS ANY KEY TO CONTINUE...\n");
+    // while (buttons_get_just_pressed() <= 0);
+    // printf("\nLISTING ALL ALBUMS\n\n");
+    // // Open the updated .tracks file created by your Python script
+    // if (f_open(&db_fil, "0:/.albums", FA_READ) == FR_OK)
+    // {
         
-        // Single 384-byte container allocated locally on the CPU stack frame
-        album_info_t t; 
+    //     // Single 384-byte container allocated locally on the CPU stack frame
+    //     album_info_t t; 
 
-        // Read sequentially until we reach the End-of-File boundary
-        while (f_read(&db_fil, &t, sizeof(album_info_t), &br) == FR_OK && br == sizeof(album_info_t))
-        {
-            printf("[%03d] %s - %d songs. Starting track index: %d\n", index, t.album_name, t.num_tracks, t.start_track);
-            index++;
-        }
-        f_close(&db_fil);
-        printf("--- End of List (%d tracks validated clean) ---\n\n", index);
-    } 
-    else 
-    {
-        printf("[Fatal Error] Could not open 0:/.albums for validation readout.\n");
-    }
-    printf("\nPRESS ANY KEY TO CONTINUE...\n");
-    while (buttons_get_just_pressed() <= 0);
-    printf("\nLISTING ALL ARTISTS\n\n");
-    index = 0;
-    // Open the updated .tracks file created by your Python script
-    if (f_open(&db_fil, "0:/.artists", FA_READ) == FR_OK)
-    {
+    //     // Read sequentially until we reach the End-of-File boundary
+    //     while (f_read(&db_fil, &t, sizeof(album_info_t), &br) == FR_OK && br == sizeof(album_info_t))
+    //     {
+    //         printf("[%03d] %s - %d songs. Starting track index: %d\n", index, t.album_name, t.num_tracks, t.start_track);
+    //         index++;
+    //     }
+    //     f_close(&db_fil);
+    //     printf("--- End of List (%d tracks validated clean) ---\n\n", index);
+    // } 
+    // else 
+    // {
+    //     printf("[Fatal Error] Could not open 0:/.albums for validation readout.\n");
+    // }
+    // printf("\nPRESS ANY KEY TO CONTINUE...\n");
+    // while (buttons_get_just_pressed() <= 0);
+    // printf("\nLISTING ALL ARTISTS\n\n");
+    // index = 0;
+    // // Open the updated .tracks file created by your Python script
+    // if (f_open(&db_fil, "0:/.artists", FA_READ) == FR_OK)
+    // {
         
-        // Single 384-byte container allocated locally on the CPU stack frame
-        artist_info_t t; 
+    //     // Single 384-byte container allocated locally on the CPU stack frame
+    //     artist_info_t t; 
 
-        // Read sequentially until we reach the End-of-File boundary
-        while (f_read(&db_fil, &t, sizeof(artist_info_t), &br) == FR_OK && br == sizeof(artist_info_t))
-        {
-            printf("[%03d] %s - %d songs. Starting album index: %d\n", index, t.artist_name, t.num_albums, t.start_album);
-            index++;
-        }
-        f_close(&db_fil);
-        printf("--- End of List (%d tracks validated clean) ---\n\n", index);
-    } 
-    else 
-    {
-        printf("[Fatal Error] Could not open 0:/.artists for validation readout.\n");
-    }
-    printf("\nPRESS ANY KEY TO CONTINUE...\n");
-    while (buttons_get_just_pressed() <= 0);
-    printf("\nLISTING ALL TRACKS\n");
-    index = 0;
-    // Open the updated .tracks file created by your Python script
-    if (f_open(&db_fil, "0:/.tracks", FA_READ) == FR_OK)
-    {
+    //     // Read sequentially until we reach the End-of-File boundary
+    //     while (f_read(&db_fil, &t, sizeof(artist_info_t), &br) == FR_OK && br == sizeof(artist_info_t))
+    //     {
+    //         printf("[%03d] %s - %d songs. Starting album index: %d\n", index, t.artist_name, t.num_albums, t.start_album);
+    //         index++;
+    //     }
+    //     f_close(&db_fil);
+    //     printf("--- End of List (%d tracks validated clean) ---\n\n", index);
+    // } 
+    // else 
+    // {
+    //     printf("[Fatal Error] Could not open 0:/.artists for validation readout.\n");
+    // }
+    // printf("\nPRESS ANY KEY TO CONTINUE...\n");
+    // while (buttons_get_just_pressed() <= 0);
+    // printf("\nLISTING ALL TRACKS\n");
+    // index = 0;
+    // // Open the updated .tracks file created by your Python script
+    // if (f_open(&db_fil, "0:/.tracks", FA_READ) == FR_OK)
+    // {
         
-        // Single 384-byte container allocated locally on the CPU stack frame
-        track_cache_t t; 
+    //     // Single 384-byte container allocated locally on the CPU stack frame
+    //     track_cache_t t; 
 
-        // Read sequentially until we reach the End-of-File boundary
-        while (f_read(&db_fil, &t, sizeof(track_cache_t), &br) == FR_OK && br == sizeof(track_cache_t))
-        {
-            printf("[%03d] %s by %s\n", index, t.title, t.artist);
-            printf("  Album : %s\r\n", t.album);
-            printf("  Filename : %s\r\n", t.filename);
-            printf("  ============================================\r\n");
-            index++;
-        }
-        f_close(&db_fil);
-        printf("--- End of List (%d tracks validated clean) ---\n\n", index);
-    } 
-    else 
-    {
-        printf("[Fatal Error] Could not open 0:/.tracks for validation readout.\n");
-    }
+    //     // Read sequentially until we reach the End-of-File boundary
+    //     while (f_read(&db_fil, &t, sizeof(track_cache_t), &br) == FR_OK && br == sizeof(track_cache_t))
+    //     {
+    //         printf("[%03d] %s by %s\n", index, t.title, t.artist);
+    //         printf("  Album : %s\r\n", t.album);
+    //         printf("  Filename : %s\r\n", t.filename);
+    //         printf("  ============================================\r\n");
+    //         index++;
+    //     }
+    //     f_close(&db_fil);
+    //     printf("--- End of List (%d tracks validated clean) ---\n\n", index);
+    // } 
+    // else 
+    // {
+    //     printf("[Fatal Error] Could not open 0:/.tracks for validation readout.\n");
+    // }
 
     int exitCode = 0;
     int prev_choice = 0;
     bool selected = 0;
     
     song_choice = 0;
+    current_track = &current_track_holder;
     
     while(1) {
         // read_lwbt();
@@ -202,7 +210,6 @@ int main() {
             while (selected == false) {
                 uint8_t pressed = buttons_get_just_pressed();
                 if (pressed > 0){
-                    printf("Fuck!\n");
                     if (pressed & BTN_D)      song_choice = (song_choice + 1) % count;
                     if (pressed & BTN_U)      song_choice = (song_choice - 1 + count) % count; //added roll-over
                         // shift songs down by one and insert new song on top
@@ -242,7 +249,6 @@ int main() {
         if (exitCode == 1){
             song_choice = (song_choice + 1) % count;
             printf("\r\n Next song!\r\n");
-            printf("\r\n Fuck!\r\n");
             dprint("Next song!");
         }
         // play previous song
