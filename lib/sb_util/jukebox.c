@@ -26,7 +26,8 @@ uint16_t *ff_rew_status = empty_icon;
 int progress_bar = 0;
 int prev_progress_bar = 0;
 
-// Allocate a single instance on the stack frame workspace
+// track_cache_t *track_window[];
+track_cache_t track_window[11];
 
 /*******************visualizations not scope*******************/
 #define HISTORY_SIZE 256
@@ -39,7 +40,7 @@ bool album_art_ready = false;
 int jukebox(vs1053_t *player, uint16_t song_choice, st7789_t *display)
 {
 
-    if (!sb_get_track_by_index(song_choice, current_track)) {
+    if (!sb_get_track_by_index(song_choice, current_track, track_window)) {
         printf("Error reading track metadata from cache table!\n");
     }
     

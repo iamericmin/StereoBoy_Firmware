@@ -17,6 +17,7 @@ album_info_t  *global_albums  = NULL;
 
 uint16_t artist_count = 0;
 uint16_t album_count  = 0;
+uint16_t track_count  = 0;
 
 void set_backlight_brightness(uint gpio, uint16_t brightness_percent) {
     // Ensure percent is clamped between 0 and 100
@@ -252,7 +253,7 @@ int sb_get_raw_tracks(char raw_tracks[][256], int max_tracks) {
  * @param out_track Pointer to the track container used by your jukebox.
  * @return int 1 on success, 0 on disk read failure.
  */
-int sb_get_track_by_index(uint16_t idx, track_info_t *out_track) {
+int sb_get_track_by_index(uint16_t idx, track_info_t *out_track, track_cache_t *track_window) {
     FIL db_fil;
     UINT br;
     track_cache_t cache;
@@ -263,18 +264,52 @@ int sb_get_track_by_index(uint16_t idx, track_info_t *out_track) {
         return 0;
     }
 
+    // 1. First, fetch the single target track metadata as originally requested
     uint32_t byte_offset = (uint32_t)idx * sizeof(track_cache_t);
     f_lseek(&db_fil, byte_offset);
 
-    if (f_read(&db_fil, &cache, sizeof(track_cache_t), &br) == FR_OK && br == sizeof(track_cache_t)) {
-        get_mp3_metadata(cache.filename, out_track);
+    if (f_read(&db_fil, &cache, sizeof(track_cache_t), &br) != FR_OK || br != sizeof(track_cache_t)) {
         f_close(&db_fil);
-        return 1;
-    } else {
-        f_close(&db_fil);
-        return 0;
+        return 0; // Failed to read target track
     }
+    
+    // Populate the main metadata struct
+    get_mp3_metadata(cache.filename, out_track);
+
+    // 2. Populate the sliding track window (11 tracks total: 5 below, current, 5 above)
+    // Calculate total tracks available in the cache file
+    uint32_t total_tracks = f_size(&db_fil) / sizeof(track_cache_t);
+    track_count = total_tracks;
+    
+    // Determine the safe starting index for the window
+    int32_t start_idx = (int32_t)idx - 5;
+    
+    for (int i = 0; i < 11; i++) {
+        int32_t current_window_idx = start_idx + i;
+        
+        // Bounds checking: Ensure index is within 0 and total_tracks - 1
+        if (current_window_idx >= 0 && current_window_idx < (int32_t)total_tracks) {
+            uint32_t window_offset = (uint32_t)current_window_idx * sizeof(track_cache_t);
+            f_lseek(&db_fil, window_offset);
+            
+            if (f_read(&db_fil, &track_window[i], sizeof(track_cache_t), &br) != FR_OK || br != sizeof(track_cache_t)) {
+                // If a read fails mid-way, clear the struct slot to be safe
+                memset(&track_window[i], 0, sizeof(track_cache_t));
+            }
+        } else {
+            // Out of bounds (e.g., trying to read track -2 or a track past the end of the file)
+            // Zero-fill the struct so your UI/player logic knows it's empty space
+            memset(&track_window[i], 0, sizeof(track_cache_t));
+        }
+    }
+
+    f_close(&db_fil);
+    return 1;
 }
+
+// sb_update_track_window() {
+
+// }
 
 /**
  * @brief Zero-overhead binary loader for pre-compiled DAP index files.
@@ -334,8 +369,16 @@ int sb_load_library(void) {
         }
     }
 
-    printf("[Success] Loaded %d Packed Artists and %d Packed Albums into RAM.\r\n", 
-           artist_count, album_count);
+    // --- LOAD TRACKS ---
+    if (f_stat("0:/.tracks", &fno) != FR_OK) {
+        printf("[Error] 0:/.tracks file missing.\r\n");
+        free(global_artists); global_artists = NULL;
+        return 0;
+    }
+    track_count = fno.fsize / sizeof(track_cache_t);
+
+    printf("[Success] Loaded %d Artists, %d Albums, and %d tracks into RAM.\r\n", 
+           artist_count, album_count, track_count);
     return 1;
 }
 

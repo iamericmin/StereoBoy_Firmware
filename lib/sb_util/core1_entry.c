@@ -18,6 +18,8 @@ uint8_t marquee_album_start = 0;
 // track_info_t runtime_playing_track; 
 // track_info_t *current_track = &runtime_playing_track;
 
+int count;
+
 void set_visualizer(int num)
 {
     visualizer = num;
@@ -410,23 +412,30 @@ void core1_entry()
 
         case 7:
             clear_framebuffer();
-            start = count-10>0 ? count-10 : 0;
-            for (int i = 0; i<10; i++){
-                if (start + i >= count){
-                    break;
+
+            for (int i = 0; i < 11; i++) {
+                track_cache_t *track = &track_window[i];
+                
+                // Check if this slot is empty (out of bounds padding from our earlier function)
+                if (track->filename[0] == '\0') {
+                    continue; 
                 }
-                track_info_t *track = current_track;
+
+                // Calculate the absolute track number for the UI text (1-indexed)
+                // 'song_choice' matches track_window[5]. So index 'i' is offset by (i - 5).
+                int32_t absolute_track_num = (int32_t)song_choice + (i - 5) + 1;
+
                 char buf[256];
-                sprintf(buf, "%d", start+i+1); //Index at 1 for users
-                strcat(buf, " ");
-                strcat(buf, track->title);
-                if (start + i == song_choice) {
+                sprintf(buf, "%d %s", absolute_track_num, track->title); // Clean combination of index and title
+
+                // If i == 5, this is the currently selected track (the middle of our window)
+                if (i == 5) {
                     st7789_draw_string(1, 5 + i * font_height, buf, HIGHLIGHT_COLOR_PRIMARY);
-                }
-                else{
+                } else {
                     st7789_draw_string(1, 5 + i * font_height, buf, WHITE);
                 }
             }
+
             st7789_set_cursor(0, 0);
             st7789_ramwr();
             spi_set_format(spi0, 16, SPI_CPOL_0, SPI_CPHA_0, SPI_MSB_FIRST);

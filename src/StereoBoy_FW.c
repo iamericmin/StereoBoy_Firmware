@@ -51,13 +51,10 @@ folder_info_t folders[MAX_FOLDERS];
 track_info_t *current_track = NULL;
 track_info_t current_track_holder;
 
-uint16_t track_count;
-
 char folder_names[20][64];
 int folder_file_counts[20];
 
 int song_choice = 0;
-int count;
 
 int temp_visualizer = 1;
 
@@ -87,7 +84,7 @@ int main() {
    ENGINEERING PROTOTYPE UNIT 001)");
     printf("\r\n\r\n");
 
-    sleep_ms(750); // pause for dramatic effect
+    // sleep_ms(750); // pause for dramatic effect
 
     dprint("Starting Folder Scan");
 
@@ -105,7 +102,6 @@ int main() {
     // Load your main relational pointers into RAM first
     sb_load_library();
 
-    track_count = 64;
     printf("%d Artists\n", artist_count);
     printf("%d Albums\n", album_count);
     printf("%d Tracks\n", track_count);
@@ -200,6 +196,9 @@ int main() {
     while(1) {
         // read_lwbt();
         temp_visualizer = (visualizer == 7) ? 1 : visualizer;
+        if (!sb_get_track_by_index(song_choice, current_track, track_window)) {
+            printf("Error reading track metadata from cache table!\n");
+        }
         //Return to main menu with list selection:
         if (exitCode == 0) {
             // pca9685_all_off(&vu_meter);
