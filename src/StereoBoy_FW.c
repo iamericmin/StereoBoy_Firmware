@@ -59,7 +59,7 @@ int song_choice = 0;
 int temp_visualizer = 1;
 
 int main() {
-    set_visualizer(7);
+    set_visualizer(1);
     // Lower RP2350 core voltage to 1V
     // P = V^2 * f, so 0.1V drop results in quadratic change
     // Before: 1.1 ^ 2 * 150 = 181.5
@@ -167,10 +167,10 @@ int main() {
     // {
         
     //     // Single 384-byte container allocated locally on the CPU stack frame
-    //     track_cache_t t; 
+    //     track_info_t t; 
 
     //     // Read sequentially until we reach the End-of-File boundary
-    //     while (f_read(&db_fil, &t, sizeof(track_cache_t), &br) == FR_OK && br == sizeof(track_cache_t))
+    //     while (f_read(&db_fil, &t, sizeof(track_info_t), &br) == FR_OK && br == sizeof(track_info_t))
     //     {
     //         printf("[%03d] %s by %s\n", index, t.title, t.artist);
     //         printf("  Album : %s\r\n", t.album);
@@ -203,7 +203,7 @@ int main() {
         if (exitCode == 0) {
             // pca9685_all_off(&vu_meter);
             selected = false;
-            set_visualizer(6);
+            set_visualizer(1);
             printf("\r\nSong %d/%d: ", song_choice+1, count);
             prev_choice = song_choice;
             while (selected == false) {
@@ -216,7 +216,7 @@ int main() {
                     if (pressed & BTN_L)      song_choice = (song_choice - 10 + count) % count;
                     if (pressed & BTN_A){
                         selected = true;   
-                        printf("Poo cum fart shit pee");
+                        printf("Poo cum fart shit pee\n");
                     }       
                 }
                 if (prev_choice != song_choice){

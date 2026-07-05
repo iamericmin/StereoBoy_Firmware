@@ -152,9 +152,6 @@ void sb_display_init(st7789_t *display)
         true                           // Start now!
     );
     // sleep_ms(500);
-
-    multicore_launch_core1(core1_entry);
-    printf("CORE 1 LAUNCHED!\r\n");
 }
 
 // scans for folders in root dir
@@ -257,6 +254,7 @@ int sb_get_raw_tracks(char raw_tracks[][256], int max_tracks) {
  * @return int 1 on success, 0 on disk read failure.
  */
 int sb_get_track_by_index(uint16_t idx, track_info_t *out_track, track_info_t *track_window) {
+    printf("Track fetch process started!\n");
     uint64_t initial_timestamp = get_absolute_time();
     FIL db_fil;
     UINT br; 
@@ -353,7 +351,7 @@ int sb_load_library(void) {
     album_count = fno.fsize / sizeof(album_info_t);
     global_albums = (album_info_t *)malloc(fno.fsize);
     if (global_albums == NULL) {
-        free(global_artists); global_artists = NULL;
+        free(global_albums); global_albums = NULL;
         return 0;
     }
 
@@ -361,7 +359,6 @@ int sb_load_library(void) {
         FRESULT res = f_read(&fil, global_albums, fno.fsize, &br);
         f_close(&fil);
         if (res != FR_OK || br != fno.fsize) {
-            free(global_artists); global_artists = NULL;
             free(global_albums);  global_albums = NULL;
             return 0;
         }
@@ -370,10 +367,9 @@ int sb_load_library(void) {
     // --- LOAD TRACKS ---
     if (f_stat("0:/.tracks", &fno) != FR_OK) {
         printf("[Error] 0:/.tracks file missing.\r\n");
-        free(global_artists); global_artists = NULL;
         return 0;
     }
-    track_count = fno.fsize / sizeof(track_cache_t);
+    track_count = fno.fsize / sizeof(track_info_t);
 
     printf("[Success] Loaded %d Artists, %d Albums, and %d tracks into RAM.\r\n", 
            artist_count, album_count, track_count);
@@ -490,6 +486,11 @@ void sb_hw_init(vs1053_t *player, st7789_t *display)
     vs1053_enable_i2s(player);
     printf("VS1053 I2S enabled.\r\n");
     // dprint("VS1053 I2S enabled.");
+
+    multicore_reset_core1();
+    sleep_ms(10);
+    multicore_launch_core1(core1_entry);
+    printf("CORE 1 LAUNCHED!\r\n");
     
     // dprint("Finished sb_hw_init");
     printf("\r\nFinished sb_hw_init\r\n");
