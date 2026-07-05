@@ -39,10 +39,16 @@ bool selected;
 
 int jukebox(vs1053_t *player, uint16_t song_choice, st7789_t *display)
 {
+    printf("\n******** JUKEBOX START ********\n");
+    uint64_t timestamp = get_absolute_time();
+    uint64_t jukebox_init_start_time = get_absolute_time();
 
     if (!sb_get_track_by_index(song_choice, current_track, track_window)) {
         printf("Error reading track metadata from cache table!\n");
     }
+
+    printf("Fetched track window! Took %d us.\n", (int)absolute_time_diff_us(timestamp, get_absolute_time()));
+    timestamp = get_absolute_time();
 
     printf("\r\n\rNOW PLAYING:\r\n");
     printf("  Title : %s\r\n", current_track->title);
@@ -74,12 +80,18 @@ int jukebox(vs1053_t *player, uint16_t song_choice, st7789_t *display)
     uint32_t warp_duration = RESUME_WARP_US; // warp effect duration
     absolute_time_t warp_start_time;
 
+    printf("Initialized a bunch of variables. Took %d us.\n", (int)absolute_time_diff_us(timestamp, get_absolute_time()));
+    timestamp = get_absolute_time();
+
     // open selected MP3 file
     if (f_open(&fil, filename, FA_READ) != FR_OK)
     {
         printf("Failed to open %s\r\n", filename);
         return exitType;
     }
+
+    printf("Opened MP3 file! Took %d us.\n", (int)absolute_time_diff_us(timestamp, get_absolute_time()));
+    timestamp = get_absolute_time();
 
     uint16_t stereo_bit = sampleSpeed & 1;     // LSB indicates mono or stereo (not exactly sure what but this is pretty much always 1)
     uint16_t base_rate = sampleSpeed & 0xFFFE; // sampling speed in upper 15 bits
@@ -96,8 +108,30 @@ int jukebox(vs1053_t *player, uint16_t song_choice, st7789_t *display)
     uint8_t vol_check = 10;
     uint8_t old_volume = 0;
     // read_lwbt();
+
+    printf("******** JUKEBOX INIT FINISHED! ********\n");
+    printf("Took %d us for entire jukebox init.\n", (int)absolute_time_diff_us(jukebox_init_start_time, timestamp));
+
     while (1)
     {
+
+        // Always feed decoder unless fully paused
+        if (!paused || warping)
+        {
+            uint16_t new_rate = (uint16_t)(base_rate * transport) & 0xFFFE;
+            if (new_rate < 9000)
+                new_rate = 9000;
+            sci_write(player, 0x05, new_rate | stereo_bit);
+
+            if (f_read(&fil, buffer, sizeof(buffer), &br) != FR_OK || br == 0)
+            {
+                exitType = 1; // Default return when no bytes read (end of song)
+                break;
+            }
+
+            vs1053_play_data(player, buffer, br);
+        }
+        
         // janky counter for volume sampling
         if (vol_check == 10) {
             uint16_t vol = (uint32_t)potVal * 0x60 / 4096;
@@ -348,18 +382,6 @@ int jukebox(vs1053_t *player, uint16_t song_choice, st7789_t *display)
             }
         }
 
-        // Always feed decoder unless fully paused
-        if (!paused || warping)
-        {
-            if (f_read(&fil, buffer, sizeof(buffer), &br) != FR_OK || br == 0)
-            {
-                exitType = 1; // Default return when no bytes read (end of song)
-                break;
-            }
-
-            vs1053_play_data(player, buffer, br);
-        }
-
         // --- Warp logic ---
         if (warping)
         {
@@ -390,20 +412,6 @@ int jukebox(vs1053_t *player, uint16_t song_choice, st7789_t *display)
                 transport = warp_start_transport +
                             (warp_target - warp_start_transport) * t;
             }
-        }
-
-        // --- Apply playback rate + volume ---
-        if (!paused || warping)
-        {
-            uint16_t new_rate = (uint16_t)(base_rate * transport) & 0xFFFE;
-            if (new_rate < 9000)
-                new_rate = 9000;
-            sci_write(player, 0x05, new_rate | stereo_bit);
-
-            // volume scales with transport
-            // uint8_t vol = (uint8_t)(0xFE * (1.0f - transport));
-            // if (vol > 0xFE) vol = 0xFE;
-            // vs1053_set_volume(player, vol, vol);
         }
     }
 
