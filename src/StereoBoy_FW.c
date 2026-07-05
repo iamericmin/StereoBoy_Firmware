@@ -86,16 +86,16 @@ int main() {
 
     // sleep_ms(750); // pause for dramatic effect
 
-    dprint("Starting Folder Scan");
+    // printf("Starting Folder Scan...\n");
 
-    uint8_t total_folders = sb_scan_folders(folders, 20);
-    printf("--- Found %d Folders ---\n", total_folders);
-    for (int i = 0; i < total_folders; i++) {
-        printf("[%02d] %-16s (%d songs)\n", 
-                i, 
-                folders[i].foldername, 
-                folders[i].num_tracks);
-    }
+    // uint8_t total_folders = sb_scan_folders(folders, 20);
+    // printf("--- Found %d Folders ---\n", total_folders);
+    // for (int i = 0; i < total_folders; i++) {
+    //     printf("[%02d] %-16s (%d songs)\n", 
+    //             i, 
+    //             folders[i].foldername, 
+    //             folders[i].num_tracks);
+    // }
 
     dprint("Starting Track Scan");
 

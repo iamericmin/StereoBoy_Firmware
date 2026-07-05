@@ -37,6 +37,58 @@ int num_visualizations = 8;
 bool album_art_ready = false;
 bool selected;
 
+/*
+    album_art_ready = false;
+
+    FIL fil;             // file object
+    UINT br;             // pointer to number of bytes read
+    uint8_t buffer[2048]; // buffer read from file
+
+    char *filename = track->filename;
+    uint16_t sampleSpeed = track->samplespeed;
+    uint16_t bitRate = track->bitrate;
+    uint32_t skip_bits = bitRate * 256; // bitrate * 1024 / 4 = approx. 2 seconds
+    int exitType = 0;
+    sci_write(player, 0x05, sampleSpeed + 1); // initialize codec sampling speed (+1 at the end for stereo)
+
+    // status bits for player state and warp effect
+    paused = false;
+    playStatus = play_icon;
+    warping = false;
+    stopped = 0;
+    enableIcons = true;
+
+    // more warp effect stuff
+    float transport = 1.0f;                  // desired speed
+    float warp_start_transport = 1.0f;       // start speed for warp
+    float warp_target = 1.0f;                // target speed for warp
+    uint32_t warp_duration = RESUME_WARP_US; // warp effect duration
+    absolute_time_t warp_start_time;
+
+    // open selected MP3 file
+    if (f_open(&fil, filename, FA_READ) != FR_OK)
+    {
+        printf("Failed to open %s\r\n", filename);
+        return exitType;
+    }
+
+    uint16_t stereo_bit = sampleSpeed & 1;     // LSB indicates mono or stereo (not exactly sure what but this is pretty much always 1)
+    uint16_t base_rate = sampleSpeed & 0xFFFE; // sampling speed in upper 15 bits
+    if (visualizer == 0) {
+        display_album_art(img_buffer, track->artist, track->album, track->title);
+    }
+
+    f_lseek(&fil, track->audio_start);
+    absolute_time_t last_skip_time = get_absolute_time();
+
+    selected_band = 0;
+    int currEq = 0;
+    dac_eq_init(sampleSpeed); // init with default sample rate
+    uint8_t vol_check = 10;
+    uint8_t old_volume = 0;
+    read_lwbt();
+*/
+
 int jukebox(vs1053_t *player, uint16_t song_choice, st7789_t *display)
 {
     printf("\n******** JUKEBOX START ********\n");

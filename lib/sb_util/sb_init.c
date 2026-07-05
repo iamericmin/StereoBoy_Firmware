@@ -259,51 +259,47 @@ int sb_get_track_by_index(uint16_t idx, track_info_t *out_track, track_info_t *t
     FIL db_fil;
     UINT br; 
 
+    // Open the flat index cache database file
     if (f_open(&db_fil, "0:/.tracks", FA_READ) != FR_OK) {
         printf("[Error] Failed to open .tracks cache file for lookup.\n");
         return 0;
     }
-    
-    // Clear out the entire sliding window array up front.
-    // This instantly handles out-of-bounds track margins (padding) with zero CPU overhead.
-    memset(track_window, 0, sizeof(track_info_t) * 11);
-    
+    printf("+ %d us! (Opened .tracks cache file)\n", (int)absolute_time_diff_us(initial_timestamp, get_absolute_time()));
+    initial_timestamp = get_absolute_time();
+
+    // 1. Instantly pull down the full selected song metadata block in one single disk operation
+    uint32_t byte_offset = (uint32_t)idx * sizeof(track_info_t);
+    f_lseek(&db_fil, byte_offset);
+
+    if (f_read(&db_fil, out_track, sizeof(track_info_t), &br) != FR_OK || br != sizeof(track_info_t)) {
+        f_close(&db_fil);
+        return 0; // Failed to read target track row
+    }
+    printf("+ %d us! (Fetched whole track profile completely from disk cache)\n", (int)absolute_time_diff_us(initial_timestamp, get_absolute_time()));
+    initial_timestamp = get_absolute_time();
+
+    // 2. Populate the sliding track window (11 tracks total: 5 below, current, 5 above)
     uint32_t total_tracks = f_size(&db_fil) / sizeof(track_info_t);
     int32_t start_idx = (int32_t)idx - 5;
-    int32_t end_idx = start_idx + 11; // Exclusive bound
-
-    // Clamp safe boundaries for our single contiguous storage read block
-    int32_t valid_start = start_idx;
-    int32_t valid_end = end_idx;
     
-    if (valid_start < 0) valid_start = 0;
-    if (valid_end > (int32_t)total_tracks) valid_end = (int32_t)total_tracks;
-
-    if (valid_start < valid_end) {
-        uint32_t read_count = valid_end - valid_start;
-        uint32_t disk_offset = (uint32_t)valid_start * sizeof(track_info_t);
+    for (int i = 0; i < 11; i++) {
+        int32_t current_window_idx = start_idx + i;
         
-        // Execute exactly ONE seek operation
-        f_lseek(&db_fil, disk_offset);
-        
-        // Calculate the destination slot in our 11-track array.
-        // For example, if we are on track 0, start_idx is -5, valid_start is 0. 
-        // Array destination offset = 0 - (-5) = 5 (slots 0-4 remain zero-padded).
-        int32_t window_dest_offset = valid_start - start_idx;
-        
-        // Fire a single bulk transaction (7.2 KB max for 11 tracks) directly into RAM
-        if (f_read(&db_fil, &track_window[window_dest_offset], read_count * sizeof(track_info_t), &br) != FR_OK) {
-            f_close(&db_fil);
-            return 0;
+        if (current_window_idx >= 0 && current_window_idx < (int32_t)total_tracks) {
+            uint32_t window_offset = (uint32_t)current_window_idx * sizeof(track_info_t);
+            f_lseek(&db_fil, window_offset);
+            
+            if (f_read(&db_fil, &track_window[i], sizeof(track_info_t), &br) != FR_OK || br != sizeof(track_info_t)) {
+                memset(&track_window[i], 0, sizeof(track_info_t));
+            }
+        } else {
+            // Out of bounds constraints (e.g. padding entries for list margins)
+            memset(&track_window[i], 0, sizeof(track_info_t));
         }
     }
 
     f_close(&db_fil);
-
-    // The currently active track is always guaranteed to reside right in the middle row (index 5)
-    memcpy(out_track, &track_window[5], sizeof(track_info_t));
-
-    printf("+ %d us! (Contiguous cluster burst read complete)\n", (int)absolute_time_diff_us(initial_timestamp, get_absolute_time()));
+    printf("+ %d us! (Populated scrolling tracks window array)\n", (int)absolute_time_diff_us(initial_timestamp, get_absolute_time()));
     return 1;
 }
 
