@@ -23,7 +23,7 @@
 #define MODE2_OUTDRV  0x04  // 0 = Open-Drain, 1 = Totem-Pole
 
 #define MAX_BRIGHTNESS 4095
-#define DESIRED_BRIGHTNESS 16
+#define DESIRED_BRIGHTNESS 32
 
 static void write8(pca9685_t *dev, uint8_t reg, uint8_t val) {
     uint8_t buf[2] = {reg, val};
