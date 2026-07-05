@@ -27,7 +27,7 @@ int progress_bar = 0;
 int prev_progress_bar = 0;
 
 // track_cache_t *track_window[];
-track_cache_t track_window[11];
+track_info_t track_window[11];
 
 /*******************visualizations not scope*******************/
 #define HISTORY_SIZE 256
@@ -36,6 +36,7 @@ cplx audio_history_r[HISTORY_SIZE];
 int history_index = 0;
 int num_visualizations = 8;
 bool album_art_ready = false;
+bool selected;
 
 int jukebox(vs1053_t *player, uint16_t song_choice, st7789_t *display)
 {
@@ -43,14 +44,11 @@ int jukebox(vs1053_t *player, uint16_t song_choice, st7789_t *display)
     if (!sb_get_track_by_index(song_choice, current_track, track_window)) {
         printf("Error reading track metadata from cache table!\n");
     }
-    
 
     printf("\r\n\rNOW PLAYING:\r\n");
     printf("  Title : %s\r\n", current_track->title);
     printf("  Artist: %s\r\n", current_track->artist);
     printf("  Album : %s\r\n", current_track->album);
-
-    // get_mp3_metadata(current_track->filename, &current_track);
 
     FIL fil;             // file object
     UINT br;             // pointer to number of bytes read

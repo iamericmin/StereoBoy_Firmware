@@ -192,13 +192,13 @@ int main() {
     
     song_choice = 0;
     current_track = &current_track_holder;
+    if (!sb_get_track_by_index(song_choice, current_track, track_window)) {
+        printf("Error reading track metadata from cache table!\n");
+    }
     
     while(1) {
         // read_lwbt();
         temp_visualizer = (visualizer == 7) ? 1 : visualizer;
-        if (!sb_get_track_by_index(song_choice, current_track, track_window)) {
-            printf("Error reading track metadata from cache table!\n");
-        }
         //Return to main menu with list selection:
         if (exitCode == 0) {
             // pca9685_all_off(&vu_meter);

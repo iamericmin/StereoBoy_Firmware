@@ -185,7 +185,7 @@ void core1_entry()
         case 6:
             process_audio_batch();
             clear_framebuffer();
-            start =  (song_choice < 6) ? 0 : song_choice - 5;
+            start = (song_choice < 6) ? 0 : song_choice - 5;
             // track_info_t *track;
             track_info_t *selected_track;
             static char buf[256]; // buffer for string to write to display
@@ -206,7 +206,7 @@ void core1_entry()
                 }
                 // track = &tracks[start+i];
                 // selected_track = &tracks[song_choice];
-                selected_track = current_track;
+                selected_track = &track_window[i];
                 sprintf(buf, "%d", start+i+1); //Index at 1 for users
                 strcat(buf, " ");
                 if (start + i == song_choice) {
@@ -414,7 +414,7 @@ void core1_entry()
             clear_framebuffer();
 
             for (int i = 0; i < 11; i++) {
-                track_cache_t *track = &track_window[i];
+                track_info_t *track = &track_window[i];
                 
                 // Check if this slot is empty (out of bounds padding from our earlier function)
                 if (track->filename[0] == '\0') {

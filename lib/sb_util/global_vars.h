@@ -44,11 +44,11 @@ extern bool warping;
 #define SCREEN_WIDTH 240
 #define SCREEN_HEIGHT 240
 
-extern uint16_t play_icon[400];
-extern uint16_t pause_icon[400];
-extern uint16_t empty_icon[400];
-extern uint16_t ff_icon[400];
-extern uint16_t rew_icon[400];
+extern const uint16_t play_icon[400];
+extern const uint16_t pause_icon[400];
+extern const uint16_t empty_icon[400];
+extern const uint16_t ff_icon[400];
+extern const uint16_t rew_icon[400];
 extern uint16_t frame_buffer[SCREEN_WIDTH * SCREEN_HEIGHT];
 
 extern struct st7789_t st7789_cfg;
@@ -106,7 +106,7 @@ typedef struct __attribute__((packed)) {
     char filename[128]; // Added to match the new 512-byte compiled cache line
 } track_cache_t;
 
-extern track_cache_t track_window[11];
+extern track_info_t track_window[11];
 
 typedef struct __attribute__((packed)) {
     char artist_name[128];

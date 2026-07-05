@@ -2,6 +2,7 @@
 
 #include "lib/sb_util/sb_util.h"
 #include "hardware/pwm.h"
+#include "hardware/xip_cache.h"
 
 static FATFS fs;
 
@@ -249,61 +250,58 @@ int sb_get_raw_tracks(char raw_tracks[][256], int max_tracks) {
 
 /**
  * @brief Seeks the cache file on disk and extracts a specific track profile.
+ * Directly populates the full technical struct with zero processing overhead.
  * @param idx The cache index to fetch the song from
  * @param out_track Pointer to the track container used by your jukebox.
+ * @param track_window Pointer to an array of 11 track structures forming a UI slider layout window.
  * @return int 1 on success, 0 on disk read failure.
  */
-int sb_get_track_by_index(uint16_t idx, track_info_t *out_track, track_cache_t *track_window) {
+int sb_get_track_by_index(uint16_t idx, track_info_t *out_track, track_info_t *track_window) {
+    uint64_t initial_timestamp = get_absolute_time();
     FIL db_fil;
-    UINT br;
-    track_cache_t cache;
+    UINT br; 
 
-    // Open the flat index cache file
+    // Open the flat index cache database file
     if (f_open(&db_fil, "0:/.tracks", FA_READ) != FR_OK) {
         printf("[Error] Failed to open .tracks cache file for lookup.\n");
         return 0;
     }
+    printf("+ %d us! (Opened .tracks cache file)\n", (int)absolute_time_diff_us(initial_timestamp, get_absolute_time()));
+    initial_timestamp = get_absolute_time();
 
-    // 1. First, fetch the single target track metadata as originally requested
-    uint32_t byte_offset = (uint32_t)idx * sizeof(track_cache_t);
+    // 1. Instantly pull down the full selected song metadata block in one single disk operation
+    uint32_t byte_offset = (uint32_t)idx * sizeof(track_info_t);
     f_lseek(&db_fil, byte_offset);
 
-    if (f_read(&db_fil, &cache, sizeof(track_cache_t), &br) != FR_OK || br != sizeof(track_cache_t)) {
+    if (f_read(&db_fil, out_track, sizeof(track_info_t), &br) != FR_OK || br != sizeof(track_info_t)) {
         f_close(&db_fil);
-        return 0; // Failed to read target track
+        return 0; // Failed to read target track row
     }
-    
-    // Populate the main metadata struct
-    get_mp3_metadata(cache.filename, out_track);
+    printf("+ %d us! (Fetched whole track profile completely from disk cache)\n", (int)absolute_time_diff_us(initial_timestamp, get_absolute_time()));
+    initial_timestamp = get_absolute_time();
 
     // 2. Populate the sliding track window (11 tracks total: 5 below, current, 5 above)
-    // Calculate total tracks available in the cache file
-    uint32_t total_tracks = f_size(&db_fil) / sizeof(track_cache_t);
-    track_count = total_tracks;
-    
-    // Determine the safe starting index for the window
+    uint32_t total_tracks = f_size(&db_fil) / sizeof(track_info_t);
     int32_t start_idx = (int32_t)idx - 5;
     
     for (int i = 0; i < 11; i++) {
         int32_t current_window_idx = start_idx + i;
         
-        // Bounds checking: Ensure index is within 0 and total_tracks - 1
         if (current_window_idx >= 0 && current_window_idx < (int32_t)total_tracks) {
-            uint32_t window_offset = (uint32_t)current_window_idx * sizeof(track_cache_t);
+            uint32_t window_offset = (uint32_t)current_window_idx * sizeof(track_info_t);
             f_lseek(&db_fil, window_offset);
             
-            if (f_read(&db_fil, &track_window[i], sizeof(track_cache_t), &br) != FR_OK || br != sizeof(track_cache_t)) {
-                // If a read fails mid-way, clear the struct slot to be safe
-                memset(&track_window[i], 0, sizeof(track_cache_t));
+            if (f_read(&db_fil, &track_window[i], sizeof(track_info_t), &br) != FR_OK || br != sizeof(track_info_t)) {
+                memset(&track_window[i], 0, sizeof(track_info_t));
             }
         } else {
-            // Out of bounds (e.g., trying to read track -2 or a track past the end of the file)
-            // Zero-fill the struct so your UI/player logic knows it's empty space
-            memset(&track_window[i], 0, sizeof(track_cache_t));
+            // Out of bounds constraints (e.g. padding entries for list margins)
+            memset(&track_window[i], 0, sizeof(track_info_t));
         }
     }
 
     f_close(&db_fil);
+    printf("+ %d us! (Populated scrolling tracks window array)\n", (int)absolute_time_diff_us(initial_timestamp, get_absolute_time()));
     return 1;
 }
 
@@ -386,17 +384,51 @@ void sb_hw_init(vs1053_t *player, st7789_t *display)
 {
 
     sleep_ms(1000);
-
+    
     mutex_init(&text_buff_mtx);
     sem_init(&text_sem, 0, 255);
 
+    bool sd_success = false;
+    for (int i = 0; i < 50; i++) {
+        if (sd_init_driver()) {
+            sd_success = true;
+            printf("SD card initialized on attempt %d!\r\n", i + 1);
+            break; 
+        }
+        sleep_ms(100); // Give the card a moment before retrying
+    }
+
+    if (!sd_success) {
+        // dprint("SD init failed");
+        printf("SD init failed\r\n");
+    }
+
+    FRESULT fr;
+    for (int retry = 0; retry < 100; retry++) {
+        fr = f_mount(&fs, "0:", 1);
+        if (fr == FR_OK) {
+            printf("SD Card successfully mounted on try %d!\n", retry);
+            break;
+        } else {
+            printf("Mount failed on try %d. Retrying...\n", retry);
+            sleep_ms(50);
+        }
+    }
+    if (fr != FR_OK) {
+        // Only hang if it fails 50 times in a row
+        while (1) {
+            printf("SD Mount permanently failed: %d\n", fr);
+            sleep_ms(1000);
+        }
+    }
+    
     // set I2C0 for DAC at 400KHz
     gpio_set_function(PIN_I2C0_SCL, GPIO_FUNC_I2C);
     gpio_set_function(PIN_I2C0_SDA, GPIO_FUNC_I2C);
     i2c_init(i2c0, 400 * 1000);
     // gpio_pull_up(PIN_I2C0_SCL);
     // gpio_pull_up(PIN_I2C0_SDA);
-    dprint("SPI0 and I2C0 initialized.");
+    // dprint("SPI0 and I2C0 initialized.");
     printf("SPI0 and I2C0 initialized.\r\n");
 
     // set I2C1 for PCA9685 at 400KHz
@@ -423,7 +455,7 @@ void sb_hw_init(vs1053_t *player, st7789_t *display)
     adc_gpio_init(45); // Right
 
     printf("Oscope ADC initialized!\r\n");
-    dprint("Oscope ADC initialized!");
+    // dprint("Oscope ADC initialized!");
 
     // sleep_ms(10); // seems to help flaky display issues
 
@@ -434,10 +466,10 @@ void sb_hw_init(vs1053_t *player, st7789_t *display)
     dac_init(i2c0);
     dac_interrupt_init();
     printf("DAC intialized.\r\n");
-    dprint("DAC intialized.");
+    // dprint("DAC intialized.");
 
     printf("Audio init complete.\r\n");
-    dprint("Audio init complete.");
+    // dprint("Audio init complete.");
 
     // Initialize buttons with a 10ms scan rate
     buttons_init(50);
@@ -446,54 +478,19 @@ void sb_hw_init(vs1053_t *player, st7789_t *display)
     pot_init();
     printf("\r\npot intialized\r\n");
     
-    bool sd_success = false;
-    for (int i = 0; i < 50; i++) {
-        if (sd_init_driver()) {
-            sd_success = true;
-            printf("SD card initialized on attempt %d!\r\n", i + 1);
-            break; 
-        }
-        sleep_ms(100); // Give the card a moment before retrying
-    }
-
-    if (!sd_success) {
-        dprint("SD init failed");
-        printf("SD init failed\r\n");
-    }
-
-    FRESULT fr;
-    for (int retry = 0; retry < 100; retry++) {
-        fr = f_mount(&fs, "0:", 1);
-        if (fr == FR_OK) {
-            printf("SD Card successfully mounted on try %d!\n", retry);
-            break;
-        } else {
-            printf("Mount failed on try %d. Retrying...\n", retry);
-            sleep_ms(50);
-        }
-    }
-    if (fr != FR_OK) {
-        // Only hang if it fails 50 times in a row
-        while (1) {
-            printf("SD Mount permanently failed: %d\n", fr);
-            sleep_ms(1000);
-        }
-    }
-
     vs1053_init(player);
-    printf("test point 2");
-
     printf("VS1053 initialized.\r\n");
-    dprint("VS1053 initialized.");
+    // dprint("VS1053 initialized.");
+    
     vs1053_set_volume(player, 0x01, 0x01); // chnged from 0 (0x00) to -12dB (0x0202) to -6dB (0x0101)
     printf("VS1053 volume set to max!\r\n");
-    dprint("VS1053 volume set to max!");
+    // dprint("VS1053 volume set to max!");
 
     // Enable I2S output
     vs1053_enable_i2s(player);
     printf("VS1053 I2S enabled.\r\n");
-    dprint("VS1053 I2S enabled.");
+    // dprint("VS1053 I2S enabled.");
     
-    dprint("Finished sb_hw_init");
+    // dprint("Finished sb_hw_init");
     printf("\r\nFinished sb_hw_init\r\n");
 }
