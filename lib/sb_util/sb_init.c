@@ -278,25 +278,25 @@ int sb_get_track_by_index(uint16_t idx, track_info_t *out_track, track_info_t *t
     printf("+ %d us! (Fetched whole track profile completely from disk cache)\n", (int)absolute_time_diff_us(initial_timestamp, get_absolute_time()));
     initial_timestamp = get_absolute_time();
 
-    // 2. Populate the sliding track window (11 tracks total: 5 below, current, 5 above)
-    uint32_t total_tracks = f_size(&db_fil) / sizeof(track_info_t);
-    int32_t start_idx = (int32_t)idx - 5;
+    // // 2. Populate the sliding track window (11 tracks total: 5 below, current, 5 above)
+    // uint32_t total_tracks = f_size(&db_fil) / sizeof(track_info_t);
+    // int32_t start_idx = (int32_t)idx - 5;
     
-    for (int i = 0; i < 11; i++) {
-        int32_t current_window_idx = start_idx + i;
+    // for (int i = 0; i < 11; i++) {
+    //     int32_t current_window_idx = start_idx + i;
         
-        if (current_window_idx >= 0 && current_window_idx < (int32_t)total_tracks) {
-            uint32_t window_offset = (uint32_t)current_window_idx * sizeof(track_info_t);
-            f_lseek(&db_fil, window_offset);
+    //     if (current_window_idx >= 0 && current_window_idx < (int32_t)total_tracks) {
+    //         uint32_t window_offset = (uint32_t)current_window_idx * sizeof(track_info_t);
+    //         f_lseek(&db_fil, window_offset);
             
-            if (f_read(&db_fil, &track_window[i], sizeof(track_info_t), &br) != FR_OK || br != sizeof(track_info_t)) {
-                memset(&track_window[i], 0, sizeof(track_info_t));
-            }
-        } else {
-            // Out of bounds constraints (e.g. padding entries for list margins)
-            memset(&track_window[i], 0, sizeof(track_info_t));
-        }
-    }
+    //         if (f_read(&db_fil, &track_window[i], sizeof(track_info_t), &br) != FR_OK || br != sizeof(track_info_t)) {
+    //             memset(&track_window[i], 0, sizeof(track_info_t));
+    //         }
+    //     } else {
+    //         // Out of bounds constraints (e.g. padding entries for list margins)
+    //         memset(&track_window[i], 0, sizeof(track_info_t));
+    //     }
+    // }
 
     f_close(&db_fil);
     printf("+ %d us! (Populated scrolling tracks window array)\n", (int)absolute_time_diff_us(initial_timestamp, get_absolute_time()));
@@ -378,32 +378,32 @@ int sb_load_library(void) {
 
 void sb_hw_init(vs1053_t *player, st7789_t *display)
 {
-
-    sleep_ms(1000);
-    
     mutex_init(&text_buff_mtx);
     sem_init(&text_sem, 0, 255);
 
+    sleep_ms(1000);
+
+    // 1. Initialize the SDIO driver hardware parameters (PIO/DMA)
     bool sd_success = false;
     for (int i = 0; i < 50; i++) {
         if (sd_init_driver()) {
             sd_success = true;
-            printf("SD card initialized on attempt %d!\r\n", i + 1);
+            printf("SDIO card driver initialized on attempt %d!\r\n", i + 1);
             break; 
         }
         sleep_ms(100); // Give the card a moment before retrying
     }
 
     if (!sd_success) {
-        // dprint("SD init failed");
-        printf("SD init failed\r\n");
+        printf("SDIO hardware init failed\r\n");
     }
 
+    // 2. Mount via FatFS using the explicit volume ID "0:" defined in hw_config.c
     FRESULT fr;
     for (int retry = 0; retry < 100; retry++) {
-        fr = f_mount(&fs, "0:", 1);
+        fr = f_mount(&fs, "0:", 1); // Forced immediate mount option
         if (fr == FR_OK) {
-            printf("SD Card successfully mounted on try %d!\n", retry);
+            printf("SDIO Card successfully mounted on try %d!\n", retry);
             break;
         } else {
             printf("Mount failed on try %d. Retrying...\n", retry);
@@ -411,9 +411,8 @@ void sb_hw_init(vs1053_t *player, st7789_t *display)
         }
     }
     if (fr != FR_OK) {
-        // Only hang if it fails 50 times in a row
         while (1) {
-            printf("SD Mount permanently failed: %d\n", fr);
+            printf("SDIO Mount permanently failed: (%d)\n", fr);
             sleep_ms(1000);
         }
     }
@@ -422,17 +421,12 @@ void sb_hw_init(vs1053_t *player, st7789_t *display)
     gpio_set_function(PIN_I2C0_SCL, GPIO_FUNC_I2C);
     gpio_set_function(PIN_I2C0_SDA, GPIO_FUNC_I2C);
     i2c_init(i2c0, 400 * 1000);
-    // gpio_pull_up(PIN_I2C0_SCL);
-    // gpio_pull_up(PIN_I2C0_SDA);
-    // dprint("SPI0 and I2C0 initialized.");
     printf("SPI0 and I2C0 initialized.\r\n");
 
     // set I2C1 for PCA9685 at 400KHz
     gpio_set_function(PIN_I2C1_SDA, GPIO_FUNC_I2C);
     gpio_set_function(PIN_I2C1_SCL, GPIO_FUNC_I2C);
     i2c_init(i2c1, 400 * 1000);
-    // gpio_pull_up(PIN_I2C1_SDA);
-    // gpio_pull_up(PIN_I2C1_SCL);
     printf("I2C1 initialized.\r\n");
 
     // LED driver init
@@ -446,14 +440,11 @@ void sb_hw_init(vs1053_t *player, st7789_t *display)
         printf("WARNING: PCA9685 Init Failed!\r\n");
     }
 
-    adc_init();        // Inside sb_hw_init
+    adc_init();        
     adc_gpio_init(46); // Left
     adc_gpio_init(45); // Right
 
     printf("Oscope ADC initialized!\r\n");
-    // dprint("Oscope ADC initialized!");
-
-    // sleep_ms(10); // seems to help flaky display issues
 
     sb_display_init(display);
     printf("test point 1");
@@ -462,36 +453,51 @@ void sb_hw_init(vs1053_t *player, st7789_t *display)
     dac_init(i2c0);
     dac_interrupt_init();
     printf("DAC intialized.\r\n");
-    // dprint("DAC intialized.");
 
     printf("Audio init complete.\r\n");
-    // dprint("Audio init complete.");
 
-    // Initialize buttons with a 10ms scan rate
+    // Initialize buttons with a 50ms scan rate
     buttons_init(50);
     printf("\r\nButtons intializedr\n");
 
     pot_init();
     printf("\r\npot intialized\r\n");
     
+    // --- Manually Initialize SPI1 for VS1053 Codec ---
+    // 1. Initialize the hardware peripheral to your desired operational speed
+    uint actual_baud = spi_init(spi1, 125 * 1000 * 1000 / 4); // 31.25 MHz
+    printf("SPI1 initialized for VS1053 at %u Hz\r\n", actual_baud);
+
+    // 2. Configure the GPIO pins to use the SPI hardware function
+    gpio_set_function(30, GPIO_FUNC_SPI); // SCK
+    gpio_set_function(31, GPIO_FUNC_SPI); // MOSI
+    gpio_set_function(28, GPIO_FUNC_SPI); // MISO
+
+    // 3. Configure the Slave Select / Chip Select (CS) pin
+    // Note: The VS1053 usually has an XCS (Command CS) and an XDCS (Data CS).
+    // Ensure whichever pin was mapped to 'ss_gpio' (GPIO 2) is explicitly configured as an output.
+    gpio_init(32);
+    gpio_init(33);
+    gpio_set_dir(32, GPIO_OUT);
+    gpio_set_dir(33, GPIO_OUT);
+    gpio_put(32, 1); // Deselect by default (high)
+    gpio_put(33, 1); // Deselect by default (high)
+    printf("SPI1 GPIO pins assigned.\r\n");
+
     vs1053_init(player);
     printf("VS1053 initialized.\r\n");
-    // dprint("VS1053 initialized.");
     
-    vs1053_set_volume(player, 0x01, 0x01); // chnged from 0 (0x00) to -12dB (0x0202) to -6dB (0x0101)
+    vs1053_set_volume(player, 0x01, 0x01); 
     printf("VS1053 volume set to max!\r\n");
-    // dprint("VS1053 volume set to max!");
 
     // Enable I2S output
     vs1053_enable_i2s(player);
     printf("VS1053 I2S enabled.\r\n");
-    // dprint("VS1053 I2S enabled.");
 
     multicore_reset_core1();
     sleep_ms(10);
     multicore_launch_core1(core1_entry);
     printf("CORE 1 LAUNCHED!\r\n");
     
-    // dprint("Finished sb_hw_init");
     printf("\r\nFinished sb_hw_init\r\n");
 }

@@ -1,4 +1,3 @@
-
 /* hw_config.c
 Copyright 2021 Carl John Kugler III
 
@@ -13,44 +12,30 @@ CONDITIONS OF ANY KIND, either express or implied. See the License for the
 specific language governing permissions and limitations under the License.
 */
 
-/*
-This file should be tailored to match the hardware design.
-
-See
-https://github.com/carlk3/no-OS-FatFS-SD-SDIO-SPI-RPi-Pico/tree/main#customizing-for-the-hardware-configuration
-*/
-
 #include "hw_config.h"
 
-/* Configuration of hardware SPI object */
-static spi_t spi = {
-    .hw_inst = spi1,  // SPI component
-    .sck_gpio = 30,    // GPIO number (not Pico pin number)
-    .mosi_gpio = 31,
-    .miso_gpio = 28,
-    // .baud_rate = 12500000,              // Normal operational speed (12.5 MHz)
-    // .baud_rate = 125 * 1000 * 1000 / 8  // 15625000 Hz
-    // .baud_rate = 125 * 1000 * 1000 / 6  // 20833333 Hz
-    .baud_rate = 125 * 1000 * 1000 / 4  // 31250000 Hz -> Use this for vs1053 breakout integrated card slot
-    // .baud_rate = 70000000
-    // .baud_rate = 125 * 1000 * 1000 / 2  // 62500000 Hz -> use this for standalone card slot
+/* SDIO Interface Configuration 
+ * Pin mapping details for your requested GPIO 12-18 range:
+ * CLK = 12 (Derived automatically by the PIO logic as D0_gpio - 2)
+ * CMD = 13
+ * D0  = 14
+ * D1  = 15
+ * D2  = 16
+ * D3  = 17
+ */
+static sd_sdio_if_t sdio_if = {
+    .CMD_gpio = 13,
+    .D0_gpio = 14,
+    .baud_rate = 125 * 1000 * 1000 / 12  // 20833333 Hz (Safe operational speed)
 };
 
-/* SPI Interface */
-static sd_spi_if_t spi_if = {
-    .spi = &spi,  // Pointer to the SPI driving this card
-    .ss_gpio = 2  // The SPI slave select GPIO for this SD card
-};
-
-/* Configuration of the SD Card socket object */
+/* Hardware Configuration of the SD Card socket "object" */
 static sd_card_t sd_card = {
-    .type = SD_IF_SPI,
-    .spi_if_p = &spi_if,  // Pointer to the SPI interface driving this card
+    .type = SD_IF_SDIO, 
+    .sdio_if_p = &sdio_if,
     .use_card_detect = false,
-    .card_detect_gpio = 41,  
-    .card_detected_true = 0, // What the GPIO read returns when a card is present.
-    .card_detect_use_pull = true,
-    .card_detect_pull_hi = true   
+    // .card_detect_gpio = 18, // Uncomment if you want to use GPIO 18 for Card Detect
+    // .card_detected_true = 0
 };
 
 /* ********************************************************************** */
@@ -64,13 +49,10 @@ size_t sd_get_num() { return 1; }
  *
  * @return A pointer to the SD card object, or @c NULL if the number is invalid.
  */
-sd_card_t *sd_get_by_num(size_t num) {
+sd_card_t* sd_get_by_num(size_t num) {
     if (0 == num) {
-        // The number 0 is a valid SD card number.
-        // Return a pointer to the sd_card object.
         return &sd_card;
     } else {
-        // The number is invalid. Return @c NULL.
         return NULL;
     }
 }
