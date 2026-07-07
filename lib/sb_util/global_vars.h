@@ -44,11 +44,11 @@ extern bool warping;
 #define SCREEN_WIDTH 240
 #define SCREEN_HEIGHT 240
 
-extern const uint16_t play_icon[400];
-extern const uint16_t pause_icon[400];
-extern const uint16_t empty_icon[400];
-extern const uint16_t ff_icon[400];
-extern const uint16_t rew_icon[400];
+extern uint16_t play_icon[400];
+extern uint16_t pause_icon[400];
+extern uint16_t empty_icon[400];
+extern uint16_t ff_icon[400];
+extern uint16_t rew_icon[400];
 extern uint16_t frame_buffer[SCREEN_WIDTH * SCREEN_HEIGHT];
 
 extern struct st7789_t st7789_cfg;

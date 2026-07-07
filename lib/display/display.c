@@ -203,7 +203,7 @@ void lcd_draw_char(uint16_t x, uint16_t y, char c, uint16_t color)
 
 
 
-const uint16_t play_icon[400] = {
+uint16_t play_icon[400] = {
     0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
     0,0xFFFF,0xFFFF,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
     0,0xFFFF,0xFFFF,0xFFFF,0xFFFF,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -226,7 +226,7 @@ const uint16_t play_icon[400] = {
     0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 };
 
-const uint16_t pause_icon[400]= {
+uint16_t pause_icon[400]= {
     0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
     0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
     0,0,0,0xFFFF,0xFFFF,0xFFFF,0xFFFF,0xFFFF,0,0,0,0,0xFFFF,0xFFFF,0xFFFF,0xFFFF,0xFFFF,0,0,0,
@@ -249,9 +249,9 @@ const uint16_t pause_icon[400]= {
     0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 };
 
-const uint16_t empty_icon[400] = {0};
+uint16_t empty_icon[400] = {0};
 
-const uint16_t ff_icon[400] = {
+uint16_t ff_icon[400] = {
     0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
     0,0xFFFF,0,0,0,0,0,0,0,0,0xFFFF,0,0,0,0,0,0,0,0,0,
     0,0xFFFF,0xFFFF,0,0,0,0,0,0,0,0xFFFF,0xFFFF,0,0,0,0,0,0,0,0,
@@ -274,7 +274,7 @@ const uint16_t ff_icon[400] = {
     0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 };
 
-const uint16_t rew_icon[400] = {
+uint16_t rew_icon[400] = {
     0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
     0,0,0,0,0,0,0,0,0,0xFFFF,0,0,0,0,0,0,0,0,0xFFFF,0,
     0,0,0,0,0,0,0,0,0xFFFF,0xFFFF,0,0,0,0,0,0,0,0xFFFF,0xFFFF,0,

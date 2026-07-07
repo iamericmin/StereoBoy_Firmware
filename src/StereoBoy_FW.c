@@ -204,23 +204,23 @@ int main() {
             // pca9685_all_off(&vu_meter);
             selected = false;
             set_visualizer(1);
-            printf("\r\nSong %d/%d: ", song_choice+1, count);
+            printf("\r\nSong %d/%d: ", song_choice+1, track_count);
             prev_choice = song_choice;
             while (selected == false) {
                 uint8_t pressed = buttons_get_just_pressed();
                 if (pressed > 0){
-                    if (pressed & BTN_D)      song_choice = (song_choice + 1) % count;
-                    if (pressed & BTN_U)      song_choice = (song_choice - 1 + count) % count; //added roll-over
+                    if (pressed & BTN_D)      song_choice = (song_choice + 1) % track_count;
+                    if (pressed & BTN_U)      song_choice = (song_choice - 1 + track_count) % track_count; //added roll-over
                         // shift songs down by one and insert new song on top
-                    if (pressed & BTN_R)      song_choice = (song_choice + 10) % count;
-                    if (pressed & BTN_L)      song_choice = (song_choice - 10 + count) % count;
+                    if (pressed & BTN_R)      song_choice = (song_choice + 10) % track_count;
+                    if (pressed & BTN_L)      song_choice = (song_choice - 10 + track_count) % track_count;
                     if (pressed & BTN_A){
                         selected = true;   
                         printf("Poo cum fart shit pee\n");
                     }       
                 }
                 if (prev_choice != song_choice){
-                    printf("\r\nSong %d/%d: ", song_choice+1, count);
+                    printf("\r\nSong %d/%d: ", song_choice+1, track_count);
                     prev_choice = song_choice;
                 }
                 
@@ -246,13 +246,13 @@ int main() {
 
         // play next song
         if (exitCode == 1){
-            song_choice = (song_choice + 1) % count;
+            song_choice = (song_choice + 1) % track_count;
             printf("\r\n Next song!\r\n");
             dprint("Next song!");
         }
         // play previous song
         if (exitCode == 2){
-            song_choice = (song_choice - 1 + count) % count;
+            song_choice = (song_choice - 1 + track_count) % track_count;
             dprint("Prev Song!");
             printf("\r\nPrev Song!\r\n");
         }

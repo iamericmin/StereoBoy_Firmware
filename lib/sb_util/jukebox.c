@@ -295,29 +295,23 @@ int jukebox(vs1053_t *player, uint16_t song_choice, st7789_t *display)
                 }
             case 'f':
             case 'F':
-                if (absolute_time_diff_us(last_skip_time, now) >= SKIP_INTERVAL_MS * 1000)
-                {
-                    ff_rew_status = ff_icon;
-                    pos += skip_bits;
-                    if (pos > f_size(&fil))
-                        pos = f_size(&fil) - 1;
-                    f_lseek(&fil, pos);
-                    printf("\r\nFast-forwarded ~2s\r\n");
-                    last_skip_time = now;
-                }
+                ff_rew_status = ff_icon;
+                pos += skip_bits;
+                if (pos > f_size(&fil))
+                    pos = f_size(&fil) - 1;
+                f_lseek(&fil, pos);
+                printf("\r\nFast-forwarded ~2s\r\n");
+                last_skip_time = now;
                 break;
             case 'r':
             case 'R':
-                if (absolute_time_diff_us(last_skip_time, now) >= SKIP_INTERVAL_MS * 1000)
-                {
-                    ff_rew_status = rew_icon;
-                    pos -= skip_bits;
-                    if (pos < 0)
-                        pos = 0;
-                    f_lseek(&fil, pos);
-                    printf("\r\nRewound ~2s\r\n");
-                    last_skip_time = now;
-                }
+                ff_rew_status = rew_icon;
+                pos -= skip_bits;
+                if (pos < 0)
+                    pos = 0;
+                f_lseek(&fil, pos);
+                printf("\r\nRewound ~2s\r\n");
+                last_skip_time = now;
                 break;
             case 'u':
             case 'U':
