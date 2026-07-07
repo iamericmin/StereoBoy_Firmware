@@ -278,25 +278,25 @@ int sb_get_track_by_index(uint16_t idx, track_info_t *out_track, track_info_t *t
     printf("+ %d us! (Fetched whole track profile completely from disk cache)\n", (int)absolute_time_diff_us(initial_timestamp, get_absolute_time()));
     initial_timestamp = get_absolute_time();
 
-    // // 2. Populate the sliding track window (11 tracks total: 5 below, current, 5 above)
-    // uint32_t total_tracks = f_size(&db_fil) / sizeof(track_info_t);
-    // int32_t start_idx = (int32_t)idx - 5;
+    // 2. Populate the sliding track window (11 tracks total: 5 below, current, 5 above)
+    uint32_t total_tracks = f_size(&db_fil) / sizeof(track_info_t);
+    int32_t start_idx = (int32_t)idx - 5;
     
-    // for (int i = 0; i < 11; i++) {
-    //     int32_t current_window_idx = start_idx + i;
+    for (int i = 0; i < 11; i++) {
+        int32_t current_window_idx = start_idx + i;
         
-    //     if (current_window_idx >= 0 && current_window_idx < (int32_t)total_tracks) {
-    //         uint32_t window_offset = (uint32_t)current_window_idx * sizeof(track_info_t);
-    //         f_lseek(&db_fil, window_offset);
+        if (current_window_idx >= 0 && current_window_idx < (int32_t)total_tracks) {
+            uint32_t window_offset = (uint32_t)current_window_idx * sizeof(track_info_t);
+            f_lseek(&db_fil, window_offset);
             
-    //         if (f_read(&db_fil, &track_window[i], sizeof(track_info_t), &br) != FR_OK || br != sizeof(track_info_t)) {
-    //             memset(&track_window[i], 0, sizeof(track_info_t));
-    //         }
-    //     } else {
-    //         // Out of bounds constraints (e.g. padding entries for list margins)
-    //         memset(&track_window[i], 0, sizeof(track_info_t));
-    //     }
-    // }
+            if (f_read(&db_fil, &track_window[i], sizeof(track_info_t), &br) != FR_OK || br != sizeof(track_info_t)) {
+                memset(&track_window[i], 0, sizeof(track_info_t));
+            }
+        } else {
+            // Out of bounds constraints (e.g. padding entries for list margins)
+            memset(&track_window[i], 0, sizeof(track_info_t));
+        }
+    }
 
     f_close(&db_fil);
     printf("+ %d us! (Populated scrolling tracks window array)\n", (int)absolute_time_diff_us(initial_timestamp, get_absolute_time()));
@@ -381,7 +381,7 @@ void sb_hw_init(vs1053_t *player, st7789_t *display)
     mutex_init(&text_buff_mtx);
     sem_init(&text_sem, 0, 255);
 
-    sleep_ms(1000);
+    // sleep_ms(1000);
 
     // 1. Initialize the SDIO driver hardware parameters (PIO/DMA)
     bool sd_success = false;
@@ -465,7 +465,7 @@ void sb_hw_init(vs1053_t *player, st7789_t *display)
     
     // --- Manually Initialize SPI1 for VS1053 Codec ---
     // 1. Initialize the hardware peripheral to your desired operational speed
-    uint actual_baud = spi_init(spi1, 125 * 1000 * 1000 / 4); // 31.25 MHz
+    uint actual_baud = spi_init(spi1, 1 * 1000 * 1000); // 1 MHz
     printf("SPI1 initialized for VS1053 at %u Hz\r\n", actual_baud);
 
     // 2. Configure the GPIO pins to use the SPI hardware function

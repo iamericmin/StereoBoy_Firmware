@@ -26,7 +26,7 @@ specific language governing permissions and limitations under the License.
 static sd_sdio_if_t sdio_if = {
     .CMD_gpio = 13,
     .D0_gpio = 14,
-    .baud_rate = 125 * 1000 * 1000 / 12  // 20833333 Hz (Safe operational speed)
+    .baud_rate = 8 * 1000000 // 8 MHz
 };
 
 /* Hardware Configuration of the SD Card socket "object" */
