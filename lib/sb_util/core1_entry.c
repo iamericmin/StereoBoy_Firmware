@@ -18,8 +18,6 @@ uint8_t marquee_album_start = 0;
 // track_info_t runtime_playing_track; 
 // track_info_t *current_track = &runtime_playing_track;
 
-int count;
-
 void set_visualizer(int num)
 {
     visualizer = num;
@@ -267,7 +265,7 @@ void core1_entry()
                 int current_abs_idx = (int)song_choice - 5 + i;
 
                 // Bounds-check each line item individually
-                if (current_abs_idx >= 0 && current_abs_idx < count) {
+                if (current_abs_idx >= 0 && current_abs_idx < track_count) {
                     // Populate index number prefix (1-indexed for the user)
                     snprintf(buf, sizeof(buf), "%d ", current_abs_idx + 1);
 

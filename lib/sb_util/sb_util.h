@@ -40,7 +40,7 @@ void sb_print_track(track_info_t *t);
 
 /* ========= Playback ========= */
 // int sb_play_track(vs1053_t *player, track_info_t *track, st7789_t *display);
-int jukebox(vs1053_t *player, uint16_t song_choice, st7789_t *display);
+int jukebox(vs1053_t *player, track_info_t *track, st7789_t *display);
 
 /* ====== Core 1 Entry  ======*/
 void dprint(char * str, ...);

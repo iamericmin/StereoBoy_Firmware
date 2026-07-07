@@ -89,23 +89,18 @@ bool selected;
     read_lwbt();
 */
 
-int jukebox(vs1053_t *player, uint16_t song_choice, st7789_t *display)
+int jukebox(vs1053_t *player, track_info_t *current_track, st7789_t *display)
 {
     printf("\n******** JUKEBOX START ********\n");
     uint64_t timestamp = get_absolute_time();
     uint64_t jukebox_init_start_time = get_absolute_time();
 
-    if (!sb_get_track_by_index(song_choice, current_track, track_window)) {
-        printf("Error reading track metadata from cache table!\n");
-    }
+    // if (!sb_get_track_by_index(song_choice, current_track, track_window)) {
+    //     printf("Error reading track metadata from cache table!\n");
+    // }
 
     printf("Fetched track window! Took %d us.\n", (int)absolute_time_diff_us(timestamp, get_absolute_time()));
     timestamp = get_absolute_time();
-
-    printf("\r\n\rNOW PLAYING:\r\n");
-    printf("  Title : %s\r\n", current_track->title);
-    printf("  Artist: %s\r\n", current_track->artist);
-    printf("  Album : %s\r\n", current_track->album);
 
     FIL fil;             // file object
     UINT br;             // pointer to number of bytes read
@@ -248,26 +243,52 @@ int jukebox(vs1053_t *player, uint16_t song_choice, st7789_t *display)
             // new **
             case 'n':
             case 'N':
-                exitType = 1;
-                vs1053_set_play_speed(player, 0); // hard pause
-                printf("\r\n Going to next song....\r\n");
-                f_close(&fil);
-                vs1053_stop(player);
-                return exitType;
-            case 'o':
-            case 'O':
-                uint8_t seconds_into_song = (f_tell(&fil) - current_track->audio_start) / (current_track->bitrate * 125);
-                if (seconds_into_song >= 5){
-                    // uint32_t audio_start = find_audio_start(&fil);
-                    f_lseek(&fil, current_track->audio_start);
+                if (visualizer == 6) {
+                    if (song_choice + 10 > track_count) {
+                        song_choice = track_count % 10;
+                    } else {
+                        song_choice += 10;
+                    }
+                    if (!sb_get_track_by_index(song_choice, current_track, track_window)) {
+                        printf("Error reading track metadata from cache table!\n");
+                    }
+                    printf("\nUp by 10! Track: %d\r\n", song_choice);
                     break;
                 } else {
-                    exitType = 2;
+                    exitType = 1;
                     vs1053_set_play_speed(player, 0); // hard pause
                     printf("\r\n Going to next song....\r\n");
                     f_close(&fil);
                     vs1053_stop(player);
                     return exitType;
+                }
+            case 'o':
+            case 'O':
+                if (visualizer == 6) { // scroll through menu without actually changing the track
+                    if (song_choice - 10 < 1) {
+                        song_choice = track_count - (track_count % 10);
+                    } else {
+                        song_choice -= 10;
+                    }
+                    if (!sb_get_track_by_index(song_choice, current_track, track_window)) {
+                        printf("Error reading track metadata from cache table!\n");
+                    }
+                    printf("\rDown by 10! Track: %d\r\n", song_choice);
+                    break;
+                } else {
+                    uint8_t seconds_into_song = (f_tell(&fil) - current_track->audio_start) / (current_track->bitrate * 125);
+                    if (seconds_into_song >= 5){
+                        // uint32_t audio_start = find_audio_start(&fil);
+                        f_lseek(&fil, current_track->audio_start);
+                        break;
+                    } else {
+                        exitType = 2;
+                        vs1053_set_play_speed(player, 0); // hard pause
+                        printf("\r\n Going to previous song....\r\n");
+                        f_close(&fil);
+                        vs1053_stop(player);
+                        return exitType;
+                    }
                 }
             case 'p':
             case 'P':
@@ -317,11 +338,14 @@ int jukebox(vs1053_t *player, uint16_t song_choice, st7789_t *display)
             case 'U':
                 if (visualizer == 6) { // scroll through menu without actually changing the track
                     if (song_choice - 1 < 1) {
-                        song_choice = count - 1;
+                        song_choice = track_count - 1;
                     } else {
                         song_choice -= 1;
                     }
-                    printf("\r\nUp pressed! Song: %d\r\n", song_choice);
+                    if (!sb_get_track_by_index(song_choice, current_track, track_window)) {
+                        printf("Error reading track metadata from cache table!\n");
+                    }
+                    printf("\r\nUp by 1! Track: %d\r\n", song_choice);
                 } else {
                     uint8_t seconds_into_song = (f_tell(&fil) - current_track->audio_start) / (current_track->bitrate * 125);
                     if (seconds_into_song >= 5){
@@ -341,12 +365,15 @@ int jukebox(vs1053_t *player, uint16_t song_choice, st7789_t *display)
             case 'd':
             case 'D':
                 if (visualizer == 6) {
-                    if (song_choice + 1 > count) {
+                    if (song_choice + 1 > track_count) {
                         song_choice = 0;
                     } else {
                         song_choice += 1;
                     }
-                    printf("\r\nDown pressed! Song: %d\r\n", song_choice);
+                    if (!sb_get_track_by_index(song_choice, current_track, track_window)) {
+                        printf("Error reading track metadata from cache table!\n");
+                    }
+                    printf("\rDown by 1! Track: %d\r\n", song_choice);
                 } else {
                     exitType = 1;
                     vs1053_set_play_speed(player, 0); // hard pause

@@ -59,7 +59,7 @@ int song_choice = 0;
 int temp_visualizer = 1;
 
 int main() {
-    set_visualizer(1);
+    set_visualizer(6);
     // Lower RP2350 core voltage to 1V
     // P = V^2 * f, so 0.1V drop results in quadratic change
     // Before: 1.1 ^ 2 * 150 = 181.5
@@ -191,6 +191,7 @@ int main() {
     bool selected = 0;
     
     song_choice = 0;
+
     current_track = &current_track_holder;
     if (!sb_get_track_by_index(song_choice, current_track, track_window)) {
         printf("Error reading track metadata from cache table!\n");
@@ -203,7 +204,7 @@ int main() {
         if (exitCode == 0) {
             // pca9685_all_off(&vu_meter);
             selected = false;
-            set_visualizer(1);
+            set_visualizer(6);
             printf("\r\nSong %d/%d: ", song_choice+1, track_count);
             prev_choice = song_choice;
             while (selected == false) {
@@ -228,21 +229,27 @@ int main() {
             }
         }
 
-        // track_info_t track_buff;
+        if (!sb_get_track_by_index(song_choice, current_track, track_window)) {
+            printf("Error reading track metadata from cache table!\n");
+        }
 
-        // Fetch strings directly from the SD card into our globally visible runtime tracking struct
-        // if (!sb_get_track_by_index(song_choice, &current_track)) {
-        //     printf("Error reading track metadata from cache table!\n");
-        //     continue; 
-        // }
+        get_mp3_metadata(current_track->filename, current_track);
 
-        // Parse metadata directly into the shared global structure
-        // get_mp3_metadata(current_track.filename, &current_track); 
+        printf("\r\n\rNOW PLAYING:\r\n");
+        printf("  Title : %s\r\n", current_track->title);
+        printf("  Artist: %s\r\n", current_track->artist);
+        printf("  Album : %s\r\n", current_track->album);
+        printf("  Bitrate : %d Kbps\r\n", current_track->bitrate);
+        printf("  Sample rate : %d Hz\r\n", current_track->samplespeed);
+        printf("  Channels : %s\r\n", current_track->channels == 1 ? "Mono" : "Stereo");
+        printf("  Header: %X\r\n", current_track->header);
+        printf("  Start: %X\r\n", current_track->audio_start);
+        printf("  Start: %X\r\n", current_track->audio_end);
 
         set_visualizer(temp_visualizer);
         
         // Pass it to the playback loop
-        exitCode = jukebox(&player, song_choice, &display);
+        exitCode = jukebox(&player, current_track, &display);
 
         // play next song
         if (exitCode == 1){
