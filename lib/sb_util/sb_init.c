@@ -302,7 +302,7 @@ void sb_hw_init(vs1053_t *player, st7789_t *display)
     mutex_init(&text_buff_mtx);
     sem_init(&text_sem, 0, 255);
 
-    sleep_ms(3000);
+    // sleep_ms(3000);
 
     // 1. Initialize the SDIO driver hardware parameters (PIO/DMA)
     bool sd_success = false;
