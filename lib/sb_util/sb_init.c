@@ -260,11 +260,11 @@ int sb_get_track_by_index(uint16_t idx, track_info_t *out_track, track_info_t *t
     UINT br; 
 
     // Open the flat index cache database file
-    if (f_open(&db_fil, "0:/.tracks", FA_READ) != FR_OK) {
-        printf("[Error] Failed to open .tracks cache file for lookup.\n");
+    if (f_open(&db_fil, "0:/.tracks.sbc", FA_READ) != FR_OK) {
+        printf("[Error] Failed to open .tracks.sbc cache file for lookup.\n");
         return 0;
     }
-    printf("+ %d us! (Opened .tracks cache file)\n", (int)absolute_time_diff_us(initial_timestamp, get_absolute_time()));
+    printf("+ %d us! (Opened .tracks.sbc cache file)\n", (int)absolute_time_diff_us(initial_timestamp, get_absolute_time()));
     initial_timestamp = get_absolute_time();
 
     // 1. Instantly pull down the full selected song metadata block in one single disk operation
@@ -325,15 +325,15 @@ int sb_load_library(void) {
     printf("Loading music indexes into RAM...\r\n");
 
     // --- LOAD ARTISTS ---
-    if (f_stat("0:/.artists", &fno) != FR_OK) {
-        printf("[Error] 0:/.artists file missing.\r\n");
+    if (f_stat("0:/.artists.sbc", &fno) != FR_OK) {
+        printf("[Error] 0:/.artists.sbc file missing.\r\n");
         return 0;
     }
     artist_count = fno.fsize / sizeof(artist_info_t);
     global_artists = (artist_info_t *)malloc(fno.fsize);
     if (global_artists == NULL) return 0;
 
-    if (f_open(&fil, "0:/.artists", FA_READ) == FR_OK) {
+    if (f_open(&fil, "0:/.artists.sbc", FA_READ) == FR_OK) {
         FRESULT res = f_read(&fil, global_artists, fno.fsize, &br);
         f_close(&fil);
         if (res != FR_OK || br != fno.fsize) {
@@ -343,8 +343,8 @@ int sb_load_library(void) {
     }
 
     // --- LOAD ALBUMS ---
-    if (f_stat("0:/.albums", &fno) != FR_OK) {
-        printf("[Error] 0:/.albums file missing.\r\n");
+    if (f_stat("0:/.albums.sbc", &fno) != FR_OK) {
+        printf("[Error] 0:/.albums.sbc file missing.\r\n");
         free(global_artists); global_artists = NULL;
         return 0;
     }
@@ -355,7 +355,7 @@ int sb_load_library(void) {
         return 0;
     }
 
-    if (f_open(&fil, "0:/.albums", FA_READ) == FR_OK) {
+    if (f_open(&fil, "0:/.albums.sbc", FA_READ) == FR_OK) {
         FRESULT res = f_read(&fil, global_albums, fno.fsize, &br);
         f_close(&fil);
         if (res != FR_OK || br != fno.fsize) {
@@ -365,8 +365,8 @@ int sb_load_library(void) {
     }
 
     // --- LOAD TRACKS ---
-    if (f_stat("0:/.tracks", &fno) != FR_OK) {
-        printf("[Error] 0:/.tracks file missing.\r\n");
+    if (f_stat("0:/.tracks.sbc", &fno) != FR_OK) {
+        printf("[Error] 0:/.tracks.sbc file missing.\r\n");
         return 0;
     }
     track_count = fno.fsize / sizeof(track_info_t);
