@@ -124,6 +124,9 @@ typedef struct __attribute__((packed)) {
 extern artist_info_t *global_artists;
 extern album_info_t  *global_albums;
 
+// read-only cache file that contains every track's metadata
+extern FIL tracks_cache_file;
+
 // Global counts for UI loop boundaries
 extern uint16_t artist_count;
 extern uint16_t album_count;

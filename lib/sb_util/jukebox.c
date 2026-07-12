@@ -95,7 +95,7 @@ int jukebox(vs1053_t *player, track_info_t *current_track, st7789_t *display)
     uint64_t timestamp = get_absolute_time();
     uint64_t jukebox_init_start_time = get_absolute_time();
 
-    // if (!sb_get_track_by_index(song_choice, current_track, track_window)) {
+    // if (!sb_get_track_window_fast(song_choice, current_track, track_window)) {
     //     printf("Error reading track metadata from cache table!\n");
     // }
 
@@ -249,7 +249,7 @@ int jukebox(vs1053_t *player, track_info_t *current_track, st7789_t *display)
                     } else {
                         song_choice += 10;
                     }
-                    if (!sb_get_track_by_index(song_choice, current_track, track_window)) {
+                    if (!sb_get_track_window_fast(song_choice, current_track, track_window)) {
                         printf("Error reading track metadata from cache table!\n");
                     }
                     printf("\nUp by 10! Track: %d\r\n", song_choice);
@@ -270,7 +270,7 @@ int jukebox(vs1053_t *player, track_info_t *current_track, st7789_t *display)
                     } else {
                         song_choice -= 10;
                     }
-                    if (!sb_get_track_by_index(song_choice, current_track, track_window)) {
+                    if (!sb_get_track_window_fast(song_choice, current_track, track_window)) {
                         printf("Error reading track metadata from cache table!\n");
                     }
                     printf("\rDown by 10! Track: %d\r\n", song_choice);
@@ -342,7 +342,7 @@ int jukebox(vs1053_t *player, track_info_t *current_track, st7789_t *display)
                     } else {
                         song_choice -= 1;
                     }
-                    if (!sb_get_track_by_index(song_choice, current_track, track_window)) {
+                    if (!sb_get_track_window_fast(song_choice, current_track, track_window)) {
                         printf("Error reading track metadata from cache table!\n");
                     }
                     printf("\r\nUp by 1! Track: %d\r\n", song_choice);
@@ -370,7 +370,7 @@ int jukebox(vs1053_t *player, track_info_t *current_track, st7789_t *display)
                     } else {
                         song_choice += 1;
                     }
-                    if (!sb_get_track_by_index(song_choice, current_track, track_window)) {
+                    if (!sb_get_track_window_fast(song_choice, current_track, track_window)) {
                         printf("Error reading track metadata from cache table!\n");
                     }
                     printf("\rDown by 1! Track: %d\r\n", song_choice);

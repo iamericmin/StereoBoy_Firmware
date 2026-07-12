@@ -94,8 +94,7 @@ void pca9685_set_pin(pca9685_t *dev, uint8_t channel, uint16_t value) {
 }
 
 bool pca9685_checkSleep(pca9685_t *dev) {
-    uint8_t sleepModeQuestionMark = read8(&vu_meter, 0x00) & 0x10; // check MODE1 bit 4
-    return sleepModeQuestionMark;
+    return (read8(dev, MODE1) & MODE1_SLEEP) != 0;
 }
 
 void pca9685_sleep(pca9685_t *dev) {
@@ -104,25 +103,22 @@ void pca9685_sleep(pca9685_t *dev) {
 }
 
 void pca9685_wakeup(pca9685_t *dev) {
-
-    // 2. Set MODE2: Open-Drain (0) and Inverted Polarity (1)
-    // This makes 4095 = LED Full Bright for cathode-wired setups
+    uint8_t mode1 = read8(dev, MODE1);
+    
+    // 1. Wake up by clearing the SLEEP bit
+    mode1 &= ~MODE1_SLEEP;
+    write8(dev, MODE1, mode1);
+    sleep_ms(5); // Wait for the oscillator to stabilize
+    
+    // 2. Properly handle the PCA9685 Restart sequence if RESTART was set
+    if (mode1 & MODE1_RESTART) {
+        write8(dev, MODE1, mode1 | MODE1_RESTART | MODE1_AI);
+    } else {
+        write8(dev, MODE1, mode1 | MODE1_AI);
+    }
+    
+    // 3. Re-enforce your desired driver layout
     write8(dev, MODE2, MODE2_INVRT);
-
-    // 3. Set PWM frequency
-    pca9685_set_pwm_freq(dev, 1000);
-
-    // 4. Wake up and enable Auto-Increment
-    write8(dev, MODE1, MODE1_AI);
-    sleep_ms(5);
-
-    // 5. Clear restart bit
-    write8(dev, MODE1, MODE1_AI | MODE1_RESTART);
-
-    uint8_t mode = read8(dev, MODE1);
-    write8(dev, MODE1, mode & ~MODE1_SLEEP);
-    sleep_ms(1);
-    write8(dev, MODE1, (mode & ~MODE1_SLEEP) | MODE1_RESTART);
 }
 
 void pca9685_toggleSleep(pca9685_t *dev) {
@@ -204,13 +200,8 @@ void pca9685_all_off(pca9685_t *dev) {
     peak_l = 0.0f;
     peak_r = 0.0f;
 
-    // Use the ALL_LED registers to force everything off in one I2C transaction
-    uint8_t buf[5] = {
-        ALL_LED_ON_L,
-        0x00, 
-        0x00, 
-        0x00, 
-        0x10  // Bit 4 of OFF_H = Full OFF
-    };
+    // Safe alternative: sets ALL channels to 0-count duration, 
+    // avoiding the problematic Full-OFF bit inversion.
+    uint8_t buf[5] = { ALL_LED_ON_L, 0, 0, 0, 0 };
     i2c_write_blocking(dev->i2c, dev->addr, buf, 5, false);
 }

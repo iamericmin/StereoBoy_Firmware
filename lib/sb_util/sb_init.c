@@ -245,7 +245,44 @@ int sb_get_raw_tracks(char raw_tracks[][256], int max_tracks) {
     return count;
 }
 
-int sb_get_track_by_index(uint16_t idx, track_info_t *out_track, track_info_t *track_window) {
+int sb_get_track_window_fast(uint16_t idx, track_info_t *out_track, track_info_t *track_window) {
+    uint64_t func_start_timestamp = get_absolute_time();
+    printf("Track fetch process started (using open cache)!\n");
+    uint64_t initial_timestamp = get_absolute_time();
+    UINT br; 
+
+    // Calculate sliding window start index (Target: current track at window index 5)
+    uint16_t start_idx = (idx < 5) ? 0 : idx - 5;
+    UINT bytes_to_read = 10 * sizeof(track_info_t);
+
+    // Seek using the global file handle g_cache_file
+    if (f_lseek(&tracks_cache_file, (DWORD)(start_idx * sizeof(track_info_t))) != FR_OK) {
+        printf("[Error] Global file seek failed.\n");
+        return 0;
+    }
+    printf("+ %d us! (Seeked to target cache position)\n", (int)absolute_time_diff_us(initial_timestamp, get_absolute_time()));
+    initial_timestamp = get_absolute_time();
+
+    // Read using the global file handle g_cache_file
+    if (f_read(&tracks_cache_file, track_window, bytes_to_read, &br) != FR_OK || br < bytes_to_read) {
+        printf("[Error] Global file read failed or reached unexpected EOF.\n");
+        memset(track_window, 0, bytes_to_read); 
+        return 0;
+    }
+
+    // Extract the specific track profile from the populated window
+    if (idx < 5) {
+        *out_track = track_window[idx];
+    } else {
+        *out_track = track_window[5];
+    }
+
+    printf("+ %d us! (Populated scrolling tracks window array)\n", (int)absolute_time_diff_us(initial_timestamp, get_absolute_time()));
+    printf("Fast window op took %d us\n", (int)absolute_time_diff_us(func_start_timestamp, get_absolute_time()));
+    return 1;
+}
+
+int sb_get_track_window(uint16_t idx, track_info_t *out_track, track_info_t *track_window) {
     uint64_t func_start_timestamp = get_absolute_time();
     printf("Track fetch process started!\n");
     uint64_t initial_timestamp = get_absolute_time();
@@ -289,7 +326,7 @@ int sb_get_track_by_index(uint16_t idx, track_info_t *out_track, track_info_t *t
 
     f_close(&db_fil);
     printf("+ %d us! (Populated scrolling tracks window array)\n", (int)absolute_time_diff_us(initial_timestamp, get_absolute_time()));
-    printf("Total operation took %d us\n", (int)absolute_time_diff_us(func_start_timestamp, get_absolute_time()));
+    printf("Slow window op took %d us\n", (int)absolute_time_diff_us(func_start_timestamp, get_absolute_time()));
     return 1;
 }
 
@@ -444,12 +481,17 @@ int sb_load_library(void) {
     return 1;
 }
 
+// opens .tracks.sbc and returns a 
+FRESULT sb_load_tracks_cache() {
+    return f_open(&tracks_cache_file, "0:/.tracks.sbc", FA_READ);
+}
+
 void sb_hw_init(vs1053_t *player, st7789_t *display)
 {
     mutex_init(&text_buff_mtx);
     sem_init(&text_sem, 0, 255);
 
-    sleep_ms(2000);
+    // sleep_ms(2000);
 
     // 1. Initialize the SDIO driver hardware parameters (PIO/DMA)
     bool sd_success = false;

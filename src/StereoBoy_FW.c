@@ -51,6 +51,10 @@ folder_info_t folders[MAX_FOLDERS];
 track_info_t *current_track = NULL;
 track_info_t current_track_holder;
 
+// file that contains all tracks' metadata
+// VERY IMPORTANT
+FIL tracks_cache_file;
+
 char folder_names[20][64];
 int folder_file_counts[20];
 
@@ -101,6 +105,7 @@ int main() {
 
     // Load your main relational pointers into RAM first
     sb_load_library();
+    sb_load_tracks_cache();
 
     printf("%d Artists\n", artist_count);
     printf("%d Albums\n", album_count);
@@ -113,7 +118,7 @@ int main() {
     song_choice = 0;
 
     current_track = &current_track_holder;
-    if (!sb_get_track_by_index(song_choice, current_track, track_window)) {
+    if (!sb_get_track_window_fast(song_choice, current_track, track_window)) {
         printf("Error reading track metadata from cache table!\n");
     }
     
@@ -139,7 +144,7 @@ int main() {
                         selected = true;   
                         printf("Poo cum fart shit pee\n");
                     }       
-                    sb_get_track_by_index(song_choice, current_track, track_window);
+                    sb_get_track_window_fast(song_choice, current_track, track_window);
                 }
                 if (prev_choice != song_choice){
                     printf("\r\nSong %d/%d: ", song_choice+1, track_count);
@@ -150,7 +155,7 @@ int main() {
             }
         }
 
-        if (!sb_get_track_by_index(song_choice, current_track, track_window)) {
+        if (!sb_get_track_window_fast(song_choice, current_track, track_window)) {
             printf("Error reading track metadata from cache table!\n");
         }
 

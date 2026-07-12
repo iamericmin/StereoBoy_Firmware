@@ -122,6 +122,7 @@ void core1_entry()
             break;
         case 1: // Oscilloscope
             update_scope_core1();
+            // st7789_draw_string(1, 200, current_track->title, WHITE);
             break;
 
         // case 2: // FFT
@@ -600,44 +601,9 @@ void addIcons(uint16_t* frame_buffer, bool enabled){
                 }
             }
         }
-
-        //eq Icons
-        for (int i = 0; i < 6; i++){
-            float eqGain = dac_eq_get_gain(i);
-            
-            // Map the gain to pixel height
-            int pixel_height = (int)((eqGain / MAX_GAIN_DB) * 20.0f);
-
-            // Determine vertical start and end points based on positive/negative gain
-            int y_start, y_end;
-
-            if (pixel_height >= 0)
-            {
-                // Positive gain: bar goes UP from center (subtracting from Y)
-                y_start = CENTER_Y - pixel_height;
-                y_end = CENTER_Y;
-            }
-            else
-            {
-                // Negative gain: bar goes DOWN from center (adding to Y)
-                y_start = CENTER_Y;
-                y_end = CENTER_Y - pixel_height; // pixel_height is negative, so subtracting it ADDS to Y
-            }
-
-            // Determine horizontal bounds for this specific bar
-            int x_start = MARGIN_LEFT + i * (BAR_WIDTH + GAP_PX);
-            int x_end = x_start + BAR_WIDTH;
-
-            // 3. Draw the white block directly into the frame buffer
-            for (int y = y_start; y <= y_end; y++)
-            {
-                for (int x = x_start; x < x_end; x++)
-                {
-                    // Assuming WHITE is defined as 0xFFFF
-                    if (get_selected_band() == i) frame_buffer[y * SCREEN_WIDTH + x] = 0x001F;
-                    else frame_buffer[y * SCREEN_WIDTH + x] = 0xFFFF; 
-                }
-            }
-        }
+        // track info
+        // TODO: keep song info intact even while user scrolls through menu
+        char *current_title = current_track->title;
+        st7789_draw_string(60, 1, current_title, WHITE);
     }
 }
