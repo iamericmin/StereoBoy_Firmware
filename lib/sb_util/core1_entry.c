@@ -185,6 +185,9 @@ void core1_entry()
             process_audio_batch();
             clear_framebuffer();
             start =  (song_choice < 6) ? 0 : song_choice - 5;
+            if (track_count >= 10 && start > track_count - 10) {
+                start = track_count - 10;
+            }
             track_info_t *track;
             track_info_t *selected_track;
             // selected_track = (song_choice <= 5) ? &track_window[song_choice] : &track_window[5];

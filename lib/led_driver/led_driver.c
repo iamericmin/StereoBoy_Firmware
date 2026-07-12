@@ -19,8 +19,8 @@
 #define MODE1_SLEEP   0x10
 
 /* MODE2 Bits */
-#define MODE2_INVRT   0x10  // 0 = Normal, 1 = Inverted logic
-#define MODE2_OUTDRV  0x04  // 0 = Open-Drain, 1 = Totem-Pole (Push-Pull)
+#define MODE2_INVRT   0x10  // Invert logic: 1 = High duty cycle is Sink (GND)
+#define MODE2_OUTDRV  0x04  // 0 = Open-Drain, 1 = Totem-Pole
 
 #define MAX_BRIGHTNESS 4095
 #define DESIRED_BRIGHTNESS 32
@@ -45,9 +45,9 @@ bool pca9685_init(pca9685_t *dev, i2c_inst_t *i2c, uint8_t addr) {
     // 1. Enter sleep to allow configuration
     pca9685_sleep(dev);
 
-    // 2. Set MODE2: Totem-Pole (0x04) and Non-Inverted (0x00)
-    // This allows the PCA9685 to source current directly to your LED anodes.
-    write8(dev, MODE2, MODE2_OUTDRV);
+    // 2. Set MODE2: Open-Drain (0) and Inverted Polarity (1)
+    // This makes 4095 = LED Full Bright for cathode-wired setups
+    write8(dev, MODE2, MODE2_INVRT);
 
     // 3. Set PWM frequency
     pca9685_set_pwm_freq(dev, 1000);
@@ -76,8 +76,7 @@ void pca9685_set_pwm(pca9685_t *dev, uint8_t channel, uint16_t on, uint16_t off)
 
 /**
  * Sets brightness from 0 to 4095. 
- * Hardware is configured for Totem-Pole/Non-Inverted:
- * 0 = Full OFF, 4095 = Full ON (Sourcing V+)
+ * Hardware INVRT handles the cathode logic.
  */
 void pca9685_set_pin(pca9685_t *dev, uint8_t channel, uint16_t value) {
     if (value > 4095) value = 4095;
@@ -89,7 +88,7 @@ void pca9685_set_pin(pca9685_t *dev, uint8_t channel, uint16_t value) {
         // Special Case: Full OFF (Bit 4 of OFF_H)
         pca9685_set_pwm(dev, channel, 0, 0x1000);
     } else {
-        // Standard PWM: Signal goes HIGH at 0 and LOW at 'value'
+        // Standard PWM: We pulse from time 0 to 'value'
         pca9685_set_pwm(dev, channel, 0, value);
     }
 }
@@ -100,26 +99,29 @@ bool pca9685_checkSleep(pca9685_t *dev) {
 
 void pca9685_sleep(pca9685_t *dev) {
     uint8_t mode1 = read8(dev, MODE1);
-    write8(dev, MODE1, mode1 | MODE1_SLEEP);
+    write8(dev, MODE1, mode1 | (1 << 4));
 }
 
 void pca9685_wakeup(pca9685_t *dev) {
-    uint8_t mode1 = read8(dev, MODE1);
-    
-    // 1. Wake up by clearing the SLEEP bit
-    mode1 &= ~MODE1_SLEEP;
-    write8(dev, MODE1, mode1);
-    sleep_ms(5); // Wait for the oscillator to stabilize
-    
-    // 2. Properly handle the PCA9685 Restart sequence if RESTART was set
-    if (mode1 & MODE1_RESTART) {
-        write8(dev, MODE1, mode1 | MODE1_RESTART | MODE1_AI);
-    } else {
-        write8(dev, MODE1, mode1 | MODE1_AI);
-    }
-    
-    // 3. Re-enforce your Totem-Pole driver layout
-    write8(dev, MODE2, MODE2_OUTDRV);
+
+    // 2. Set MODE2: Open-Drain (0) and Inverted Polarity (1)
+    // This makes 4095 = LED Full Bright for cathode-wired setups
+    write8(dev, MODE2, MODE2_INVRT);
+
+    // 3. Set PWM frequency
+    pca9685_set_pwm_freq(dev, 1000);
+
+    // 4. Wake up and enable Auto-Increment
+    write8(dev, MODE1, MODE1_AI);
+    sleep_ms(5);
+
+    // 5. Clear restart bit
+    write8(dev, MODE1, MODE1_AI | MODE1_RESTART);
+
+    uint8_t mode = read8(dev, MODE1);
+    write8(dev, MODE1, mode & ~MODE1_SLEEP);
+    sleep_ms(1);
+    write8(dev, MODE1, (mode & ~MODE1_SLEEP) | MODE1_RESTART);
 }
 
 void pca9685_toggleSleep(pca9685_t *dev) {
@@ -130,6 +132,7 @@ void pca9685_toggleSleep(pca9685_t *dev) {
     }
 }
 
+// ... (pca9685_set_pwm_freq remains the same) ...
 void pca9685_set_pwm_freq(pca9685_t *dev, float freq) {
     if (freq < 1) freq = 1;
     if (freq > 3500) freq = 3500;
@@ -200,8 +203,13 @@ void pca9685_all_off(pca9685_t *dev) {
     peak_l = 0.0f;
     peak_r = 0.0f;
 
-    // Sets ALL channels to a 0-count duration.
-    // In Totem-Pole / Non-Inverted mode, this completely shuts off all pins.
-    uint8_t buf[5] = { ALL_LED_ON_L, 0, 0, 0, 0 };
+    // Use the ALL_LED registers to force everything off in one I2C transaction
+    uint8_t buf[5] = {
+        ALL_LED_ON_L,
+        0x00, 
+        0x00, 
+        0x00, 
+        0x10  // Bit 4 of OFF_H = Full OFF
+    };
     i2c_write_blocking(dev->i2c, dev->addr, buf, 5, false);
 }

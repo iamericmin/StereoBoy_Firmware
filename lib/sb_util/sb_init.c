@@ -299,6 +299,12 @@ int sb_get_track_window(uint16_t idx, track_info_t *out_track, track_info_t *tra
 
     // Calculate sliding window start index (Target: current track at window index 5)
     uint16_t start_idx = (idx < 5) ? 0 : idx - 5;
+    
+    // NEW: Prevent the window from reading past the end of the file
+    if (track_count >= 10 && start_idx > track_count - 10) {
+        start_idx = track_count - 10;
+    }
+
     UINT bytes_to_read = 10 * sizeof(track_info_t);
 
     // Seek to the calculated start position in the file
