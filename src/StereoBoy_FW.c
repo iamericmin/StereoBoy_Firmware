@@ -219,6 +219,7 @@ int main() {
                         selected = true;   
                         printf("Poo cum fart shit pee\n");
                     }       
+                    sb_get_track_by_index(song_choice, current_track, track_window);
                 }
                 if (prev_choice != song_choice){
                     printf("\r\nSong %d/%d: ", song_choice+1, track_count);

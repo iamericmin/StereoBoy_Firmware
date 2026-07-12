@@ -183,121 +183,229 @@ void core1_entry()
         case 6:
             process_audio_batch();
             clear_framebuffer();
-            
-            // FIX: The active song is always pinned to the middle row, which is index 5 in our cache layout
-            track_info_t *selected_track = &track_window[5]; 
-            
-            static char buf[256];          // Render row string buffer
-            static char marquee_title[32];  // Safe isolated scroll windows
-            static char marquee_artist[32];
-            static char marquee_album[32];
-            
+            start =  (song_choice < 6) ? 0 : song_choice - 5;
+            track_info_t *track;
+            track_info_t *selected_track;
+            // selected_track = (song_choice <= 5) ? &track_window[song_choice] : &track_window[5];
+            uint16_t selected_slot = song_choice - start;
+            selected_track = &track_window[selected_slot];
+            static char buf[256]; // buffer for string to write to display
+            static char marquee_title[32]; // buffer for scrolling title marquee
+            static char md_artist[128]; // artist metadata of currently selected track
+            static char md_album[128]; // album metadata of currently selected track
+            static char marquee_artist[32]; // buffer for scrolling album marquee
+            static char marquee_album[32]; // // buffer for scrolling album marquee
             uint16_t marquee_delay = 1000;
+
             static uint32_t marquee_delay_start_ms = 0;
             static int last_song_choice = -1;
 
-            // Handle track change state resets
+            for (int i = 0; i<10; i++) {
+                if (start + i >= track_count) {
+                    break;
+                }
+                track = &track_window[i];
+                sprintf(buf, "%d", start+i+1); // Index at 1 for users
+                strcat(buf, " ");
+                if (start + i == song_choice) {
+                    strcat(buf, marquee_title);
+                    st7789_draw_string(1, 0 + i * font_height, buf, HIGHLIGHT_COLOR_SECONDARY);
+                } else {
+                    strcat(buf, track->title);
+                    st7789_draw_string(1, 0 + i * font_height, buf, WHITE);
+                }
+            }
+
             if (song_choice != last_song_choice) {
                 marquee_title_start = 0;
                 marquee_artist_start = 0;
                 marquee_album_start = 0;
+
                 marquee_delay_start_ms = to_ms_since_boot(get_absolute_time());
+
                 last_song_choice = song_choice;
             }
 
-            /* ─── MARQUEE TIME ENGINE (UNTOUCHED) ─── */
+            /* ##### MARQUEE BLOCK - WRITTEN BY ERIC ##### */
+
+            // 'static' ensures this variable survives between function calls
             static uint32_t last_marquee_update_ms = 0;
+            // Get the current time since the chip started
             uint32_t current_time_ms = to_ms_since_boot(get_absolute_time());
 
+            // crude counter to update marquee
+            // Here, we update the window values for all three marquees every 100 milliseconds.
             if (current_time_ms - last_marquee_update_ms >= 100) {
-                if (current_time_ms - marquee_delay_start_ms >= marquee_delay) {
-                    if (strlen(selected_track->title) > 18) {
-                        marquee_title_start++;
-                        if (marquee_title_start > strlen(selected_track->title) + 6) marquee_title_start = 0;
-                    } else { marquee_title_start = 0; }
-
-                    if (strlen(selected_track->artist) > 20) {
-                        marquee_artist_start++;
-                        if (marquee_artist_start > strlen(selected_track->artist) + 8) marquee_artist_start = 0;
-                    } else { marquee_artist_start = 0; }
+                if (current_time_ms - marquee_delay_start_ms < marquee_delay) {
+                    last_marquee_update_ms = current_time_ms;
+                } else { if (strlen(selected_track->artist) > 20) {
+                        // only apply marquee effect if album name is greater than window
+                        marquee_artist_start++; // increment marquee pointer
+                        if (marquee_artist_start > strlen(selected_track->artist) + 8) {  // set limit to virtual length of 28 (window size + number of spaces)
+                            marquee_artist_start = 0; // reset only when marquee pointer goes over virtual length
+                        }
+                    } else {
+                        marquee_artist_start = 0;
+                    }
 
                     if (strlen(selected_track->album) > 20) {
-                        marquee_album_start++;
-                        if (marquee_album_start > strlen(selected_track->album) + 8) marquee_album_start = 0;
-                    } else { marquee_album_start = 0; }
+                        // only apply marquee effect if album name is greater than window
+                        marquee_album_start++; // increment marquee pointer
+                        if (marquee_album_start > strlen(selected_track->album) + 8) {  // set limit to virtual length of 28 (window size + number of spaces)
+                            marquee_album_start = 0; // reset only when marquee pointer goes over virtual length
+                        }
+                    } else {
+                        marquee_album_start = 0;
+                    }
+
+                    if (strlen(selected_track->title) > 18) {
+                        // only apply marquee effect if album name is greater than window
+                        marquee_title_start++; // increment marquee pointer
+                        if (marquee_title_start > strlen(selected_track->title) + 6) {  // set limit to virtual length of 28 (window size + number of spaces)
+                            marquee_title_start = 0; // reset only when marquee pointer goes over virtual length
+                        }
+                    } else {
+                        marquee_title_start = 0;
+                    }
+
+                    last_marquee_update_ms = current_time_ms;
                 }
-                last_marquee_update_ms = current_time_ms;
             }
 
-            /* ─── VIRTUAL MARQUEE GENERATION (UNTOUCHED) ─── */
-            uint8_t titleLen  = strlen(selected_track->title);
+     
+            // Now that we've updated the marquee windows, splice the strings together for smooth scrolling
+            uint8_t albumLen = strlen(selected_track->album);
             uint8_t artistLen = strlen(selected_track->artist);
-            uint8_t albumLen  = strlen(selected_track->album);
+            uint8_t titleLen = strlen(selected_track->title);
+            uint8_t window = 20;
+            uint8_t gap = 8;
+            uint8_t virtualWindow = 28;
 
             if (titleLen > 18) {
-                for (int m = 0; m < 18; m++) {
-                    uint32_t virt_idx = (marquee_title_start + m) % (titleLen + 6);
-                    marquee_title[m] = (virt_idx < titleLen) ? selected_track->title[virt_idx] : ' ';
-                }
-                marquee_title[18] = '\0';
-            } else { snprintf(marquee_title, 19, "%s", selected_track->title); }
-
-            if (artistLen > 20) {
-                for (int m = 0; m < 20; m++) {
-                    uint32_t virt_idx = (marquee_artist_start + m) % (artistLen + 8);
-                    marquee_artist[m] = (virt_idx < artistLen) ? selected_track->artist[virt_idx] : ' ';
-                }
-                marquee_artist[20] = '\0';
-            } else { snprintf(marquee_artist, 21, "%s", selected_track->artist); }
-
-            if (albumLen > 20) {
-                for (int m = 0; m < 20; m++) {
-                    uint32_t virt_idx = (marquee_album_start + m) % (albumLen + 8);
-                    marquee_album[m] = (virt_idx < albumLen) ? selected_track->album[virt_idx] : ' ';
-                }
-                marquee_album[20] = '\0';
-            } else { snprintf(marquee_album, 21, "%s", selected_track->album); }
-
-            /* ─── LOCK-TO-CENTER LIST RENDER PANEL ─── */
-            // Loop exactly 10 times to draw our rows (5 above, 1 selected, 4 below)
-            for (int i = 0; i < 10; i++) {
-                // Calculate the real absolute global index for the current row line
-                int current_abs_idx = (int)song_choice - 5 + i;
-
-                // Bounds-check each line item individually
-                if (current_abs_idx >= 0 && current_abs_idx < track_count) {
-                    // Populate index number prefix (1-indexed for the user)
-                    snprintf(buf, sizeof(buf), "%d ", current_abs_idx + 1);
-
-                    // Row index 5 is always the exact vertical center line
-                    if (i == 5) {
-                        strncat(buf, marquee_title, sizeof(buf) - strlen(buf) - 1);
-                        st7789_draw_string(1, 0 + i * font_height, buf, HIGHLIGHT_COLOR_SECONDARY);
-                    } 
-                    else {
-                        // The track window maps directly to screen line index 'i'
-                        strncat(buf, track_window[i].title, sizeof(buf) - strlen(buf) - 1);
-                        st7789_draw_string(1, 0 + i * font_height, buf, WHITE);
+                if (titleLen - marquee_title_start >= 18) {
+                    memcpy(marquee_title, selected_track->title + marquee_title_start, 18);
+                } else if (titleLen - marquee_title_start > 0) {
+                    memcpy(marquee_title, selected_track->title + marquee_title_start, titleLen - marquee_title_start);
+                    uint8_t numSpaces = 6;
+                    if ((titleLen - marquee_title_start) + numSpaces > 18) {
+                        numSpaces = 18 - (titleLen - marquee_title_start);
                     }
-                } 
-                else {
-                    // If the current row falls out of playlist limits (e.g. tracks before track #1),
-                    // render an empty line string so old text buffer data doesn't pool on screen.
-                    st7789_draw_string(1, 0 + i * font_height, " ", WHITE);
+                    for (int i=0; i<numSpaces; i++) {
+                        marquee_title[titleLen - marquee_title_start + i] = ' ';
+                    }
+                    memcpy(marquee_title + (titleLen - marquee_title_start) + numSpaces, selected_track-> title, 18 - ((titleLen - marquee_title_start) + numSpaces));
+                } else {
+                    int numSpaces = 6 - (marquee_title_start - titleLen);
+                    if (numSpaces < 0) numSpaces = 0;
+                    if (numSpaces > window) numSpaces = 18;
+                    for (int i = 0; i < numSpaces; i++) {
+                        marquee_title[i] = ' ';
+                    }
+                    memcpy(marquee_title + numSpaces,
+                        selected_track->title,
+                        18 - numSpaces);
+                    marquee_title[18] = '\0';
                 }
+            } else {
+                memcpy(marquee_title, selected_track->title, 18);
             }
 
-            // Render bottom metadata sub-panels
-            st7789_draw_string(1, -2 + 10 * font_height, marquee_artist, HIGHLIGHT_COLOR_PRIMARY);
-            st7789_draw_string(1, -2 + 11 * font_height, marquee_album, HIGHLIGHT_COLOR_PRIMARY);
+            if (albumLen > 20) {
+                if (albumLen - marquee_album_start >= window) {
+                    // if there are more characters left than the marquee window, continue as necessary
+                    memcpy(marquee_album, selected_track->album + marquee_album_start, 20);
+                } else if (albumLen - marquee_album_start > 0) {
+                    // if there are less characters than the window size, splice string into two
+                    // whatever's left, plus some spaces, then the start of the string
 
-            // Blit frame buffer contents to display
+                    // Whatever's left at the end of string
+                    memcpy(marquee_album, selected_track->album + marquee_album_start, albumLen - marquee_album_start);
+
+                    // Now, tack on eight spaces
+                    uint8_t numSpaces = gap;
+                    if ((albumLen - marquee_album_start) + numSpaces > window) {
+                        numSpaces = window - (albumLen - marquee_album_start);
+                    }
+                    for (int i=0; i<numSpaces; i++) {
+                        marquee_album[albumLen - marquee_album_start + i] = ' ';
+                    }
+
+                    // Now, tack on however many characters we can from the beginning of string
+                    memcpy(marquee_album + (albumLen - marquee_album_start) + numSpaces, selected_track-> album, window - ((albumLen - marquee_album_start) + numSpaces));
+                } else {
+                    // Now, all text of the marquee has passed. All that remains are 8 spaces and the begnning of the text tacked behind.
+                    // So we decrement the number of spaces in the front, and drag in the beginning of the marquee text.
+                    // To do this, we need a counter to track the spaces. We will use the marquee pointer for this.
+                    // At this point, the marquee pointer is 20 to 27. I think.
+
+                    // uint8_t numSpaces = (20 + 8) - marquee_album_start; // this way, we get 8 to 1 spaces
+                    uint8_t numSpaces = gap - (marquee_album_start - albumLen);
+
+                    if (numSpaces > window) numSpaces = window;
+
+                    // Fill leading spaces
+                    for (int i = 0; i < numSpaces; i++) {
+                        marquee_album[i] = ' ';
+                    }
+
+                    // Fill remaining with album text
+                    memcpy(marquee_album + numSpaces,
+                        selected_track->album,
+                        window - numSpaces);
+
+                    marquee_album[window] = '\0';
+                }
+            } else {
+                memcpy(marquee_album, selected_track->album, 20);
+            }
+
+            if (artistLen > 20) {
+                if (artistLen - marquee_artist_start >= window) {
+                    // if there are more characters left than the marquee window, continue as necessary
+                    memcpy(marquee_artist, selected_track->artist + marquee_artist_start, 20);
+                } else if (artistLen - marquee_artist_start > 0) {
+                    // if there are less characters than the window size, splice string into two
+                    // whatever's left, plus some spaces, then the start of the string
+
+                    // Whatever's left at the end of string
+                    memcpy(marquee_artist, selected_track->artist + marquee_artist_start, artistLen - marquee_artist_start);
+
+                    // Now, tack on eight spaces
+                    uint8_t numSpaces = gap;
+                    if ((artistLen - marquee_artist_start) + numSpaces > window) {
+                        numSpaces = window - (artistLen - marquee_artist_start);
+                    }
+                    for (int i=0; i<numSpaces; i++) {
+                        marquee_artist[artistLen - marquee_artist_start + i] = ' ';
+                    }
+
+                    // Now, tack on however many characters we can from the beginning of string
+                    memcpy(marquee_artist + (artistLen - marquee_artist_start) + numSpaces, selected_track-> artist, window - ((artistLen - marquee_artist_start) + numSpaces));
+                } else {
+                    uint8_t numSpaces = gap - (marquee_artist_start - artistLen);
+                    if (numSpaces > window) numSpaces = window;
+                    for (int i = 0; i < numSpaces; i++) {
+                        marquee_artist[i] = ' ';
+                    }
+                    memcpy(marquee_artist + numSpaces,
+                        selected_track->artist,
+                        window - numSpaces);
+                    marquee_artist[window] = '\0';
+                }
+            } else {
+                memcpy(marquee_artist, selected_track->artist, 20);
+            }
+
+            sprintf(md_artist, "%s", marquee_artist);
+            sprintf(md_album, "%s", marquee_album);
+            st7789_draw_string(1, -2 + 10 * font_height, md_artist, HIGHLIGHT_COLOR_PRIMARY);
+            st7789_draw_string(1, -2 + 11 * font_height, md_album, HIGHLIGHT_COLOR_PRIMARY);
+
             st7789_set_cursor(0, 0);
             st7789_ramwr();
             spi_set_format(spi0, 16, SPI_CPOL_0, SPI_CPHA_0, SPI_MSB_FIRST);
             spi_write16_blocking(spi0, frame_buffer, 240 * 240);
             break;
-
         case 7:
             clear_framebuffer();
 

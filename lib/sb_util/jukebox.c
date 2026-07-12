@@ -26,7 +26,7 @@ uint16_t *ff_rew_status = empty_icon;
 int progress_bar = 0;
 int prev_progress_bar = 0;
 
-track_info_t track_window[11];
+track_info_t track_window[10];
 
 /*******************visualizations not scope*******************/
 #define HISTORY_SIZE 256

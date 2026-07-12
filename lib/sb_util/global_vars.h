@@ -106,7 +106,7 @@ typedef struct __attribute__((packed)) {
     char filename[128]; // Added to match the new 512-byte compiled cache line
 } track_cache_t;
 
-extern track_info_t track_window[11];
+extern track_info_t track_window[10];
 
 typedef struct __attribute__((packed)) {
     char artist_name[128];

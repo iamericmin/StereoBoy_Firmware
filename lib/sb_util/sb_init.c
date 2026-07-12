@@ -245,14 +245,6 @@ int sb_get_raw_tracks(char raw_tracks[][256], int max_tracks) {
     return count;
 }
 
-/**
- * @brief Seeks the cache file on disk and extracts a specific track profile.
- * Directly populates the full technical struct with zero processing overhead.
- * @param idx The cache index to fetch the song from
- * @param out_track Pointer to the track container used by your jukebox.
- * @param track_window Pointer to an array of 11 track structures forming a UI slider layout window.
- * @return int 1 on success, 0 on disk read failure.
- */
 int sb_get_track_by_index(uint16_t idx, track_info_t *out_track, track_info_t *track_window) {
     printf("Track fetch process started!\n");
     uint64_t initial_timestamp = get_absolute_time();
@@ -267,35 +259,31 @@ int sb_get_track_by_index(uint16_t idx, track_info_t *out_track, track_info_t *t
     printf("+ %d us! (Opened .tracks.sbc cache file)\n", (int)absolute_time_diff_us(initial_timestamp, get_absolute_time()));
     initial_timestamp = get_absolute_time();
 
-    // 1. Instantly pull down the full selected song metadata block in one single disk operation
-    uint32_t byte_offset = (uint32_t)idx * sizeof(track_info_t);
-    f_lseek(&db_fil, byte_offset);
+    // Calculate sliding window start index (Target: current track at window index 5)
+    uint16_t start_idx = (idx < 5) ? 0 : idx - 5;
+    UINT bytes_to_read = 10 * sizeof(track_info_t);
 
-    if (f_read(&db_fil, out_track, sizeof(track_info_t), &br) != FR_OK || br != sizeof(track_info_t)) {
+    // Seek to the calculated start position in the file
+    if (f_lseek(&db_fil, (DWORD)(start_idx * sizeof(track_info_t))) != FR_OK) {
+        printf("[Error] File seek failed.\n");
         f_close(&db_fil);
-        return 0; // Failed to read target track row
+        return 0;
     }
-    printf("+ %d us! (Fetched whole track profile completely from disk cache)\n", (int)absolute_time_diff_us(initial_timestamp, get_absolute_time()));
-    initial_timestamp = get_absolute_time();
 
-    // 2. Populate the sliding track window (11 tracks total: 5 below, current, 5 above)
-    uint32_t total_tracks = f_size(&db_fil) / sizeof(track_info_t);
-    int32_t start_idx = (int32_t)idx - 5;
-    
-    for (int i = 0; i < 11; i++) {
-        int32_t current_window_idx = start_idx + i;
-        
-        if (current_window_idx >= 0 && current_window_idx < (int32_t)total_tracks) {
-            uint32_t window_offset = (uint32_t)current_window_idx * sizeof(track_info_t);
-            f_lseek(&db_fil, window_offset);
-            
-            if (f_read(&db_fil, &track_window[i], sizeof(track_info_t), &br) != FR_OK || br != sizeof(track_info_t)) {
-                memset(&track_window[i], 0, sizeof(track_info_t));
-            }
-        } else {
-            // Out of bounds constraints (e.g. padding entries for list margins)
-            memset(&track_window[i], 0, sizeof(track_info_t));
-        }
+    // Read the 10-track window block
+    if (f_read(&db_fil, track_window, bytes_to_read, &br) != FR_OK || br < bytes_to_read) {
+        printf("[Error] File read failed or reached unexpected EOF.\n");
+        // Optional: clear the window buffer on failure
+        memset(track_window, 0, bytes_to_read); 
+        f_close(&db_fil);
+        return 0;
+    }
+
+    // Extract the specific track profile from the populated window
+    if (idx < 5) {
+        *out_track = track_window[idx];
+    } else {
+        *out_track = track_window[5];
     }
 
     f_close(&db_fil);
