@@ -246,6 +246,7 @@ int sb_get_raw_tracks(char raw_tracks[][256], int max_tracks) {
 }
 
 int sb_get_track_by_index(uint16_t idx, track_info_t *out_track, track_info_t *track_window) {
+    uint64_t func_start_timestamp = get_absolute_time();
     printf("Track fetch process started!\n");
     uint64_t initial_timestamp = get_absolute_time();
     FIL db_fil;
@@ -288,12 +289,88 @@ int sb_get_track_by_index(uint16_t idx, track_info_t *out_track, track_info_t *t
 
     f_close(&db_fil);
     printf("+ %d us! (Populated scrolling tracks window array)\n", (int)absolute_time_diff_us(initial_timestamp, get_absolute_time()));
+    printf("Total operation took %d us\n", (int)absolute_time_diff_us(func_start_timestamp, get_absolute_time()));
     return 1;
 }
 
-// sb_update_track_window() {
+void sb_check_cache_loaded() {
+    FIL db_fil;
+    UINT br;
+    int index = 0;
 
-// }
+    printf("\n--- VERIFYING HOST-SIDE CACHE GENERATION ---\n");
+    printf("\nPRESS ANY KEY TO CONTINUE...\n");
+    while (buttons_get_just_pressed() <= 0);
+    printf("\nLISTING ALL ALBUMS\n\n");
+    if (f_open(&db_fil, "0:/.albums.sbc", FA_READ) == FR_OK)
+    {
+        
+        // Single 384-byte container allocated locally on the CPU stack frame
+        album_info_t t; 
+
+        // Read sequentially until we reach the End-of-File boundary
+        while (f_read(&db_fil, &t, sizeof(album_info_t), &br) == FR_OK && br == sizeof(album_info_t))
+        {
+            printf("[%03d] %s - %d songs. Starting track index: %d\n", index, t.album_name, t.num_tracks, t.start_track);
+            index++;
+        }
+        f_close(&db_fil);
+        printf("--- End of List (%d tracks validated clean) ---\n\n", index);
+    } 
+    else 
+    {
+        printf("[Fatal Error] Could not open 0:/.albums.sbc for validation readout.\n");
+    }
+    printf("\nPRESS ANY KEY TO CONTINUE...\n");
+    while (buttons_get_just_pressed() <= 0);
+    printf("\nLISTING ALL ARTISTS\n\n");
+    index = 0;
+    if (f_open(&db_fil, "0:/.artists.sbc", FA_READ) == FR_OK)
+    {
+        
+        // Single 384-byte container allocated locally on the CPU stack frame
+        artist_info_t t; 
+
+        // Read sequentially until we reach the End-of-File boundary
+        while (f_read(&db_fil, &t, sizeof(artist_info_t), &br) == FR_OK && br == sizeof(artist_info_t))
+        {
+            printf("[%03d] %s - %d songs. Starting album index: %d\n", index, t.artist_name, t.num_albums, t.start_album);
+            index++;
+        }
+        f_close(&db_fil);
+        printf("--- End of List (%d tracks validated clean) ---\n\n", index);
+    } 
+    else 
+    {
+        printf("[Fatal Error] Could not open 0:/.artists.sbc for validation readout.\n");
+    }
+    printf("\nPRESS ANY KEY TO CONTINUE...\n");
+    while (buttons_get_just_pressed() <= 0);
+    printf("\nLISTING ALL TRACKS\n");
+    index = 0;
+    if (f_open(&db_fil, "0:/.tracks.sbc", FA_READ) == FR_OK)
+    {
+        
+        // Single 384-byte container allocated locally on the CPU stack frame
+        track_info_t t; 
+
+        // Read sequentially until we reach the End-of-File boundary
+        while (f_read(&db_fil, &t, sizeof(track_info_t), &br) == FR_OK && br == sizeof(track_info_t))
+        {
+            printf("[%03d] %s by %s\n", index, t.title, t.artist);
+            printf("  Album : %s\r\n", t.album);
+            printf("  Filename : %s\r\n", t.filename);
+            printf("  ============================================\r\n");
+            index++;
+        }
+        f_close(&db_fil);
+        printf("--- End of List (%d tracks validated clean) ---\n\n", index);
+    } 
+    else 
+    {
+        printf("[Fatal Error] Could not open 0:/.tracks.sbc for validation readout.\n");
+    }
+}
 
 /**
  * @brief Zero-overhead binary loader for pre-compiled DAP index files.
@@ -361,6 +438,9 @@ int sb_load_library(void) {
 
     printf("[Success] Loaded %d Artists, %d Albums, and %d tracks into RAM.\r\n", 
            artist_count, album_count, track_count);
+
+    // sb_check_cache_loaded();
+
     return 1;
 }
 
@@ -369,7 +449,7 @@ void sb_hw_init(vs1053_t *player, st7789_t *display)
     mutex_init(&text_buff_mtx);
     sem_init(&text_sem, 0, 255);
 
-    // sleep_ms(1000);
+    sleep_ms(2000);
 
     // 1. Initialize the SDIO driver hardware parameters (PIO/DMA)
     bool sd_success = false;
