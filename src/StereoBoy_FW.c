@@ -105,7 +105,7 @@ int main() {
 
     // Load your main relational pointers into RAM first
     sb_load_library();
-    if (sb_load_tracks_cache() != FR_OK) {
+    if (sb_load_tracks_cache(&tracks_cache_file) != FR_OK) {
         while(1) {
             printf("What the fuck just happened\n");
             sleep_ms(1000);
@@ -122,7 +122,7 @@ int main() {
     uint8_t selected = 100;
 
     current_track = &current_track_holder;
-    if (!sb_get_track_window(song_choice, current_track, track_window)) {
+    if (!sb_get_track_window_fast(&tracks_cache_file, song_choice, current_track, track_window)) {
         printf("Error reading track metadata from cache table!\n");
     }
 
@@ -169,7 +169,7 @@ int main() {
                         selected = true;   
                         printf("Poo cum fart shit pee\n");
                     }       
-                    sb_get_track_window(song_choice, current_track, track_window);
+                    sb_get_track_window_fast(&tracks_cache_file, song_choice, current_track, track_window);
                 }
                 if (prev_choice != song_choice){
                     printf("\r\nSong %d/%d: ", song_choice+1, track_count);
@@ -180,7 +180,7 @@ int main() {
             }
         }
 
-        if (!sb_get_track_window(song_choice, current_track, track_window)) {
+        if (!sb_get_track_window_fast(&tracks_cache_file, song_choice, current_track, track_window)) {
             printf("Error reading track metadata from cache table!\n");
         }
 

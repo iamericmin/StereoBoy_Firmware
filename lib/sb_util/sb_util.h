@@ -33,9 +33,9 @@ void sb_audio_init(vs1053_t *player);
 /* ========= Filesystem / MP3 / Metadata ========= */
 int sb_scan_folders(folder_info_t *folders, int max_folders);
 int sb_get_track_window(uint16_t idx, track_info_t *out_track, track_info_t *track_window);
-int sb_get_track_window_fast(uint16_t idx, track_info_t *out_track, track_info_t *track_window);
+int sb_get_track_window_fast(FIL *fil, uint16_t idx, track_info_t *out_track, track_info_t *track_window);
 int sb_load_library();
-FRESULT sb_load_tracks_cache();
+FRESULT sb_load_tracks_cache(FIL *fil);
 
 /* ========= Playback ========= */
 // int sb_play_track(vs1053_t *player, track_info_t *track, st7789_t *display);
