@@ -104,4 +104,3 @@ target_link_libraries(StereoBoy_FW
         )
 
 pico_add_extra_outputs(StereoBoy_FW)
-
