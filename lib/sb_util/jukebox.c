@@ -35,73 +35,9 @@ cplx audio_history_r[HISTORY_SIZE];
 int history_index = 0;
 int num_visualizations = 8;
 bool album_art_ready = false;
-bool selected;
-
-/*
-    album_art_ready = false;
-
-    FIL fil;             // file object
-    UINT br;             // pointer to number of bytes read
-    uint8_t buffer[2048]; // buffer read from file
-
-    char *filename = track->filename;
-    uint16_t sampleSpeed = track->samplespeed;
-    uint16_t bitRate = track->bitrate;
-    uint32_t skip_bits = bitRate * 256; // bitrate * 1024 / 4 = approx. 2 seconds
-    int exitType = 0;
-    sci_write(player, 0x05, sampleSpeed + 1); // initialize codec sampling speed (+1 at the end for stereo)
-
-    // status bits for player state and warp effect
-    paused = false;
-    playStatus = play_icon;
-    warping = false;
-    stopped = 0;
-    enableIcons = true;
-
-    // more warp effect stuff
-    float transport = 1.0f;                  // desired speed
-    float warp_start_transport = 1.0f;       // start speed for warp
-    float warp_target = 1.0f;                // target speed for warp
-    uint32_t warp_duration = RESUME_WARP_US; // warp effect duration
-    absolute_time_t warp_start_time;
-
-    // open selected MP3 file
-    if (f_open(&fil, filename, FA_READ) != FR_OK)
-    {
-        printf("Failed to open %s\r\n", filename);
-        return exitType;
-    }
-
-    uint16_t stereo_bit = sampleSpeed & 1;     // LSB indicates mono or stereo (not exactly sure what but this is pretty much always 1)
-    uint16_t base_rate = sampleSpeed & 0xFFFE; // sampling speed in upper 15 bits
-    if (visualizer == 0) {
-        display_album_art(img_buffer, track->artist, track->album, track->title);
-    }
-
-    f_lseek(&fil, track->audio_start);
-    absolute_time_t last_skip_time = get_absolute_time();
-
-    selected_band = 0;
-    int currEq = 0;
-    dac_eq_init(sampleSpeed); // init with default sample rate
-    uint8_t vol_check = 10;
-    uint8_t old_volume = 0;
-    read_lwbt();
-*/
 
 int jukebox(vs1053_t *player, track_info_t *current_track, st7789_t *display)
 {
-    printf("\n******** JUKEBOX START ********\n");
-    uint64_t timestamp = get_absolute_time();
-    uint64_t jukebox_init_start_time = get_absolute_time();
-
-    // if (!sb_get_track_window_fast(song_choice, current_track, track_window)) {
-    //     printf("Error reading track metadata from cache table!\n");
-    // }
-
-    printf("Fetched track window! Took %d us.\n", (int)absolute_time_diff_us(timestamp, get_absolute_time()));
-    timestamp = get_absolute_time();
-
     FIL fil;             // file object
     UINT br;             // pointer to number of bytes read
     uint8_t buffer[2048]; // buffer read from file
@@ -127,18 +63,12 @@ int jukebox(vs1053_t *player, track_info_t *current_track, st7789_t *display)
     uint32_t warp_duration = RESUME_WARP_US; // warp effect duration
     absolute_time_t warp_start_time;
 
-    printf("Initialized a bunch of variables. Took %d us.\n", (int)absolute_time_diff_us(timestamp, get_absolute_time()));
-    timestamp = get_absolute_time();
-
     // open selected MP3 file
     if (f_open(&fil, filename, FA_READ) != FR_OK)
     {
         printf("Failed to open %s\r\n", filename);
         return exitType;
     }
-
-    printf("Opened MP3 file! Took %d us.\n", (int)absolute_time_diff_us(timestamp, get_absolute_time()));
-    timestamp = get_absolute_time();
 
     uint16_t stereo_bit = sampleSpeed & 1;     // LSB indicates mono or stereo (not exactly sure what but this is pretty much always 1)
     uint16_t base_rate = sampleSpeed & 0xFFFE; // sampling speed in upper 15 bits
@@ -155,9 +85,6 @@ int jukebox(vs1053_t *player, track_info_t *current_track, st7789_t *display)
     uint8_t vol_check = 5;
     uint8_t old_volume = 0;
     // read_lwbt();
-
-    printf("******** JUKEBOX INIT FINISHED! ********\n");
-    printf("Took %d us for entire jukebox init.\n", (int)absolute_time_diff_us(jukebox_init_start_time, timestamp));
 
     while (1)
     {
@@ -244,7 +171,7 @@ int jukebox(vs1053_t *player, track_info_t *current_track, st7789_t *display)
             case 'n':
             case 'N':
                 if (visualizer == 6) {
-                    multicore_lockout_start_blocking();
+                    // multicore_lockout_start_blocking();
                     if (song_choice + 10 > track_count) {
                         song_choice = track_count % 10;
                     } else {
@@ -254,7 +181,7 @@ int jukebox(vs1053_t *player, track_info_t *current_track, st7789_t *display)
                         printf("Error reading track metadata from cache table!\n");
                     }
                     printf("\nUp by 10! Track: %d\r\n", song_choice);
-                    multicore_lockout_end_blocking();
+                    // multicore_lockout_end_blocking();
                     break;
                 } else {
                     exitType = 1;
@@ -267,7 +194,7 @@ int jukebox(vs1053_t *player, track_info_t *current_track, st7789_t *display)
             case 'o':
             case 'O':
                 if (visualizer == 6) { // scroll through menu without actually changing the track
-                    multicore_lockout_start_blocking();
+                    // multicore_lockout_start_blocking();
                     if (song_choice - 10 < 1) {
                         song_choice = track_count - (track_count % 10);
                     } else {
@@ -277,7 +204,7 @@ int jukebox(vs1053_t *player, track_info_t *current_track, st7789_t *display)
                         printf("Error reading track metadata from cache table!\n");
                     }
                     printf("\rDown by 10! Track: %d\r\n", song_choice);
-                    multicore_lockout_end_blocking();
+                    // multicore_lockout_end_blocking();
                     break;
                 } else {
                     uint8_t seconds_into_song = (f_tell(&fil) - current_track->audio_start) / (current_track->bitrate * 125);
