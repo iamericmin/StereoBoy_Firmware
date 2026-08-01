@@ -91,6 +91,7 @@ void music_menu() {
 int start;
 void core1_entry()
 {
+    multicore_lockout_victim_init();
     while (1)
     {
         adc_select_input(POT_CH);
@@ -411,30 +412,58 @@ void core1_entry()
             spi_write16_blocking(spi0, frame_buffer, 240 * 240);
             break;
         case 7:
+            // Home Menu:
+            // Cartridge name
+            // x Artists
+            // x Albums
+            // x Tracks
+            // Settings
+            // Extras
+            //
+            //
+            //
+            // (scrolling list of elements in selected menu)
+
+            static char menu_entry[32]; // buffer for scrolling title marquee
+            uint16_t highlight_color;
+
             clear_framebuffer();
 
-            for (int i = 0; i < 11; i++) {
-                track_info_t *track = &track_window[i];
-                
-                // Check if this slot is empty (out of bounds padding from our earlier function)
-                if (track->filename[0] == '\0') {
-                    continue; 
-                }
+            // cartridge name
+            st7789_draw_string(1, 5 + 0 * font_height, "Eric's Rock Mix", HIGHLIGHT_COLOR_PRIMARY);
+            sprintf(menu_entry, "%d Artists", artist_count);
+            highlight_color = (song_choice == 1) ? HIGHLIGHT_COLOR_SECONDARY : WHITE;
+            st7789_draw_string(1, 5 + 1 * font_height, menu_entry, highlight_color);
+            sprintf(menu_entry, "%d Albums", album_count);
+            highlight_color = (song_choice == 2) ? HIGHLIGHT_COLOR_SECONDARY : WHITE;
+            st7789_draw_string(1, 5 + 2 * font_height, menu_entry, highlight_color);
+            sprintf(menu_entry, "%d Tracks", track_count);
+            highlight_color = (song_choice == 3) ? HIGHLIGHT_COLOR_SECONDARY : WHITE;
+            st7789_draw_string(1, 5 + 3 * font_height, menu_entry, highlight_color);
+            highlight_color = (song_choice == 4) ? HIGHLIGHT_COLOR_SECONDARY : WHITE;
+            st7789_draw_string(1, 5 + 4 * font_height, "Last Played", highlight_color);
+            highlight_color = (song_choice == 5) ? HIGHLIGHT_COLOR_SECONDARY : WHITE;
+            st7789_draw_string(1, 5 + 5 * font_height, "Shuffle All", highlight_color);
+            highlight_color = (song_choice == 6) ? HIGHLIGHT_COLOR_SECONDARY : WHITE;
+            st7789_draw_string(1, 5 + 6 * font_height, "Extras", highlight_color);
+            highlight_color = (song_choice == 7) ? HIGHLIGHT_COLOR_SECONDARY : WHITE;
+            st7789_draw_string(1, 5 + 7 * font_height, "Settings", highlight_color);
+            st7789_draw_string(1, 5 + 8 * font_height, "", HIGHLIGHT_COLOR_PRIMARY);
+            st7789_draw_string(1, 5 + 9 * font_height, "", HIGHLIGHT_COLOR_PRIMARY);
+            st7789_draw_string(1, 5 + 10 * font_height, "Abbey Road / Back in Black / The Razor's Edge", HIGHLIGHT_COLOR_PRIMARY);
 
-                // Calculate the absolute track number for the UI text (1-indexed)
-                // 'song_choice' matches track_window[5]. So index 'i' is offset by (i - 5).
-                int32_t absolute_track_num = (int32_t)song_choice + (i - 5) + 1;
+            // st7789_draw_string(1, 5 + 0 * font_height, "Eric's Rock Collection", HIGHLIGHT_COLOR_PRIMARY);
+            // st7789_draw_string(1, 5 + 1 * font_height, "Artists", WHITE);
+            // st7789_draw_string(1, 5 + 2 * font_height, "Albums", HIGHLIGHT_COLOR_SECONDARY);
+            // st7789_draw_string(1, 5 + 3 * font_height, "Tracks", WHITE);
+            // st7789_draw_string(1, 5 + 4 * font_height, "Settings", WHITE);
+            // st7789_draw_string(1, 5 + 5 * font_height, "Extras", WHITE);
+            // st7789_draw_string(1, 5 + 6 * font_height, "", HIGHLIGHT_COLOR_PRIMARY);
+            // st7789_draw_string(1, 5 + 7 * font_height, "", HIGHLIGHT_COLOR_PRIMARY);
+            // st7789_draw_string(1, 5 + 8 * font_height, "", HIGHLIGHT_COLOR_PRIMARY);
+            // st7789_draw_string(1, 5 + 9 * font_height, "528 Albums", HIGHLIGHT_COLOR_PRIMARY);
+            // st7789_draw_string(1, 5 + 10 * font_height, "Abbey Road / Back in Black / The Razor's Edge", HIGHLIGHT_COLOR_PRIMARY);
 
-                char buf[256];
-                sprintf(buf, "%d %s", absolute_track_num, track->title); // Clean combination of index and title
-
-                // If i == 5, this is the currently selected track (the middle of our window)
-                if (i == 5) {
-                    st7789_draw_string(1, 5 + i * font_height, buf, HIGHLIGHT_COLOR_PRIMARY);
-                } else {
-                    st7789_draw_string(1, 5 + i * font_height, buf, WHITE);
-                }
-            }
 
             st7789_set_cursor(0, 0);
             st7789_ramwr();

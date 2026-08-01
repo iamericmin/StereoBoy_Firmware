@@ -58,9 +58,9 @@ FIL tracks_cache_file;
 char folder_names[20][64];
 int folder_file_counts[20];
 
-int song_choice = 0;
+uint16_t song_choice = 0;
 
-int temp_visualizer = 1;
+int temp_visualizer = 6;
 
 int main() {
     set_visualizer(6);
@@ -105,7 +105,12 @@ int main() {
 
     // Load your main relational pointers into RAM first
     sb_load_library();
-    // sb_load_tracks_cache();
+    if (sb_load_tracks_cache() != FR_OK) {
+        while(1) {
+            printf("What the fuck just happened\n");
+            sleep_ms(1000);
+        }
+    }
 
     printf("%d Artists\n", artist_count);
     printf("%d Albums\n", album_count);
@@ -113,15 +118,35 @@ int main() {
 
     int exitCode = 0;
     int prev_choice = 0;
-    bool selected = 0;
-    
-    song_choice = 0;
+    song_choice = 1;
+    uint8_t selected = 100;
 
     current_track = &current_track_holder;
     if (!sb_get_track_window(song_choice, current_track, track_window)) {
         printf("Error reading track metadata from cache table!\n");
     }
+
+    set_visualizer(7);
+    while(selected == 100) {
+        uint8_t pressed = buttons_get_just_pressed();
+        if (pressed > 0){
+            if (pressed & BTN_D)      song_choice = (song_choice + 1);
+            if (pressed & BTN_U)      song_choice = (song_choice - 1);
+            if (pressed & BTN_A){
+                selected = 1;   
+                printf("Poo cum fart shit pee\n");
+            }
+            if (song_choice < 1) {
+                song_choice = 1;
+            } else if (song_choice > 7) {
+                song_choice = 7;
+            }
+        }
+        sleep_ms(50);
+    }
     
+    selected = 0;
+    song_choice = 0;
     while(1) {
         // read_lwbt();
         temp_visualizer = (visualizer == 7) ? 1 : visualizer;

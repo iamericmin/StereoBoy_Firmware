@@ -324,11 +324,10 @@ int sb_get_track_window(uint16_t idx, track_info_t *out_track, track_info_t *tra
     }
 
     // Extract the specific track profile from the populated window
-    if (idx < 5) {
-        *out_track = track_window[idx];
-    } else {
-        *out_track = track_window[5];
-    }
+    uint16_t relative_slot = idx - start_idx;
+    *out_track = track_window[relative_slot];
+
+    f_close(&db_fil);
 
     f_close(&db_fil);
     printf("+ %d us! (Populated scrolling tracks window array)\n", (int)absolute_time_diff_us(initial_timestamp, get_absolute_time()));

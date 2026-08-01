@@ -148,7 +148,7 @@ extern LUT_entry_t *artCache_LUT;
 extern uint32_t lut_entry_count;
 
 extern int count;
-extern int song_choice;
+extern uint16_t song_choice;
 
 //CODEC
 typedef struct {

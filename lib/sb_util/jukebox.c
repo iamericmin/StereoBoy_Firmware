@@ -152,7 +152,7 @@ int jukebox(vs1053_t *player, track_info_t *current_track, st7789_t *display)
     selected_band = 0;
     int currEq = 0;
     dac_eq_init(sampleSpeed); // init with default sample rated
-    uint8_t vol_check = 10;
+    uint8_t vol_check = 5;
     uint8_t old_volume = 0;
     // read_lwbt();
 
@@ -180,7 +180,7 @@ int jukebox(vs1053_t *player, track_info_t *current_track, st7789_t *display)
         }
         
         // janky counter for volume sampling
-        if (vol_check == 10) {
+        if (vol_check == 5) {
             uint16_t vol = (uint32_t)potVal * 0x60 / 4096;
             ff_rew_status = empty_icon; //update ff/rew icon every 10 as well
             dac_set_volume(vol);
@@ -244,6 +244,7 @@ int jukebox(vs1053_t *player, track_info_t *current_track, st7789_t *display)
             case 'n':
             case 'N':
                 if (visualizer == 6) {
+                    multicore_lockout_start_blocking();
                     if (song_choice + 10 > track_count) {
                         song_choice = track_count % 10;
                     } else {
@@ -253,6 +254,7 @@ int jukebox(vs1053_t *player, track_info_t *current_track, st7789_t *display)
                         printf("Error reading track metadata from cache table!\n");
                     }
                     printf("\nUp by 10! Track: %d\r\n", song_choice);
+                    multicore_lockout_end_blocking();
                     break;
                 } else {
                     exitType = 1;
@@ -265,6 +267,7 @@ int jukebox(vs1053_t *player, track_info_t *current_track, st7789_t *display)
             case 'o':
             case 'O':
                 if (visualizer == 6) { // scroll through menu without actually changing the track
+                    multicore_lockout_start_blocking();
                     if (song_choice - 10 < 1) {
                         song_choice = track_count - (track_count % 10);
                     } else {
@@ -274,6 +277,7 @@ int jukebox(vs1053_t *player, track_info_t *current_track, st7789_t *display)
                         printf("Error reading track metadata from cache table!\n");
                     }
                     printf("\rDown by 10! Track: %d\r\n", song_choice);
+                    multicore_lockout_end_blocking();
                     break;
                 } else {
                     uint8_t seconds_into_song = (f_tell(&fil) - current_track->audio_start) / (current_track->bitrate * 125);
