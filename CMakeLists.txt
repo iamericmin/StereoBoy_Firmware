@@ -40,6 +40,7 @@ pico_sdk_init()
 add_executable(StereoBoy_FW
     src/main.c
     src/hw_config.c # this is important!!! https://forums.raspberrypi.com/viewtopic.php?t=342315
+    # lib/sb_util/interface.c
     lib/sb_util/sb_util.c
     lib/sb_util/jukebox.c
     lib/sb_util/sb_init.c

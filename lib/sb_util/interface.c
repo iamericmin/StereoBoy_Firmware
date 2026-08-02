@@ -101,3 +101,7 @@ int browse_tracks() {
 
     return 0;
 }
+
+int browse_artists() {
+    
+}

@@ -9,6 +9,7 @@
 #include "stdio.h"
 #include "ff.h"
 #include "hardware/vreg.h"
+#include "lib/sb_util/interface.h"
 
 // SPI1 configuration for codec & sd card
 #define PIN_SCK  30
