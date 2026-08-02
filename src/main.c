@@ -60,6 +60,7 @@ int folder_file_counts[20];
 
 uint16_t song_choice = 0;
 uint16_t prev_choice = 0;
+uint16_t menu_choice = 0;
 uint8_t selected = 0;
 
 int temp_visualizer = 6;
@@ -198,8 +199,7 @@ int main() {
     printf("%d Albums\n", album_count);
     printf("%d Tracks\n", track_count);
 
-    prev_choice = 0;
-    song_choice = 1;
+    menu_choice = 1;
     selected = 100;
 
     current_track = &current_track_holder;
@@ -207,32 +207,49 @@ int main() {
         printf("Error reading track metadata from cache table!\n");
     }
     while (1) {
-        prev_choice = 0;
-        song_choice = 1;
+        menu_choice = 1;
         selected = 100;
         
         set_visualizer(7);
         while(selected == 100) {
             uint8_t pressed = buttons_get_just_pressed();
             if (pressed > 0){
-                if (pressed & BTN_D)      song_choice = (song_choice + 1);
-                if (pressed & BTN_U)      song_choice = (song_choice - 1);
+                if (pressed & BTN_D)      menu_choice = (menu_choice + 1);
+                if (pressed & BTN_U)      menu_choice = (menu_choice - 1);
                 if (pressed & BTN_A){
                     selected = 1;   
                     printf("Poo cum fart shit pee\n");
                 }
-                if (song_choice < 1) {
-                    song_choice = 1;
-                } else if (song_choice > 7) {
-                    song_choice = 7;
+                if (menu_choice < 1) {
+                    menu_choice = 1;
+                } else if (menu_choice > 7) {
+                    menu_choice = 7;
                 }
             }
             sleep_ms(50);
         }
-        
-        selected = 0;
-        song_choice = 0;
 
+        switch (menu_choice) {
+            // Artists
+            case 1:
+                break;
+            // Albums
+            case 2:
+                break;
+            // Tracks
+            case 3:
+                break;
+            // Last Played
+            case 4:
+                break;
+            // Shuffle All
+            case 5:
+                break;
+            
+            default:
+                break;
+        }
+        selected = 0;
         int result = 0;
         while (result != 100) {
             result = browse_tracks();

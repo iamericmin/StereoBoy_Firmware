@@ -88,7 +88,7 @@ void music_menu() {
     
 }
 
-int start;
+uint16_t start;
 void core1_entry()
 {
     multicore_lockout_victim_init();
@@ -191,7 +191,7 @@ void core1_entry()
             }
             track_info_t *track;
             track_info_t *selected_track;
-            // selected_track = (song_choice <= 5) ? &track_window[song_choice] : &track_window[5];
+            selected_track = (song_choice <= 5) ? &track_window[song_choice] : &track_window[5];
             uint16_t selected_slot = song_choice - start;
             selected_track = &track_window[selected_slot];
             static char buf[256]; // buffer for string to write to display
@@ -432,38 +432,25 @@ void core1_entry()
             // cartridge name
             st7789_draw_string(1, 5 + 0 * font_height, "Eric's Rock Mix", HIGHLIGHT_COLOR_PRIMARY);
             sprintf(menu_entry, "%d Artists", artist_count);
-            highlight_color = (song_choice == 1) ? HIGHLIGHT_COLOR_SECONDARY : WHITE;
+            highlight_color = (menu_choice == 1) ? HIGHLIGHT_COLOR_SECONDARY : WHITE;
             st7789_draw_string(1, 5 + 1 * font_height, menu_entry, highlight_color);
             sprintf(menu_entry, "%d Albums", album_count);
-            highlight_color = (song_choice == 2) ? HIGHLIGHT_COLOR_SECONDARY : WHITE;
+            highlight_color = (menu_choice == 2) ? HIGHLIGHT_COLOR_SECONDARY : WHITE;
             st7789_draw_string(1, 5 + 2 * font_height, menu_entry, highlight_color);
             sprintf(menu_entry, "%d Tracks", track_count);
-            highlight_color = (song_choice == 3) ? HIGHLIGHT_COLOR_SECONDARY : WHITE;
+            highlight_color = (menu_choice == 3) ? HIGHLIGHT_COLOR_SECONDARY : WHITE;
             st7789_draw_string(1, 5 + 3 * font_height, menu_entry, highlight_color);
-            highlight_color = (song_choice == 4) ? HIGHLIGHT_COLOR_SECONDARY : WHITE;
+            highlight_color = (menu_choice == 4) ? HIGHLIGHT_COLOR_SECONDARY : WHITE;
             st7789_draw_string(1, 5 + 4 * font_height, "Last Played", highlight_color);
-            highlight_color = (song_choice == 5) ? HIGHLIGHT_COLOR_SECONDARY : WHITE;
+            highlight_color = (menu_choice == 5) ? HIGHLIGHT_COLOR_SECONDARY : WHITE;
             st7789_draw_string(1, 5 + 5 * font_height, "Shuffle All", highlight_color);
-            highlight_color = (song_choice == 6) ? HIGHLIGHT_COLOR_SECONDARY : WHITE;
+            highlight_color = (menu_choice == 6) ? HIGHLIGHT_COLOR_SECONDARY : WHITE;
             st7789_draw_string(1, 5 + 6 * font_height, "Extras", highlight_color);
-            highlight_color = (song_choice == 7) ? HIGHLIGHT_COLOR_SECONDARY : WHITE;
+            highlight_color = (menu_choice == 7) ? HIGHLIGHT_COLOR_SECONDARY : WHITE;
             st7789_draw_string(1, 5 + 7 * font_height, "Settings", highlight_color);
             st7789_draw_string(1, 5 + 8 * font_height, "", HIGHLIGHT_COLOR_PRIMARY);
             st7789_draw_string(1, 5 + 9 * font_height, "", HIGHLIGHT_COLOR_PRIMARY);
             st7789_draw_string(1, 5 + 10 * font_height, "Abbey Road / Back in Black / The Razor's Edge", HIGHLIGHT_COLOR_PRIMARY);
-
-            // st7789_draw_string(1, 5 + 0 * font_height, "Eric's Rock Collection", HIGHLIGHT_COLOR_PRIMARY);
-            // st7789_draw_string(1, 5 + 1 * font_height, "Artists", WHITE);
-            // st7789_draw_string(1, 5 + 2 * font_height, "Albums", HIGHLIGHT_COLOR_SECONDARY);
-            // st7789_draw_string(1, 5 + 3 * font_height, "Tracks", WHITE);
-            // st7789_draw_string(1, 5 + 4 * font_height, "Settings", WHITE);
-            // st7789_draw_string(1, 5 + 5 * font_height, "Extras", WHITE);
-            // st7789_draw_string(1, 5 + 6 * font_height, "", HIGHLIGHT_COLOR_PRIMARY);
-            // st7789_draw_string(1, 5 + 7 * font_height, "", HIGHLIGHT_COLOR_PRIMARY);
-            // st7789_draw_string(1, 5 + 8 * font_height, "", HIGHLIGHT_COLOR_PRIMARY);
-            // st7789_draw_string(1, 5 + 9 * font_height, "528 Albums", HIGHLIGHT_COLOR_PRIMARY);
-            // st7789_draw_string(1, 5 + 10 * font_height, "Abbey Road / Back in Black / The Razor's Edge", HIGHLIGHT_COLOR_PRIMARY);
-
 
             st7789_set_cursor(0, 0);
             st7789_ramwr();

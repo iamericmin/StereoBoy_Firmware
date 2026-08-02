@@ -149,6 +149,7 @@ extern uint32_t lut_entry_count;
 
 extern int count;
 extern uint16_t song_choice;
+extern uint16_t menu_choice;
 
 //CODEC
 typedef struct {

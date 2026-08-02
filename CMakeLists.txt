@@ -38,7 +38,7 @@ pico_sdk_init()
 # Add executable. Default name is the project name, version 0.1
 
 add_executable(StereoBoy_FW
-    src/StereoBoy_FW.c
+    src/main.c
     src/hw_config.c # this is important!!! https://forums.raspberrypi.com/viewtopic.php?t=342315
     lib/sb_util/sb_util.c
     lib/sb_util/jukebox.c
