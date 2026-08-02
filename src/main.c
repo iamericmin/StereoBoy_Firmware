@@ -5,6 +5,7 @@
 #include "lib/pot/pot.h"
 
 #include "pico/stdlib.h"
+#include <stdint.h>
 #include "stdio.h"
 #include "ff.h"
 #include "hardware/vreg.h"
@@ -32,7 +33,7 @@ vs1053_t player = {
     .rst = PIN_RST
 };
 
-struct st7789_t display = {
+st7789_t display = {
     .spi      = spi0,
     .gpio_din = 35,
     .gpio_clk = 34,
@@ -41,7 +42,6 @@ struct st7789_t display = {
     .gpio_rst = 4,
     .gpio_bl  = 5,
 };
-
 
 #define LCD_WIDTH  240
 #define LCD_HEIGHT 240

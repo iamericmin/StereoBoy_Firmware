@@ -36,7 +36,7 @@ int history_index = 0;
 int num_visualizations = 8;
 bool album_art_ready = false;
 
-int jukebox(vs1053_t *player, track_info_t *current_track, st7789_t *display)
+int jukebox()
 {
     FIL fil;             // file object
     UINT br;             // pointer to number of bytes read
@@ -47,9 +47,9 @@ int jukebox(vs1053_t *player, track_info_t *current_track, st7789_t *display)
     uint16_t bitRate = current_track->bitrate;
     uint32_t skip_bits = bitRate * 256; // bitrate * 1024 / 4 = approx. 2 seconds
     int exitType = 0;
-    sci_write(player, 0x05, sampleSpeed + 1); // initialize codec sampling speed (+1 at the end for stereo)
+    sci_write(&player, 0x05, sampleSpeed + 1); // initialize codec sampling speed (+1 at the end for stereo)
 
-    // status bits for player state and warp effect
+    // status bits for &player state and warp effect
     paused = false;
     playStatus = play_icon;
     warping = false;
@@ -95,7 +95,7 @@ int jukebox(vs1053_t *player, track_info_t *current_track, st7789_t *display)
             uint16_t new_rate = (uint16_t)(base_rate * transport) & 0xFFFE;
             if (new_rate < 9000)
                 new_rate = 9000;
-            sci_write(player, 0x05, new_rate | stereo_bit);
+            sci_write(&player, 0x05, new_rate | stereo_bit);
 
             if (f_read(&fil, buffer, sizeof(buffer), &br) != FR_OK || br == 0)
             {
@@ -103,7 +103,7 @@ int jukebox(vs1053_t *player, track_info_t *current_track, st7789_t *display)
                 break;
             }
 
-            vs1053_play_data(player, buffer, br);
+            vs1053_play_data(&player, buffer, br);
         }
         
         // janky counter for volume sampling
@@ -185,10 +185,10 @@ int jukebox(vs1053_t *player, track_info_t *current_track, st7789_t *display)
                     break;
                 } else {
                     exitType = 1;
-                    vs1053_set_play_speed(player, 0); // hard pause
+                    vs1053_set_play_speed(&player, 0); // hard pause
                     printf("\r\n Going to next song....\r\n");
                     f_close(&fil);
-                    vs1053_stop(player);
+                    vs1053_stop(&player);
                     return exitType;
                 }
             case 'o':
@@ -214,10 +214,10 @@ int jukebox(vs1053_t *player, track_info_t *current_track, st7789_t *display)
                         break;
                     } else {
                         exitType = 2;
-                        vs1053_set_play_speed(player, 0); // hard pause
+                        vs1053_set_play_speed(&player, 0); // hard pause
                         printf("\r\n Going to previous song....\r\n");
                         f_close(&fil);
-                        vs1053_stop(player);
+                        vs1053_stop(&player);
                         return exitType;
                     }
                 }
@@ -285,10 +285,10 @@ int jukebox(vs1053_t *player, track_info_t *current_track, st7789_t *display)
                         break;
                     } else {
                         exitType = 2;
-                        vs1053_set_play_speed(player, 0); // hard pause
+                        vs1053_set_play_speed(&player, 0); // hard pause
                         printf("\r\n Going to next song....\r\n");
                         f_close(&fil);
-                        vs1053_stop(player);
+                        vs1053_stop(&player);
                         return exitType;
                     }
                 }
@@ -307,10 +307,10 @@ int jukebox(vs1053_t *player, track_info_t *current_track, st7789_t *display)
                     printf("\rDown by 1! Track: %d\r\n", song_choice);
                 } else {
                     exitType = 1;
-                    vs1053_set_play_speed(player, 0); // hard pause
+                    vs1053_set_play_speed(&player, 0); // hard pause
                     printf("\r\n Going to next song....\r\n");
                     f_close(&fil);
-                    vs1053_stop(player);
+                    vs1053_stop(&player);
                     return exitType;
                 }
                 break;
@@ -369,10 +369,10 @@ int jukebox(vs1053_t *player, track_info_t *current_track, st7789_t *display)
                 if (paused)
                 {
                     exitType = 0;
-                    vs1053_set_play_speed(player, 0); // hard pause
+                    vs1053_set_play_speed(&player, 0); // hard pause
                     printf("\r\nStopping....\r\n");
                     f_close(&fil);
-                    vs1053_stop(player);
+                    vs1053_stop(&player);
                     return exitType;
                 }
                 stopped = 1;
@@ -398,15 +398,15 @@ int jukebox(vs1053_t *player, track_info_t *current_track, st7789_t *display)
 
                 if (paused)
                 {
-                    vs1053_set_play_speed(player, 0); // hard pause
+                    vs1053_set_play_speed(&player, 0); // hard pause
                     printf("\r\nPaused.\r\n");
                 }
                 else if (stopped)
                 {
-                    vs1053_set_play_speed(player, 0); // hard pause
+                    vs1053_set_play_speed(&player, 0); // hard pause
                     printf("\r\nPaused.\r\n");
                     f_close(&fil);
-                    vs1053_stop(player);
+                    vs1053_stop(&player);
                     return 0;
                 }
             }

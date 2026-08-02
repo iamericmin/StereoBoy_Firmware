@@ -66,6 +66,18 @@ typedef struct st7789_t {
     uint gpio_bl;
 } st7789_t;
 
+//CODEC
+typedef struct {
+    spi_inst_t *spi;
+    uint cs;
+    uint dcs;
+    uint dreq;
+    uint rst;
+} vs1053_t;
+
+extern vs1053_t player;
+extern st7789_t display;
+
 //POT
 
 //SB_UTIL
@@ -150,15 +162,6 @@ extern uint32_t lut_entry_count;
 extern int count;
 extern uint16_t song_choice;
 extern uint16_t menu_choice;
-
-//CODEC
-typedef struct {
-    spi_inst_t *spi;
-    uint cs;
-    uint dcs;
-    uint dreq;
-    uint rst;
-} vs1053_t;
 
 //FFT
 typedef float complex cplx;
