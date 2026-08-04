@@ -246,22 +246,20 @@ int sb_get_raw_tracks(char raw_tracks[][256], int max_tracks) {
 }
 
 int sb_get_track_window_fast(FIL *fil, uint16_t idx, track_info_t *out_track, track_info_t *track_window) {
-    UINT br; 
+    UINT br;
 
     // Calculate sliding window start index (Target: current track at window index 5)
     uint16_t start_idx = (idx < 5) ? 0 : idx - 5;
     UINT bytes_to_read = 10 * sizeof(track_info_t);
 
-    // Seek using the global file handle g_cache_file
     if (f_lseek(fil, (DWORD)(start_idx * sizeof(track_info_t))) != FR_OK) {
         printf("[Error] Global file seek failed.\n");
         return 0;
     }
 
-    // Read using the global file handle g_cache_file
     if (f_read(fil, track_window, bytes_to_read, &br) != FR_OK || br < bytes_to_read) {
         printf("[Error] Global file read failed or reached unexpected EOF.\n");
-        memset(track_window, 0, bytes_to_read); 
+        memset(track_window, 0, bytes_to_read);
         return 0;
     }
 
@@ -275,56 +273,16 @@ int sb_get_track_window_fast(FIL *fil, uint16_t idx, track_info_t *out_track, tr
     return 1;
 }
 
-int sb_get_track_window(uint16_t idx, track_info_t *out_track, track_info_t *track_window) {
-    uint64_t func_start_timestamp = get_absolute_time();
-    printf("Track fetch process started!\n");
-    uint64_t initial_timestamp = get_absolute_time();
-    FIL db_fil;
-    UINT br; 
-
-    // Open the flat index cache database file
-    if (f_open(&db_fil, "0:/.tracks.sbc", FA_READ) != FR_OK) {
-        printf("[Error] Failed to open .tracks.sbc cache file for lookup.\n");
-        return 0;
-    }
-    printf("+ %d us! (Opened .tracks.sbc cache file)\n", (int)absolute_time_diff_us(initial_timestamp, get_absolute_time()));
-    initial_timestamp = get_absolute_time();
+int sb_get_album_window(uint16_t idx, album_info_t *out_album, album_info_t *album_window) {
 
     // Calculate sliding window start index (Target: current track at window index 5)
     uint16_t start_idx = (idx < 5) ? 0 : idx - 5;
-    
-    // NEW: Prevent the window from reading past the end of the file
-    if (track_count >= 10 && start_idx > track_count - 10) {
-        start_idx = track_count - 10;
+
+    if (global_albums == NULL) {
+        return -1;
     }
 
-    UINT bytes_to_read = 10 * sizeof(track_info_t);
-
-    // Seek to the calculated start position in the file
-    if (f_lseek(&db_fil, (DWORD)(start_idx * sizeof(track_info_t))) != FR_OK) {
-        printf("[Error] File seek failed.\n");
-        f_close(&db_fil);
-        return 0;
-    }
-
-    // Read the 10-track window block
-    if (f_read(&db_fil, track_window, bytes_to_read, &br) != FR_OK || br < bytes_to_read) {
-        printf("[Error] File read failed or reached unexpected EOF.\n");
-        // Optional: clear the window buffer on failure
-        memset(track_window, 0, bytes_to_read); 
-        f_close(&db_fil);
-        return 0;
-    }
-
-    // Extract the specific track profile from the populated window
-    uint16_t relative_slot = idx - start_idx;
-    *out_track = track_window[relative_slot];
-
-    f_close(&db_fil);
-
-    f_close(&db_fil);
-    printf("+ %d us! (Populated scrolling tracks window array)\n", (int)absolute_time_diff_us(initial_timestamp, get_absolute_time()));
-    printf("Slow window op took %d us\n", (int)absolute_time_diff_us(func_start_timestamp, get_absolute_time()));
+    memcpy(album_window, &global_albums[start_idx], 10 * sizeof(album_info_t));
     return 1;
 }
 
@@ -429,6 +387,7 @@ int sb_load_library(void) {
         printf("[Error] 0:/.artists.sbc file missing.\r\n");
         return 0;
     }
+    
     artist_count = fno.fsize / sizeof(artist_info_t);
     global_artists = (artist_info_t *)malloc(fno.fsize);
     if (global_artists == NULL) return 0;
@@ -445,7 +404,7 @@ int sb_load_library(void) {
     // --- LOAD ALBUMS ---
     if (f_stat("0:/.albums.sbc", &fno) != FR_OK) {
         printf("[Error] 0:/.albums.sbc file missing.\r\n");
-        free(global_artists); global_artists = NULL;
+        free(global_albums); global_albums = NULL;
         return 0;
     }
     album_count = fno.fsize / sizeof(album_info_t);

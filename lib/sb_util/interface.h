@@ -4,7 +4,7 @@
 #include "global_vars.h"
 
 int browse_tracks();
-int browse_artists();
-int browse_albums();
+uint16_t browse_artists();
+uint16_t browse_albums();
 
 #endif

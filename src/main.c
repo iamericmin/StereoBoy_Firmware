@@ -49,8 +49,17 @@ st7789_t display = {
 
 folder_info_t folders[MAX_FOLDERS];
 
+track_info_t track_window[10];
 track_info_t *current_track = NULL;
 track_info_t current_track_holder;
+
+album_info_t album_window[10];
+album_info_t *current_album = NULL;
+album_info_t current_album_holder;
+
+artist_info_t artist_window[10];
+album_info_t *current_artist = NULL;
+album_info_t current_artist_holder;
 
 // file that contains all tracks' metadata
 // VERY IMPORTANT
@@ -60,6 +69,8 @@ char folder_names[20][64];
 int folder_file_counts[20];
 
 uint16_t song_choice = 0;
+uint16_t album_choice = 0;
+uint16_t artist_choice = 0;
 uint16_t prev_choice = 0;
 uint16_t menu_choice = 0;
 uint8_t selected = 0;
@@ -67,7 +78,58 @@ uint8_t selected = 0;
 int temp_visualizer = 6;
 int exitCode = 0;
 
+uint16_t browse_albums() {
+    current_album = &current_album_holder;
+    if (!sb_get_album_window(album_choice, current_album, album_window)) {
+        printf("Error reading track metadata from cache table!\n");
+    }
+    // read_lwbt();
+    temp_visualizer = (visualizer == 7) ? 1 : visualizer;
+    //Return to main menu with list selection:
+    if (exitCode == 0) {
+        // pca9685_all_off(&vu_meter);
+        selected = false;
+        set_visualizer(6);
+        printf("\r\nSong %d/%d: ", album_choice+1, album_count);
+        prev_choice = album_choice;
+        while (selected == false) {
+            uint8_t pressed = buttons_get_just_pressed();
+            if (pressed > 0){
+                if (pressed & BTN_D)      album_choice = (album_choice + 1) % album_count;
+                if (pressed & BTN_U)      album_choice = (album_choice - 1 + album_count) % album_count; //added roll-over
+                    // shift songs down by one and insert new song on top
+                if (pressed & BTN_R)      album_choice = (album_choice + 10) % album_count;
+                if (pressed & BTN_L)      album_choice = (album_choice - 10 + album_count) % album_count;
+                if (pressed & BTN_B) {
+                    return 100;
+                }
+                if (pressed & BTN_A) {
+                    selected = true;   
+                    printf("Poo cum fart shit pee\n");
+                }       
+                sb_get_album_window(album_choice, current_album, album_window);
+            }
+            if (prev_choice != album_choice){
+                printf("\r\nSong %d/%d: ", album_choice+1, album_count);
+                prev_choice = album_choice;
+            }
+            
+            sleep_ms(10);
+        }
+    }
+
+    if (!sb_get_album_window(album_choice, current_album, album_window)) {
+        printf("Error reading track metadata from cache table!\n");
+    }
+
+    return current_album->start_track;
+}
+
 int browse_tracks() {
+    current_track = &current_track_holder;
+    if (!sb_get_track_window_fast(&tracks_cache_file, song_choice, current_track, track_window)) {
+        printf("Error reading track metadata from cache table!\n");
+    }
     // read_lwbt();
     temp_visualizer = (visualizer == 7) ? 1 : visualizer;
     //Return to main menu with list selection:
@@ -106,8 +168,6 @@ int browse_tracks() {
     if (!sb_get_track_window_fast(&tracks_cache_file, song_choice, current_track, track_window)) {
         printf("Error reading track metadata from cache table!\n");
     }
-
-    get_mp3_metadata(current_track->filename, current_track);
 
     printf("\r\n\rNOW PLAYING:\r\n");
     printf("  Title : %s\r\n", current_track->title);
@@ -203,10 +263,6 @@ int main() {
     menu_choice = 1;
     selected = 100;
 
-    current_track = &current_track_holder;
-    if (!sb_get_track_window_fast(&tracks_cache_file, song_choice, current_track, track_window)) {
-        printf("Error reading track metadata from cache table!\n");
-    }
     while (1) {
         menu_choice = 1;
         selected = 100;
@@ -236,7 +292,10 @@ int main() {
                 break;
             // Albums
             case 2:
-                break;
+                // selected = 0;
+                // int result = 0;
+                // song_choice = browse_albums();
+                // break;
             // Tracks
             case 3:
                 break;

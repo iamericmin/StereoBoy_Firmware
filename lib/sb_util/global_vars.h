@@ -112,15 +112,6 @@ extern track_info_t *current_track;
 extern track_info_t current_track_holder;
 
 typedef struct __attribute__((packed)) {
-    char title[128];
-    char album[128];
-    char artist[128];
-    char filename[128]; // Added to match the new 512-byte compiled cache line
-} track_cache_t;
-
-extern track_info_t track_window[10];
-
-typedef struct __attribute__((packed)) {
     char artist_name[128];
     uint16_t num_albums;
     uint16_t start_album;
@@ -131,6 +122,10 @@ typedef struct __attribute__((packed)) {
     uint16_t num_tracks;
     uint16_t start_track;
 } album_info_t;
+
+extern track_info_t track_window[10];
+extern artist_info_t artist_window[10];
+extern album_info_t album_window[10];
 
 // Global runtime database pointers
 extern artist_info_t *global_artists;
