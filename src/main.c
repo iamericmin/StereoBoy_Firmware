@@ -58,8 +58,8 @@ album_info_t *current_album = NULL;
 album_info_t current_album_holder;
 
 artist_info_t artist_window[10];
-album_info_t *current_artist = NULL;
-album_info_t current_artist_holder;
+artist_info_t *current_artist = NULL;
+artist_info_t current_artist_holder;
 
 // file that contains all tracks' metadata
 // VERY IMPORTANT
@@ -78,6 +78,52 @@ uint8_t selected = 0;
 int temp_visualizer = 6;
 int exitCode = 0;
 
+uint16_t browse_artists() {
+    current_artist = &current_artist_holder;
+    if (!sb_get_artist_window(artist_choice, current_artist, artist_window)) {
+        printf("Error reading track metadata from cache table!\n");
+    }
+    // read_lwbt();
+    temp_visualizer = (visualizer == 7) ? 1 : visualizer;
+    //Return to main menu with list selection:
+    if (exitCode == 0) {
+        // pca9685_all_off(&vu_meter);
+        selected = false;
+        set_visualizer(6);
+        prev_choice = artist_choice;
+        while (selected == false) {
+            uint8_t pressed = buttons_get_just_pressed();
+            if (pressed > 0){
+                if (pressed & BTN_D)      artist_choice = (artist_choice + 1) % artist_count;
+                if (pressed & BTN_U)      artist_choice = (artist_choice - 1 + artist_count) % artist_count; //added roll-over
+                    // shift songs down by one and insert new song on top
+                if (pressed & BTN_R)      artist_choice = (artist_choice + 10) % artist_count;
+                if (pressed & BTN_L)      artist_choice = (artist_choice - 10 + artist_count) % artist_count;
+                if (pressed & BTN_B) {
+                    return 100;
+                }
+                if (pressed & BTN_A) {
+                    selected = true;   
+                    printf("Poo cum fart shit pee\n");
+                }       
+                sb_get_artist_window(artist_choice, current_artist, artist_window);
+            }
+            if (prev_choice != artist_choice){
+                printf("\r\nArtist %d/%d: ", artist_choice+1, artist_count);
+                prev_choice = artist_choice;
+            }
+            
+            sleep_ms(10);
+        }
+    }
+
+    if (!sb_get_artist_window(artist_choice, current_artist, artist_window)) {
+        printf("Error reading track metadata from cache table!\n");
+    }
+
+    return current_artist->start_album;
+}
+
 uint16_t browse_albums() {
     current_album = &current_album_holder;
     if (!sb_get_album_window(album_choice, current_album, album_window)) {
@@ -90,7 +136,6 @@ uint16_t browse_albums() {
         // pca9685_all_off(&vu_meter);
         selected = false;
         set_visualizer(6);
-        printf("\r\nSong %d/%d: ", album_choice+1, album_count);
         prev_choice = album_choice;
         while (selected == false) {
             uint8_t pressed = buttons_get_just_pressed();
@@ -108,16 +153,9 @@ uint16_t browse_albums() {
                     printf("Poo cum fart shit pee\n");
                 }       
                 sb_get_album_window(album_choice, current_album, album_window);
-
-                // *** ALBUM CHECKER SERIAL PRINT ***
-                printf("\n*** ALBUM WINDOW ***\n");
-                for (int i=0; i<10; i++) {
-                    printf("%s\n", album_window[i].album_name);
-                }
-                printf("\nCURRENT ALBUM: %s\n", current_album->album_name);
             }
             if (prev_choice != album_choice){
-                printf("\r\nSong %d/%d: ", album_choice+1, album_count);
+                printf("\r\nAlbum Fuck %d/%d: ", album_choice+1, album_count);
                 prev_choice = album_choice;
             }
             
@@ -296,11 +334,14 @@ int main() {
         switch (menu_choice) {
             // Artists
             case 1:
+                selected = 0;
+                album_choice = browse_artists();
+                selected = 0;
+                song_choice = browse_albums();
                 break;
             // Albums
             case 2:
                 selected = 0;
-                int result = 0;
                 song_choice = browse_albums();
                 break;
             // Tracks

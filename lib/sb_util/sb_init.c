@@ -288,6 +288,40 @@ int sb_get_album_window(uint16_t idx, album_info_t *out_album, album_info_t *alb
     } else {
         *out_album = album_window[5];
     }
+
+    // *** ALBUM CHECKER SERIAL PRINT ***
+    printf("\n*** ALBUM WINDOW ***\n");
+    for (int i=0; i<10; i++) {
+        printf("%s\n", album_window[i].album_name);
+    }
+    printf("\nCURRENT ALBUM: %s\n", out_album->album_name);
+
+    return 1;
+}
+
+int sb_get_artist_window(uint16_t idx, artist_info_t *out_artist, artist_info_t *artist_window) {
+
+    // Calculate sliding window start index (Target: current track at window index 5)
+    uint16_t start_idx = (idx < 5) ? 0 : idx - 5;
+
+    if (global_artists == NULL) {
+        return -1;
+    }
+
+    memcpy(artist_window, &global_artists[start_idx], 10 * sizeof(artist_info_t));
+    if (idx < 5) {
+        *out_artist = artist_window[idx];
+    } else {
+        *out_artist = artist_window[5];
+    }
+    
+    // *** ARTIST CHECKER SERIAL PRINT ***
+    printf("\n*** ARTIST WINDOW ***\n");
+    for (int i=0; i<10; i++) {
+        printf("%s\n", artist_window[i].artist_name);
+    }
+    printf("\nCURRENT ARTIST: %s\n", out_artist->artist_name);
+    
     return 1;
 }
 

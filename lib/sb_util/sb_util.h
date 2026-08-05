@@ -35,6 +35,7 @@ int sb_scan_folders(folder_info_t *folders, int max_folders);
 int sb_get_track_window(uint16_t idx, track_info_t *out_track, track_info_t *track_window);
 int sb_get_track_window_fast(FIL *fil, uint16_t idx, track_info_t *out_track, track_info_t *track_window);
 int sb_get_album_window(uint16_t idx, album_info_t *out_album, album_info_t *album_window);
+int sb_get_artist_window(uint16_t idx, artist_info_t *out_artist, artist_info_t *artist_window);
 int sb_load_library();
 FRESULT sb_load_tracks_cache(FIL *fil);
 
