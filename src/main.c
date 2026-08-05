@@ -135,7 +135,7 @@ uint16_t browse_albums() {
     if (exitCode == 0) {
         // pca9685_all_off(&vu_meter);
         selected = false;
-        set_visualizer(6);
+        set_visualizer(5);
         prev_choice = album_choice;
         while (selected == false) {
             uint8_t pressed = buttons_get_just_pressed();
@@ -252,7 +252,7 @@ int browse_tracks() {
 }
 
 int main() {
-    set_visualizer(6);
+    // set_visualizer(6);
     // Lower RP2350 core voltage to 1V
     // P = V^2 * f, so 0.1V drop results in quadratic change
     // Before: 1.1 ^ 2 * 150 = 181.5
