@@ -108,6 +108,13 @@ uint16_t browse_albums() {
                     printf("Poo cum fart shit pee\n");
                 }       
                 sb_get_album_window(album_choice, current_album, album_window);
+
+                // *** ALBUM CHECKER SERIAL PRINT ***
+                printf("\n*** ALBUM WINDOW ***\n");
+                for (int i=0; i<10; i++) {
+                    printf("%s\n", album_window[i].album_name);
+                }
+                printf("\nCURRENT ALBUM: %s\n", current_album->album_name);
             }
             if (prev_choice != album_choice){
                 printf("\r\nSong %d/%d: ", album_choice+1, album_count);
@@ -292,10 +299,10 @@ int main() {
                 break;
             // Albums
             case 2:
-                // selected = 0;
-                // int result = 0;
-                // song_choice = browse_albums();
-                // break;
+                selected = 0;
+                int result = 0;
+                song_choice = browse_albums();
+                break;
             // Tracks
             case 3:
                 break;

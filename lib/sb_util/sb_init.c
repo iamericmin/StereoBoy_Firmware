@@ -283,6 +283,11 @@ int sb_get_album_window(uint16_t idx, album_info_t *out_album, album_info_t *alb
     }
 
     memcpy(album_window, &global_albums[start_idx], 10 * sizeof(album_info_t));
+    if (idx < 5) {
+        *out_album = album_window[idx];
+    } else {
+        *out_album = album_window[5];
+    }
     return 1;
 }
 
