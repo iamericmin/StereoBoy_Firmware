@@ -256,10 +256,9 @@ int sb_get_track_window_fast(FIL *fil, uint16_t idx, track_info_t *out_track, tr
         start_idx = track_count - 10;
     } else if (track_count < 10) {
         start_idx = 0;
+        // 3. Zero out array to ensure remaining slots are clean if total tracks < 10
+        memset(track_window, 0, 10 * sizeof(track_info_t));
     }
-
-    // 3. Zero out array to ensure remaining slots are clean if total tracks < 10
-    memset(track_window, 0, 10 * sizeof(track_info_t));
 
     uint16_t items_to_read = (track_count - start_idx < 10) ? (track_count - start_idx) : 10;
     UINT bytes_to_read = items_to_read * sizeof(track_info_t);
@@ -295,11 +294,10 @@ int sb_get_album_window(uint16_t idx, album_info_t *out_album, album_info_t *alb
     if (album_count >= 10 && start_idx > album_count - 10) {
         start_idx = album_count - 10;
     } else if (album_count < 10) {
+        // 3. Clear window buffer first to prevent uninitialized data if count < 10
+        memset(album_window, 0, 10 * sizeof(album_info_t));
         start_idx = 0;
     }
-
-    // 3. Clear window buffer first to prevent uninitialized data if count < 10
-    memset(album_window, 0, 10 * sizeof(album_info_t));
 
     // 4. Safely copy only available items
     uint16_t items_to_copy = (album_count - start_idx < 10) ? (album_count - start_idx) : 10;
