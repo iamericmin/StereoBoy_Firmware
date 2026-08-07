@@ -322,7 +322,7 @@ int jukebox()
             case 'V':
                 visualizer = (visualizer + 1) % (num_visualizations - 1);
                 if (visualizer == 0) {
-                    display_album_art(img_buffer, current_track->artist, current_track->album, current_track->title);
+                    display_album_art_by_index(img_buffer, song_choice);
                     printf("changing visualizer");
                 }
                 switch (visualizer) {

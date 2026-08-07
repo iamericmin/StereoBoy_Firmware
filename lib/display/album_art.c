@@ -282,7 +282,7 @@ bool load_album_cover_by_index(uint16_t *img_buffer, uint32_t global_track_idx) 
  */
 int display_album_art_by_index(uint16_t *img_buffer, uint32_t global_track_idx) {
     // Optional: Clear or prepare frame buffer
-    // memset(frame_buffer, 0, sizeof(frame_buffer));
+    memset(frame_buffer, 0, sizeof(frame_buffer));
 
     if (load_album_cover_by_index(img_buffer, global_track_idx)) {
         // Center 160x160 inside 240x240 screen (offset = 40)

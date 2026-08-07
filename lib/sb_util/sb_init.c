@@ -246,84 +246,100 @@ int sb_get_raw_tracks(char raw_tracks[][256], int max_tracks) {
 }
 
 int sb_get_track_window_fast(FIL *fil, uint16_t idx, track_info_t *out_track, track_info_t *track_window) {
+    if (fil == NULL || track_count == 0) return 0;
+
+    // 1. Calculate ideal sliding window start index
+    int32_t start_idx = (idx < 5) ? 0 : (int32_t)idx - 5;
+
+    // 2. Clamp upper boundary so we never read past EOF on SD card
+    if (track_count >= 10 && start_idx > track_count - 10) {
+        start_idx = track_count - 10;
+    } else if (track_count < 10) {
+        start_idx = 0;
+    }
+
+    // 3. Zero out array to ensure remaining slots are clean if total tracks < 10
+    memset(track_window, 0, 10 * sizeof(track_info_t));
+
+    uint16_t items_to_read = (track_count - start_idx < 10) ? (track_count - start_idx) : 10;
+    UINT bytes_to_read = items_to_read * sizeof(track_info_t);
     UINT br;
 
-    // Calculate sliding window start index (Target: current track at window index 5)
-    uint16_t start_idx = (idx < 5) ? 0 : idx - 5;
-    UINT bytes_to_read = 10 * sizeof(track_info_t);
-
+    // 4. Seek and read exact byte chunk
     if (f_lseek(fil, (DWORD)(start_idx * sizeof(track_info_t))) != FR_OK) {
-        printf("[Error] Global file seek failed.\n");
+        printf("[Error] Global track file seek failed.\n");
         return 0;
     }
 
     if (f_read(fil, track_window, bytes_to_read, &br) != FR_OK || br < bytes_to_read) {
-        printf("[Error] Global file read failed or reached unexpected EOF.\n");
-        memset(track_window, 0, bytes_to_read);
+        printf("[Error] Track file read failed.\n");
         return 0;
     }
 
-    // Extract the specific track profile from the populated window
-    if (idx < 5) {
-        *out_track = track_window[idx];
-    } else {
-        *out_track = track_window[5];
+    // 5. Selected item assignment
+    uint16_t selected_slot = idx - start_idx;
+    if (out_track) {
+        *out_track = track_window[selected_slot];
     }
 
     return 1;
 }
 
 int sb_get_album_window(uint16_t idx, album_info_t *out_album, album_info_t *album_window) {
+    if (global_albums == NULL || album_count == 0) return -1;
 
-    // Calculate sliding window start index (Target: current track at window index 5)
-    uint16_t start_idx = (idx < 5) ? 0 : idx - 5;
+    // 1. Calculate ideal sliding window start index
+    int32_t start_idx = (idx < 5) ? 0 : (int32_t)idx - 5;
 
-    if (global_albums == NULL) {
-        return -1;
+    // 2. Clamp upper boundary so we never read past the end of global_albums
+    if (album_count >= 10 && start_idx > album_count - 10) {
+        start_idx = album_count - 10;
+    } else if (album_count < 10) {
+        start_idx = 0;
     }
 
-    memcpy(album_window, &global_albums[start_idx], 10 * sizeof(album_info_t));
-    if (idx < 5) {
-        *out_album = album_window[idx];
-    } else {
-        *out_album = album_window[5];
-    }
+    // 3. Clear window buffer first to prevent uninitialized data if count < 10
+    memset(album_window, 0, 10 * sizeof(album_info_t));
 
-    // *** ALBUM CHECKER SERIAL PRINT ***
-    printf("\n*** ALBUM WINDOW ***\n");
-    for (int i=0; i<10; i++) {
-        printf("%s\n", album_window[i].album_name);
+    // 4. Safely copy only available items
+    uint16_t items_to_copy = (album_count - start_idx < 10) ? (album_count - start_idx) : 10;
+    memcpy(album_window, &global_albums[start_idx], items_to_copy * sizeof(album_info_t));
+
+    // 5. Compute actual offset slot for selected item
+    uint16_t selected_slot = idx - start_idx;
+    if (out_album) {
+        *out_album = album_window[selected_slot];
     }
-    printf("\nCURRENT ALBUM: %s\n", out_album->album_name);
-    printf("# TRACKS: %s\n", out_album->num_tracks);
 
     return 1;
 }
 
 int sb_get_artist_window(uint16_t idx, artist_info_t *out_artist, artist_info_t *artist_window) {
+    if (global_artists == NULL || artist_count == 0) return -1;
 
-    // Calculate sliding window start index (Target: current track at window index 5)
-    uint16_t start_idx = (idx < 5) ? 0 : idx - 5;
+    // 1. Calculate ideal sliding window start index
+    int32_t start_idx = (idx < 5) ? 0 : (int32_t)idx - 5;
 
-    if (global_artists == NULL) {
-        return -1;
+    // 2. Clamp upper boundary
+    if (artist_count >= 10 && start_idx > artist_count - 10) {
+        start_idx = artist_count - 10;
+    } else if (artist_count < 10) {
+        start_idx = 0;
     }
 
-    memcpy(artist_window, &global_artists[start_idx], 10 * sizeof(artist_info_t));
-    if (idx < 5) {
-        *out_artist = artist_window[idx];
-    } else {
-        *out_artist = artist_window[5];
+    // 3. Clear window buffer
+    memset(artist_window, 0, 10 * sizeof(artist_info_t));
+
+    // 4. Safely copy items
+    uint16_t items_to_copy = (artist_count - start_idx < 10) ? (artist_count - start_idx) : 10;
+    memcpy(artist_window, &global_artists[start_idx], items_to_copy * sizeof(artist_info_t));
+
+    // 5. Selected item assignment
+    uint16_t selected_slot = idx - start_idx;
+    if (out_artist) {
+        *out_artist = artist_window[selected_slot];
     }
-    
-    // *** ARTIST CHECKER SERIAL PRINT ***
-    printf("\n*** ARTIST WINDOW ***\n");
-    for (int i=0; i<10; i++) {
-        printf("%s\n", artist_window[i].artist_name);
-    }
-    printf("\nCURRENT ARTIST: %s\n", out_artist->artist_name);
-    printf("# ALBUMS: %s\n", out_artist->num_albums);
-    
+
     return 1;
 }
 
