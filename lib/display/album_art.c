@@ -4,6 +4,7 @@
 
 #define IMG_WIDTH  160
 #define IMG_HEIGHT 160
+#define IMG_BYTES 160 * 160 * 2
 
 // generate FNV-1a hash for LUT lookup
 #include <ctype.h>
@@ -237,4 +238,65 @@ int display_album_art(uint16_t *img_buffer, const char* artist, const char* albu
         printf("[Art Error] Hash found, but reading 51200 bytes from artwork.bin failed!\n");
         return -1;
     }
+}
+
+bool load_album_cover_by_index(uint16_t *img_buffer, uint32_t global_track_idx) {
+    if (img_buffer == NULL) return false;
+
+    FIL file;
+    FRESULT fr;
+    UINT bytes_read;
+
+    // 1. Open the actual filename output by Python
+    fr = f_open(&file, "0:/.artwork.sbc", FA_READ);
+    if (fr != FR_OK) {
+        printf("[Art Error] Could not open 0:/.artwork.sbc (FatFs Code: %d)\n", fr);
+        return false; 
+    }
+
+    // 2. Compute byte offset (Index * 51,200)
+    FSIZE_t target_offset = (FSIZE_t)global_track_idx * IMG_BYTES;
+
+    // 3. Seek to offset
+    fr = f_lseek(&file, target_offset);
+    if (fr != FR_OK) {
+        printf("[Art Error] Seek failed to offset %llu (Code: %d)\n", target_offset, fr);
+        f_close(&file);
+        return false;
+    }
+
+    // 4. Read RGB565 block into buffer
+    fr = f_read(&file, img_buffer, IMG_BYTES, &bytes_read);
+    f_close(&file);
+
+    if (fr == FR_OK && bytes_read == IMG_BYTES) {
+        return true; 
+    }
+
+    printf("[Art Error] Read failed! Read %u / %d bytes (Code: %d)\n", bytes_read, IMG_BYTES, fr);
+    return false;
+}
+
+/**
+ * Renders the 160x160 artwork centered onto the 240x240 display frame buffer.
+ */
+int display_album_art_by_index(uint16_t *img_buffer, uint32_t global_track_idx) {
+    // Optional: Clear or prepare frame buffer
+    // memset(frame_buffer, 0, sizeof(frame_buffer));
+
+    if (load_album_cover_by_index(img_buffer, global_track_idx)) {
+        // Center 160x160 inside 240x240 screen (offset = 40)
+        const int offset = (240 - 160) / 2; // 40 px margin
+        
+        for (int y = 0; y < 160; y++) {
+            uint16_t *dst = &frame_buffer[(y + offset) * 240 + offset];
+            uint16_t *src = &img_buffer[y * 160];
+            memcpy(dst, src, 160 * sizeof(uint16_t));
+        }
+        
+        printf("[Art Success] Displayed art for Global Track ID: %lu\n", global_track_idx);
+        return 0;
+    }
+
+    return -1;
 }

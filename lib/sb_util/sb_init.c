@@ -295,6 +295,7 @@ int sb_get_album_window(uint16_t idx, album_info_t *out_album, album_info_t *alb
         printf("%s\n", album_window[i].album_name);
     }
     printf("\nCURRENT ALBUM: %s\n", out_album->album_name);
+    printf("# TRACKS: %s\n", out_album->num_tracks);
 
     return 1;
 }
@@ -321,6 +322,7 @@ int sb_get_artist_window(uint16_t idx, artist_info_t *out_artist, artist_info_t 
         printf("%s\n", artist_window[i].artist_name);
     }
     printf("\nCURRENT ARTIST: %s\n", out_artist->artist_name);
+    printf("# ALBUMS: %s\n", out_artist->num_albums);
     
     return 1;
 }

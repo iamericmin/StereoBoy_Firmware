@@ -71,7 +71,7 @@ int jukebox()
     uint16_t stereo_bit = sampleSpeed & 1;     // LSB indicates mono or stereo (not exactly sure what but this is pretty much always 1)
     uint16_t base_rate = sampleSpeed & 0xFFFE; // sampling speed in upper 15 bits
     if (visualizer == 0) {
-        display_album_art(img_buffer, current_track->artist, current_track->album, current_track->title);
+        display_album_art_by_index(img_buffer, song_choice);
     }
 
     f_lseek(&fil, current_track->audio_start);

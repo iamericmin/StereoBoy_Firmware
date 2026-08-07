@@ -82,7 +82,7 @@ void scrolling_menu(int mode) {
 
         // Format Strings safely
         snprintf(menu_string, sizeof(menu_string), "%s", selected_album->album_name);
-        snprintf(info_string_1, sizeof(info_string_1), "%s Tracks", selected_album->num_tracks);
+        snprintf(info_string_1, sizeof(info_string_1), "%u Tracks", selected_album->num_tracks);
         info_string_2[0] = '\0'; // Clear line 2 metadata for albums
 
     } else { // TRACKS
@@ -282,11 +282,11 @@ void core1_entry()
             update_scope_core1();
             // st7789_draw_string(1, 200, current_track->title, WHITE);
             break;
-        case 5:
+        case 5: // Albums
             process_audio_batch();
             scrolling_menu(1);
             break;
-        case 6:
+        case 6: // Tracks
             process_audio_batch();
             scrolling_menu(0);
             break;
