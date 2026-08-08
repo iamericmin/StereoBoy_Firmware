@@ -56,7 +56,7 @@ add_executable(StereoBoy_FW
     lib/sb_util/core1_entry.c
     lib/display/display.c
     lib/font/font.c
-    lib/font/find_font_char.c
+    # lib/font/find_font_char.c
     )
 
 pico_set_program_name(StereoBoy_FW "StereoBoy_FW")

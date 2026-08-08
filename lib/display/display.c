@@ -180,23 +180,47 @@ void set_pixel(uint16_t x, uint16_t y, uint16_t color)
     frame_buffer[y * SCREEN_WIDTH + x] = color;
 }
 
+// Helper function to blend RGB565 colors based on 8-bit Alpha (0-255)
+static inline uint16_t blend_rgb565(uint16_t fg, uint16_t bg, uint8_t alpha) {
+    if (alpha == 0)   return bg;
+    if (alpha == 255) return fg;
+
+    // Extract Red, Green, Blue components from RGB565
+    uint32_t fg_r = (fg >> 11) & 0x1F;
+    uint32_t fg_g = (fg >> 5)  & 0x3F;
+    uint32_t fg_b =  fg        & 0x1F;
+
+    uint32_t bg_r = (bg >> 11) & 0x1F;
+    uint32_t bg_g = (bg >> 5)  & 0x3F;
+    uint32_t bg_b =  bg        & 0x1F;
+
+    // Linearly interpolate each channel
+    uint32_t r = (fg_r * alpha + bg_r * (255 - alpha)) / 255;
+    uint32_t g = (fg_g * alpha + bg_g * (255 - alpha)) / 255;
+    uint32_t b = (fg_b * alpha + bg_b * (255 - alpha)) / 255;
+
+    return (uint16_t)((r << 11) | (g << 5) | b);
+}
+
 void lcd_draw_char(uint16_t x, uint16_t y, char c, uint16_t color)
 {
     const struct Font *f = find_font_char(c);
     if (f == NULL)
         return;
+
+    // Read background color at destination (Assuming BLACK or global background color)
+    uint16_t bg_color = BLACK; 
+
     for (uint8_t row = 0; row < font_height; row++)
     {
         for (uint8_t col = 0; col < font_width; col++)
         {
-            if (f->code[row * font_width + col] == 1)
-            {
-                set_pixel(x + col, y + row, color);
-            }
-            else
-            {
-                set_pixel(x + col, y + row, BLACK);
-            }
+            uint8_t alpha = f->code[row * font_width + col];
+            
+            // Blend font color with background color using alpha value
+            uint16_t blended_pixel = blend_rgb565(color, bg_color, alpha);
+            
+            set_pixel(x + col, y + row, blended_pixel);
         }
     }
 }

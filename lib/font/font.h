@@ -1,32 +1,18 @@
-/*
-	"font.h", Written by Daniel C. MIT License.
-
-	This file is C89.
-
-	Compiler/preprocessor configs (optional):
-	-D NO_LOWERCASE
-	-D NO_SYMBOL
-	-D NO_NUMBERS
-	In case you are limited in space :)
-*/
 #ifndef FONT_H
 #define FONT_H
 
-#include "stdbool.h"
-// #include "font_font.h"
+#include <stdint.h>
+#include <stddef.h>
 
-#define font_width 11
-#define font_height 20
+extern const uint8_t font_width;
+extern const uint8_t font_height;
 
-// struct Font;
 struct Font {
     char letter;
-    bool code[font_width*font_height];
-	// char width;
-	// char height;
+    uint8_t code[220]; // 8-bit alpha intensity map (0-255)
 };
 
-const struct Font * find_font_char(char c);
-extern struct Font font[];
+extern const struct Font font[];
+const struct Font* find_font_char(char c);
 
-#endif
+#endif // FONT_H
