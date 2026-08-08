@@ -173,6 +173,8 @@ void scrolling_menu(int mode) {
         const char *display_name;
         if (mode == 1) {
             display_name = album_window[i].album_name;
+        } else if (mode == 2) {
+            display_name = artist_window[i].artist_name;
         } else {
             display_name = track_window[i].title;
         }
