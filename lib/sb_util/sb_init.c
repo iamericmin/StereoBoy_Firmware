@@ -322,11 +322,10 @@ int sb_get_artist_window(uint16_t idx, artist_info_t *out_artist, artist_info_t 
     if (artist_count >= 10 && start_idx > artist_count - 10) {
         start_idx = artist_count - 10;
     } else if (artist_count < 10) {
+    // 3. Clear window buffer
+        memset(artist_window, 0, 10 * sizeof(artist_info_t));
         start_idx = 0;
     }
-
-    // 3. Clear window buffer
-    memset(artist_window, 0, 10 * sizeof(artist_info_t));
 
     // 4. Safely copy items
     uint16_t items_to_copy = (artist_count - start_idx < 10) ? (artist_count - start_idx) : 10;

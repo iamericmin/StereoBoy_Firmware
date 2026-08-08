@@ -79,12 +79,29 @@ void scrolling_menu(int mode) {
 
         selected_slot = item_choice - start;
         album_info_t *selected_album = &album_window[selected_slot];
+        track_info_t *selected_album_artist;
 
         // Format Strings safely
         snprintf(menu_string, sizeof(menu_string), "%s", selected_album->album_name);
-        snprintf(info_string_1, sizeof(info_string_1), "%u Tracks", selected_album->num_tracks);
-        info_string_2[0] = '\0'; // Clear line 2 metadata for albums
+        snprintf(info_string_1, sizeof(info_string_1), "%s", current_track->artist);
+        snprintf(info_string_2, sizeof(info_string_2), "%u Tracks", selected_album->num_tracks);
 
+    } else if (mode == 2) { // ARTISTS
+        item_choice = artist_choice;
+        item_count = artist_count;
+
+        start = (item_choice < 6) ? 0 : item_choice - 5;
+        if (item_count >= 10 && start > item_count - 10) {
+            start = item_count - 10;
+        }
+
+        selected_slot = item_choice - start;
+        artist_info_t *selected_artist = &artist_window[selected_slot];
+
+        // Format Strings safely
+        snprintf(menu_string, sizeof(menu_string), "%s", selected_artist->artist_name);
+        snprintf(info_string_1, sizeof(info_string_1), "%u Albums", selected_artist->num_albums);
+        info_string_2[0] = '\0'; // Clear line 2 metadata for albums
     } else { // TRACKS
         item_choice = song_choice; // FIX 1: Set item_choice for tracks
         item_count = track_count;
@@ -281,6 +298,10 @@ void core1_entry()
         case 1: // Oscilloscope
             update_scope_core1();
             // st7789_draw_string(1, 200, current_track->title, WHITE);
+            break;
+        case 4: // Artists
+            process_audio_batch();
+            scrolling_menu(2);
             break;
         case 5: // Albums
             process_audio_batch();
