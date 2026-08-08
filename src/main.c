@@ -178,7 +178,7 @@ int browse_tracks() {
         printf("Error reading track metadata from cache table!\n");
     }
     // read_lwbt();
-    temp_visualizer = (visualizer == 5 || visualizer == 7) ? 1 : visualizer;
+    temp_visualizer = (visualizer == 5 || visualizer == 7) ? 0 : visualizer;
     //Return to main menu with list selection:
     if (exitCode == 0) {
         // pca9685_all_off(&vu_meter);

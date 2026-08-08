@@ -84,7 +84,11 @@ void scrolling_menu(int mode) {
         // Format Strings safely
         snprintf(menu_string, sizeof(menu_string), "%s", selected_album->album_name);
         snprintf(info_string_1, sizeof(info_string_1), "%s", current_track->artist);
-        snprintf(info_string_2, sizeof(info_string_2), "%u Tracks", selected_album->num_tracks);
+        if (selected_album->num_tracks == 1) {
+            snprintf(info_string_2, sizeof(info_string_2), "1 Track");
+        } else {
+            snprintf(info_string_2, sizeof(info_string_2), "%u Tracks", selected_album->num_tracks);
+        }
 
     } else if (mode == 2) { // ARTISTS
         item_choice = artist_choice;
