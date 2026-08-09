@@ -127,10 +127,10 @@ uint16_t browse_artists() {
 uint16_t browse_albums() {
     current_track = &current_track_holder;
     current_album = &current_album_holder;
-    sb_get_track_window_fast(&tracks_cache_file, current_album->start_track, current_track, track_window);
     if (!sb_get_album_window(album_choice, current_album, album_window)) {
         printf("Error reading track metadata from cache table!\n");
     }
+    sb_get_track_window_fast(&tracks_cache_file, current_album->start_track, current_track, track_window);
     // read_lwbt();
     temp_visualizer = (visualizer == 7) ? 1 : visualizer;
     //Return to main menu with list selection:
@@ -154,8 +154,8 @@ uint16_t browse_albums() {
                     selected = true;   
                     printf("Poo cum fart shit pee\n");
                 }       
-                sb_get_track_window_fast(&tracks_cache_file, current_album->start_track, current_track, track_window);
                 sb_get_album_window(album_choice, current_album, album_window);
+                sb_get_track_window_fast(&tracks_cache_file, current_album->start_track, current_track, track_window);
             }
             if (prev_choice != album_choice){
                 printf("\r\nAlbum Fuck %d/%d: ", album_choice+1, album_count);
