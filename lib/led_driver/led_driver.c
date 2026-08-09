@@ -42,21 +42,26 @@ bool pca9685_init(pca9685_t *dev, i2c_inst_t *i2c, uint8_t addr) {
     dev->addr = addr;
     dev->osc_freq = PCA9685_OSC_FREQ;
 
-    // 1. Enter sleep to allow configuration
+    // 1. Put to sleep so we can safely configure registers & prescaler
     pca9685_sleep(dev);
 
-    // 2. Set MODE2: Open-Drain (0) and Inverted Polarity (1)
-    // This makes 4095 = LED Full Bright for cathode-wired setups
+    // 2. Set MODE2: Inverted logic (1) for common cathode driving
     write8(dev, MODE2, MODE2_INVRT);
 
-    // 3. Set PWM frequency
+    // 3. Set Auto-Increment (MODE1_AI) while staying in sleep
+    write8(dev, MODE1, MODE1_SLEEP | MODE1_AI);
+
+    // 4. Force ALL PWM outputs to OFF before waking up the oscillator
+    pca9685_all_off(dev);
+
+    // 5. Set PWM frequency (handles sleep/wake transitions internally)
     pca9685_set_pwm_freq(dev, 1000);
 
-    // 4. Wake up and enable Auto-Increment
+    // 6. Wake up: clear SLEEP bit while keeping Auto-Increment
     write8(dev, MODE1, MODE1_AI);
-    sleep_ms(5);
+    sleep_ms(5); // Allow internal oscillator time to stabilize
 
-    // 5. Clear restart bit
+    // 7. Clear restart bit to activate PWM output channels
     write8(dev, MODE1, MODE1_AI | MODE1_RESTART);
 
     return true;
@@ -103,25 +108,16 @@ void pca9685_sleep(pca9685_t *dev) {
 }
 
 void pca9685_wakeup(pca9685_t *dev) {
+    // 1. Ensure all outputs are cleared before restoring PWM clock
+    pca9685_all_off(dev);
 
-    // 2. Set MODE2: Open-Drain (0) and Inverted Polarity (1)
-    // This makes 4095 = LED Full Bright for cathode-wired setups
-    write8(dev, MODE2, MODE2_INVRT);
+    // 2. Clear SLEEP bit (keep Auto-Increment intact)
+    uint8_t mode1 = read8(dev, MODE1);
+    write8(dev, MODE1, (mode1 & ~MODE1_SLEEP) | MODE1_AI);
+    sleep_ms(5); // Oscillator spin-up time
 
-    // 3. Set PWM frequency
-    pca9685_set_pwm_freq(dev, 1000);
-
-    // 4. Wake up and enable Auto-Increment
-    write8(dev, MODE1, MODE1_AI);
-    sleep_ms(5);
-
-    // 5. Clear restart bit
-    write8(dev, MODE1, MODE1_AI | MODE1_RESTART);
-
-    uint8_t mode = read8(dev, MODE1);
-    write8(dev, MODE1, mode & ~MODE1_SLEEP);
-    sleep_ms(1);
-    write8(dev, MODE1, (mode & ~MODE1_SLEEP) | MODE1_RESTART);
+    // 3. Trigger RESTART to re-enable PWM control
+    write8(dev, MODE1, (mode1 & ~MODE1_SLEEP) | MODE1_AI | MODE1_RESTART);
 }
 
 void pca9685_toggleSleep(pca9685_t *dev) {
@@ -151,7 +147,7 @@ void pca9685_set_pwm_freq(pca9685_t *dev, float freq) {
 // State variables for peak smoothing 
 static float peak_l = 0.0f;
 static float peak_r = 0.0f;
-static const float PEAK_DECAY = 0.05f; // How fast the LEDs fall back down
+static const float PEAK_DECAY = 0.075f; // How fast the LEDs fall back down
 
 void pca9685_update_vu(pca9685_t *dev, uint16_t adc_left, uint16_t adc_right) {
     float amp_l = (float)abs((int)adc_left - ADC_CENTER);

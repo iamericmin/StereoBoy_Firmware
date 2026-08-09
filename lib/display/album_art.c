@@ -281,10 +281,10 @@ bool load_album_cover_by_index(uint16_t *img_buffer, uint32_t global_track_idx) 
  * Renders the 160x160 artwork centered onto the 240x240 display frame buffer.
  */
 int display_album_art_by_index(uint16_t *img_buffer, uint32_t global_track_idx) {
-    // Optional: Clear or prepare frame buffer
-    memset(frame_buffer, 0, sizeof(frame_buffer));
 
     if (load_album_cover_by_index(img_buffer, global_track_idx)) {
+        // Clear framebuffer first
+        memset(frame_buffer, 0, sizeof(frame_buffer));
         // Center 160x160 inside 240x240 screen (offset = 40)
         const int offset = (240 - 160) / 2; // 40 px margin
         
@@ -295,8 +295,9 @@ int display_album_art_by_index(uint16_t *img_buffer, uint32_t global_track_idx) 
         }
         
         printf("[Art Success] Displayed art for Global Track ID: %lu\n", global_track_idx);
+        
         return 0;
+    } else {
+        return -1;
     }
-
-    return -1;
 }
