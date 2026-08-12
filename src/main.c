@@ -73,7 +73,7 @@ uint16_t album_choice = 0;
 uint16_t artist_choice = 0;
 uint16_t prev_choice = 0;
 uint16_t menu_choice = 0;
-uint8_t selected = 0;
+uint16_t selected = 0; 
 
 int temp_visualizer = 6;
 int exitCode = 0;
@@ -100,7 +100,7 @@ uint16_t browse_artists() {
                 if (pressed & BTN_R)      artist_choice = (artist_choice + 10) % artist_count;
                 if (pressed & BTN_L)      artist_choice = (artist_choice - 10 + artist_count) % artist_count;
                 if (pressed & BTN_B) {
-                    return 100;
+                    return 65535;
                 }
                 if (pressed & BTN_A) {
                     selected = true;   
@@ -148,7 +148,7 @@ uint16_t browse_albums() {
                 if (pressed & BTN_R)      album_choice = (album_choice + 10) % album_count;
                 if (pressed & BTN_L)      album_choice = (album_choice - 10 + album_count) % album_count;
                 if (pressed & BTN_B) {
-                    return 100;
+                    return 65535;
                 }
                 if (pressed & BTN_A) {
                     selected = true;   
@@ -173,7 +173,7 @@ uint16_t browse_albums() {
     return current_album->start_track;
 }
 
-int browse_tracks() {
+uint16_t browse_tracks() {
     current_track = &current_track_holder;
     if (!sb_get_track_window_fast(&tracks_cache_file, song_choice, current_track, track_window)) {
         printf("Error reading track metadata from cache table!\n");
@@ -196,7 +196,7 @@ int browse_tracks() {
                 if (pressed & BTN_R)      song_choice = (song_choice + 10) % track_count;
                 if (pressed & BTN_L)      song_choice = (song_choice - 10 + track_count) % track_count;
                 if (pressed & BTN_B) {
-                    return 100;
+                    return 65535;
                 }
                 if (pressed & BTN_A) {
                     selected = true;   
@@ -309,14 +309,14 @@ int main() {
     printf("%d Tracks\n", track_count);
 
     menu_choice = 1;
-    selected = 100;
+    selected = 65535;
 
     while (1) {
         menu_choice = 1;
-        selected = 100;
+        selected = 65535;
         
         set_visualizer(7);
-        while(selected == 100) {
+        while(selected == 65535) {
             uint8_t pressed = buttons_get_just_pressed();
             if (pressed > 0){
                 if (pressed & BTN_D)      menu_choice = (menu_choice + 1);
@@ -335,35 +335,64 @@ int main() {
         }
 
         switch (menu_choice) {
-            // Artists
-            case 1:
+            // Artists -> Albums -> Tracks
+            case 1: {
                 selected = 0;
-                album_choice = browse_artists();
+                uint16_t start_album = browse_artists();
+                if (start_album == 65535) {
+                    break;
+                }
+                album_choice = start_album;
+
                 selected = 0;
-                song_choice = browse_albums();
+                uint16_t start_track = browse_albums();
+                if (start_track == 65535) {
+                    break;
+                }
+                song_choice = start_track;
+
+                int result = 0;
+                while (result != 65535) {
+                    result = browse_tracks();
+                }
                 break;
-            // Albums
-            case 2:
+            }
+
+            // Albums -> Tracks
+            case 2: {
                 selected = 0;
-                song_choice = browse_albums();
+                uint16_t start_track = browse_albums();
+                if (start_track == 65535) {
+                    break;
+                }
+                song_choice = start_track;
+
+                int result = 0;
+                while (result != 65535) {
+                    result = browse_tracks();
+                }
                 break;
-            // Tracks
-            case 3:
+            }
+
+            // Tracks (Direct Browse)
+            case 3: {
+                int result = 0;
+                while (result != 65535) {
+                    result = browse_tracks();
+                }
                 break;
+            }
+
             // Last Played
             case 4:
                 break;
+
             // Shuffle All
             case 5:
                 break;
             
             default:
                 break;
-        }
-        selected = 0;
-        int result = 0;
-        while (result != 100) {
-            result = browse_tracks();
         }
     }
 }

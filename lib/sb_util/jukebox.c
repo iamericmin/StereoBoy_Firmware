@@ -153,15 +153,15 @@ int jukebox()
             // Adjust the band (+ or -)
             if (c == '+' || c == '=')
             {
-                // dac_write(0, 0x3F, 0b11111110); // set audio output to mono
-                transport += 0.05;
+                dac_write(0, 0x3F, 0b11111110); // set audio output to mono
+                // transport += 0.05;
                 // dac_eq_adjust(selected_band, 0.5f, sampleSpeed); // Boost
                 // printf("Band %d Gain: %.1f dB\n", selected_band, dac_eq_get_gain(selected_band));
             }
             if (c == '-')
             {
-                // dac_write(0, 0x3F, 0b11010110); // set audio output to stereo
-                transport -= 0.05;
+                dac_write(0, 0x3F, 0b11010110); // set audio output to stereo
+                // transport -= 0.05;
                 // dac_eq_adjust(selected_band, -0.5f, sampleSpeed); // Cut
                 // printf("Band %d Gain: %.1f dB\n", selected_band, dac_eq_get_gain(selected_band));
             }
