@@ -33,12 +33,14 @@ cplx audio_history_r[HISTORY_SIZE];
 int history_index = 0;
 int num_visualizations = 8;
 bool album_art_ready = false;
+uint32_t current_song_idx;
 
 int jukebox()
 {
     FIL fil;             // file object
     UINT br;             // pointer to number of bytes read
     uint8_t buffer[2048]; // buffer read from file
+    current_song_idx = song_choice;
 
     char *filename = current_track->filename;
     uint16_t sampleSpeed = current_track->samplespeed;
@@ -46,6 +48,7 @@ int jukebox()
     uint32_t skip_bits = bitRate * 256; // bitrate * 1024 / 4 = approx. 2 seconds
     int exitType = 0;
     sci_write(&player, 0x05, sampleSpeed + 1); // initialize codec sampling speed (+1 at the end for stereo)
+    dac_eq_adjust(selected_band, 0.25f, sampleSpeed); // Bass Boost
 
     // status bits for &player state and warp effect
     paused = false;
@@ -71,7 +74,7 @@ int jukebox()
     uint16_t stereo_bit = sampleSpeed & 1;     // LSB indicates mono or stereo (not exactly sure what but this is pretty much always 1)
     uint16_t base_rate = sampleSpeed & 0xFFFE; // sampling speed in upper 15 bits
     if (visualizer == 0) {
-        display_album_art_by_index(img_buffer, song_choice);
+        display_album_art_by_index(img_buffer, current_song_idx);
     }
 
     f_lseek(&fil, current_track->audio_start);
@@ -153,16 +156,16 @@ int jukebox()
             // Adjust the band (+ or -)
             if (c == '+' || c == '=')
             {
-                dac_write(0, 0x3F, 0b11111110); // set audio output to mono
+                // dac_write(0, 0x3F, 0b11111110); // set audio output to mono
                 // transport += 0.05;
-                // dac_eq_adjust(selected_band, 0.5f, sampleSpeed); // Boost
+                dac_eq_adjust(selected_band, 0.25f, sampleSpeed); // Boost
                 // printf("Band %d Gain: %.1f dB\n", selected_band, dac_eq_get_gain(selected_band));
             }
             if (c == '-')
             {
-                dac_write(0, 0x3F, 0b11010110); // set audio output to stereo
+                // dac_write(0, 0x3F, 0b11010110); // set audio output to stereo
                 // transport -= 0.05;
-                // dac_eq_adjust(selected_band, -0.5f, sampleSpeed); // Cut
+                dac_eq_adjust(selected_band, -0.25f, sampleSpeed); // Cut
                 // printf("Band %d Gain: %.1f dB\n", selected_band, dac_eq_get_gain(selected_band));
             }
             // EQ END
@@ -326,7 +329,7 @@ int jukebox()
             case 'V':
                 visualizer = (visualizer + 1) % (num_visualizations - 1);
                 if (visualizer == 0) {
-                    display_album_art_by_index(img_buffer, song_choice);
+                    display_album_art_by_index(img_buffer, current_song_idx);
                     printf("changing visualizer");
                 }
                 switch (visualizer) {

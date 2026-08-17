@@ -275,124 +275,60 @@ void dac_init() {
     dac_write(0, 0x01, 0x01);
     sleep_ms(10);
 
-    // Enable PRB_P2 (best for EQ)
-    dac_write(0, 60, 0b00000001);
-    printf("asdf\r\n");
-    //Enable adaptive filtering (so eq can change in real time)
-    dac_write(8, 1, 0x04);
+    // 3. Audio Interface Setup (Page 0)
+    dac_write(0, 0x1B, 0x00); // I2S, 16-bit
+    dac_write(0, 0x04, 0x07); // PLL_CLKIN = BCLK
 
-    // 3. Interface Control (I2S, 16-bit)
-    // Reg 0x1B: 0x00 = I2S, 16bit
-    dac_write(0, 0x1B, 0x00);
-
-
-    // 4. Clock Setup (PLL from BCLK)
-    // Reg 0x04: CLKOUT Mux. PLL_CLKIN = BCLK (0x07 is typical for BCLK)
-    // Your code used setCodecClockInput(PLL) and setPLLClockInput(BCLK)
-    dac_write(0, 0x04, 0x07);
-
-
-    // 5. PLL Values (P=1, R=2, J=32, D=0)
-    // Reg 0x05: P and R. Bit 7=PowerUp. P=1 (bits 6:4), R=2 (bits 3:0)
-    // Note: Library uses P=1, but 0 in register often means 1. Check datasheet.
-    dac_write(0, 0x05, 0x92); // 1001 0010 -> PLL Power On, P=1, R=2
+    // 4. Clock & PLL Setup (Page 0)
+    dac_write(0, 0x05, 0x92); // PLL Power On, P=1, R=2
     dac_write(0, 0x06, 32);   // J=32
     dac_write(0, 0x07, 0);    // D MSB
     dac_write(0, 0x08, 0);    // D LSB
 
-
-    // 6. DAC Dividers (NDAC=8, MDAC=2)
-    dac_write(0, 0x0B, 0x88); // NDAC Power on, Val=8
-    dac_write(0, 0x0C, 0x82); // MDAC Power on, Val=2
-    // DOSR = 128 (0x0080) - Standard for 44.1/48k
-    dac_write(0, 0x0D, 0x00);
+    // 5. DAC Dividers & DSP Selection (Page 0)
+    dac_write(0, 0x0B, 0x88); // NDAC Power on = 8
+    dac_write(0, 0x0C, 0x82); // MDAC Power on = 2
+    dac_write(0, 0x0D, 0x00); // DOSR = 128
     dac_write(0, 0x0E, 0x80);
 
+    dac_write(0, 60, 0b00000001);
 
-    // 7. DAC Data Path
-    // Reg 0x3F: Left/Right DAC Power Up, Normal Path
-    // DAC left = left channel audio
-    // DAC right = right channel audio
+    // 6. Enable Headset Detection First (Page 0 & Page 1)
+    dac_write(1, 0x2E, 0x0B); // MICBIAS enable (Page 1)
+    dac_write(0, 0x43, 0x95); // Enable headset detect + interrupt (Page 0)
+    dac_write(0, 0x30, 0x81); // Route INT1 to headset change
+    dac_write(0, 0x33, 0x14); // Set GPIO1 as INT1 output
+    sleep_ms(20);             // Allow detection comparator to settle
 
-    if (dac_read(0, 0x2E) & 0x10) { // read whether headphone in or out
-        dac_write(0, 0x3F, 0b11010110); // if headphones inserted, stereo
-    } else {
-        dac_write(0, 0x3F, 0b11111110); // if speaker, mono
-    }
+    // 7. Power up DACs & Configure Data Path
+    dac_write(0, 0x3F, 0xD4); // Power up Left & Right DAC channels
 
+    // 8. Enable Adaptive Filtering (Page 8 - NOW CLOCKS ARE RUNNING)
+    dac_write(8, 0x01, 0x04); // Enable adaptive filtering buffer
 
-    // 8. Routing (Page 1)
-    // Reg 0x23: DAC to Mixer
-    dac_write(1, 0x23, 0x44); 
+    // 9. Routing & Analog Gains (Page 1)
+    // Route DAC to HPL/HPR & Speaker
+    dac_write(1, 0x23, 0x44); // LDAC to HPL, RDAC to HPR
+    dac_write(1, 0x24, 0x05); // HPL Volume
+    dac_write(1, 0x25, 0x05); // HPR Volume
+    dac_write(1, 0x20, 0x86); // SPK Driver Power Up, 6dB gain
+    dac_write(1, 0x2A, 0x14); // SPK Mixer & Route
+    dac_write(1, 0x1F, 0xC0); // HP Drivers Power Up
+    dac_write(1, 0x28, 0x06); // HPL Unmute
+    dac_write(1, 0x29, 0x06); // HPR Unmute
 
-
-    // 9. DAC Volume (Page 0)
-    dac_write(0, 0x40, 0x00); // Unmute
-    //to prevent clipping from eq
-    // dac_write(0, 0x41, 0xE8); // Left Vol -12dB (E8) -20dB -> (D8)
-    // dac_write(0, 0x42, 0xE8); // Right Vol -12dB
-    dac_write(0, 0x41, 00);   // Left Vol (0dB is usually 0, 18 is +9dB depending on mapping)
-    dac_write(0, 0x42, 00);   // Right Vol
-
-    // 10. Headphone & Speaker Setup (Page 1)
-    // Reg 0x24/0x25: HPL/R Gain (0x06 = 6dB approx)
-    // ADJUST THESE VALUES FOR VOLUME CONTROL IN MAIN FIRMWARE!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    dac_write(1, 0x24, 0x05);
-    dac_write(1, 0x25, 0x05);
-    dac_write(1, 0x26, 0x05);
-    // Reg 0x1F: HP Drivers power up
-    dac_write(1, 0x1F, 0xC0);
-    // Reg 0x28/0x29: HPL/R Driver unmute
-    dac_write(1, 0x28, 0x06);
-    dac_write(1, 0x29, 0x06);
-
-
-    // Speaker
-    dac_write(1, 0x20, 0b10000110); // Speaker Power Up, 6dB gain
-    dac_write(1, 0x2A, 0b00010100); // Speaker Unmute / Gain
-
-
-    // 11. Headset Detect
-    dac_write(1, 0x2E, 0x0b);  // MICBIAS enable
-
-
-    // Route headset detect interrupt to GPIO1
-    dac_write(0, 0x43, 0b10010101);  // Enable headset detect + interrupt
-    dac_write(0, 0x30, 0b10000001); // route INT1 to headset change interrupt
-    dac_write(0, 0x33, 0b00010100); // GPIO1 as INT1 output
-
+    // 10. Digital Volume (Page 0)
+    dac_write(0, 0x40, 0x00); // DAC Soft Unmute
+    dac_write(0, 0x41, 0x00); // Left Vol (0dB)
+    dac_write(0, 0x42, 0x00); // Right Vol (0dB)
 
     dac_set_volume((uint32_t)potVal * 0x60 / 4096);
-    
-    // Give the amp a tiny moment to attempt power-up before checking faults
-    sleep_ms(10); 
-    
-    printf("--- Checking DAC Faults ---\r\n");
-    uint8_t tlv_addr = 0x18; 
-    uint8_t fault_reg = 0;
-    
-    // 1. Set the page register (Register 0) to Page 0
-    uint8_t page_data[2] = {0x00, 0x00};
-    i2c_write_blocking(i2c_default, tlv_addr, page_data, 2, false);
-    
-    // 2. Write the register address we want to read (Reg 44 / 0x2C)
-    uint8_t reg_addr = 44;
-    i2c_write_blocking(i2c_default, tlv_addr, &reg_addr, 1, true); // true = keep master control
-    
-    // 3. Read the byte back
-    i2c_read_blocking(i2c_default, tlv_addr, &fault_reg, 1, false);
-    
+    sleep_ms(20);
+
+    // 11. Check Faults (Page 0, Reg 44)
+    uint8_t fault_reg = dac_read(0, 44);
     printf("Sticky Flag Reg (0x2C): 0x%02X\r\n", fault_reg);
-    
-    if (fault_reg & 0b10000000) { 
-        printf("FAULT [Bit 7]: Short Circuit or Overcurrent detected!\r\n");
-    }
-    if (fault_reg & 0b00100000) { 
-        printf("FAULT [Bit 5]: Speaker Amplifier Power-up Incomplete (Brownout)!\r\n");
-    }
-    if (fault_reg == 0x00) {
-        printf("STATUS: No faults detected. Chip thinks it is happy.\r\n");
-    }
-    printf("---------------------------\r\n");
-    // --- END PASTE BLOCK ---
+    if (fault_reg & 0x80) printf("FAULT: Short Circuit / Overcurrent!\r\n");
+    if (fault_reg & 0x20) printf("FAULT: Speaker Amp Power-up Incomplete!\r\n");
+    if (fault_reg == 0x00) printf("STATUS: No faults detected.\r\n");
 }
