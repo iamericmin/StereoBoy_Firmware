@@ -48,7 +48,7 @@ int jukebox()
     uint32_t skip_bits = bitRate * 256; // bitrate * 1024 / 4 = approx. 2 seconds
     int exitType = 0;
     sci_write(&player, 0x05, sampleSpeed + 1); // initialize codec sampling speed (+1 at the end for stereo)
-    dac_eq_adjust(selected_band, 0.25f, sampleSpeed); // Bass Boost
+    selected_band = '0' - '0';
 
     // status bits for &player state and warp effect
     paused = false;
@@ -86,6 +86,7 @@ int jukebox()
     uint8_t vol_check = 5;
     uint8_t old_volume = 0;
     // read_lwbt();
+    dac_eq_adjust(selected_band, 0.50f, sampleSpeed); // Bass Boost
 
     while (1)
     {
