@@ -5,7 +5,7 @@ Open-source firmware for StereoBoy, the portable & modular stereo system!
 
 ## What is this?
 
-### FULL DISCLAIMER: I use AI-generated code for parts of this project! All design and engineering choices are mine and mine only. AI was used mainly for debugging and optimization.
+### FULL DISCLAIMER: I use AI-generated code for parts of this project! AI was used mainly for debugging and optimization.
 
 <img width="512" alt="image" src="https://github.com/user-attachments/assets/b3de6a4b-a93e-4ea9-a027-3ca3d14be135" />
 

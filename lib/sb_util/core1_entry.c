@@ -1,5 +1,7 @@
 #include "global_vars.h"
 #include "sb_util.h"
+#include "hardware/vreg.h"
+#include "hardware/clocks.h"
 
 /* Text Display Stuff */
 mutex_t text_buff_mtx;
@@ -276,6 +278,10 @@ uint16_t start;
 void core1_entry()
 {
     multicore_lockout_victim_init();
+    
+    vreg_set_voltage(VREG_VOLTAGE_1_30);
+    set_sys_clock_khz(300000, true);
+
     while (1)
     {
         adc_select_input(POT_CH);

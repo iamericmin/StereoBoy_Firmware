@@ -48,6 +48,8 @@ void dac_int_callback(uint gpio, uint32_t events)
         warping = 0;
         dac_write(1, 0x20, 0b00000110); // shut down speaker driver
         dac_write(0, 0x3F, 0b11010110); // set audio output to stereo
+        dac_eq_init(current_track->samplespeed); // init with default sample rated
+        dac_eq_adjust(selected_band, 0.50f, current_track->samplespeed); // Bass Boost
         // Reg 0x1F: HP Drivers power up
         dac_write(1, 0x1F, 0xC0);
         // Reg 0x28/0x29: HPL/R Driver unmute
@@ -60,6 +62,7 @@ void dac_int_callback(uint gpio, uint32_t events)
         warping = 0;
         dac_write(1, 0x1F, 0x00); // Reg 0x1F: HP Drivers power down
         dac_write(0, 0x3F, 0b11111110); // set audio output to mono
+        dac_eq_init(current_track->samplespeed); // init with default sample rated
         dac_write(1, 0x20, 0b10000110); // power up speaker driver
     }
 }

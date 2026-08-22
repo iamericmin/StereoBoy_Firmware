@@ -9,6 +9,7 @@
 #include "stdio.h"
 #include "ff.h"
 #include "hardware/vreg.h"
+#include "hardware/clocks.h"
 #include "lib/sb_util/interface.h"
 
 // SPI1 configuration for codec & sd card
@@ -260,7 +261,9 @@ int main() {
     // P = V^2 * f, so 0.1V drop results in quadratic change
     // Before: 1.1 ^ 2 * 150 = 181.5
     // Now: 1.0 ^ 2 * 150 = 150
-    vreg_set_voltage(VREG_VOLTAGE_1_00);
+    // vreg_set_voltage(VREG_VOLTAGE_1_00);
+    vreg_set_voltage(VREG_VOLTAGE_1_30);
+    set_sys_clock_khz(300000, true);
 
     stdio_init_all();
 

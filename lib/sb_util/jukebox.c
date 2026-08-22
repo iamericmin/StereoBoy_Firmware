@@ -86,7 +86,7 @@ int jukebox()
     uint8_t vol_check = 5;
     uint8_t old_volume = 0;
     // read_lwbt();
-    dac_eq_adjust(selected_band, 0.50f, sampleSpeed); // Bass Boost
+    // dac_eq_adjust(selected_band, 0.50f, sampleSpeed); // Bass Boost
 
     while (1)
     {
