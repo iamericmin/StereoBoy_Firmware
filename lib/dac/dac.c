@@ -302,6 +302,11 @@ void dac_init() {
 
     // 7. Power up DACs & Configure Data Path
     dac_write(0, 0x3F, 0xD4); // Power up Left & Right DAC channels
+    if (dac_read(0, 0x2E) & 0x10) { // read whether headphone in or out
+        dac_write(0, 0x3F, 0b11010110); // if headphones inserted, stereo
+    } else {
+        dac_write(0, 0x3F, 0b11111110); // if speaker, mono
+    }
 
     // 8. Enable Adaptive Filtering (Page 8 - NOW CLOCKS ARE RUNNING)
     dac_write(8, 0x01, 0x04); // Enable adaptive filtering buffer
