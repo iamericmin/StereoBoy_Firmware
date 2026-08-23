@@ -174,6 +174,8 @@ struct Node {
 extern uint16_t* playStatus;
 extern uint16_t* ff_rew_status;
 extern int progress_bar;
+extern uint8_t progress_min;
+extern uint8_t progress_sec;
 extern bool enableIcons;
 
 // ST7789 uses 16-bit RGB565 colors

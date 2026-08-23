@@ -278,9 +278,6 @@ uint16_t start;
 void core1_entry()
 {
     multicore_lockout_victim_init();
-    
-    vreg_set_voltage(VREG_VOLTAGE_1_30);
-    set_sys_clock_khz(300000, true);
 
     while (1)
     {
@@ -488,7 +485,7 @@ static void process_audio_batch()
             max_dev_r = dev_r;
 
         history_ptr = (history_ptr + 1) % HISTORY_SIZE;
-        sleep_us(10);
+        // sleep_us(10);
     }
 
     // Re-add the bias so the VU meter math processes the peak correctly
@@ -501,10 +498,10 @@ static void process_audio_batch()
 #define GAP_PX 2
 
 //Adds icons and samples ADC
-void addIcons(uint16_t* frame_buffer, bool enabled){
+void addIcons(uint16_t* frame_buffer, bool enabled) {
     // adc_select_input(POT_CH);
     // potVal = adc_read();
-    if (enabled){
+    if (enabled) {
 
         //Place pause Icon on screen
         for (int y = 0; y < 20; y++)
@@ -534,10 +531,15 @@ void addIcons(uint16_t* frame_buffer, bool enabled){
                 {
                     frame_buffer[y * 240 + x] = background_progress_color; // Remaining part
                 }
+                // print time elapsed
             }
         }
+
         // track info
         // TODO: keep song info intact even while user scrolls through menu
+        char progress_time[6];
+        sprintf(progress_time, "%d:%02d", progress_min, progress_sec);
+        st7789_draw_string(0, 10 + 10 * font_height, progress_time, WHITE);
         char *current_title = current_track->title;
         st7789_draw_string(60, 1, current_title, WHITE);
     }

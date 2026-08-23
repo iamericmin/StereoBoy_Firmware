@@ -180,7 +180,7 @@ uint16_t browse_tracks() {
         printf("Error reading track metadata from cache table!\n");
     }
     // read_lwbt();
-    temp_visualizer = (visualizer == 5 || visualizer == 7) ? 0 : visualizer;
+    temp_visualizer = (visualizer == 5 || visualizer == 7) ? 1 : visualizer;
     //Return to main menu with list selection:
     if (exitCode == 0) {
         // pca9685_all_off(&vu_meter);
@@ -262,8 +262,6 @@ int main() {
     // Before: 1.1 ^ 2 * 150 = 181.5
     // Now: 1.0 ^ 2 * 150 = 150
     // vreg_set_voltage(VREG_VOLTAGE_1_00);
-    vreg_set_voltage(VREG_VOLTAGE_1_30);
-    set_sys_clock_khz(300000, true);
 
     stdio_init_all();
 

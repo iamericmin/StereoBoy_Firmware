@@ -24,6 +24,8 @@ uint16_t *playStatus = empty_icon;
 uint16_t *ff_rew_status = empty_icon;
 
 int progress_bar = 0;
+uint8_t progress_min;
+uint8_t progress_sec;
 int prev_progress_bar = 0;
 
 /*******************visualizations not scope*******************/
@@ -137,6 +139,9 @@ int jukebox()
             progress = 1.0f;
         prev_progress_bar = progress_bar;
         progress_bar = 240 * progress;
+        uint16_t seconds_passed = (uint16_t)(progress * (((current_track->audio_end - current_track->audio_start) * 8) / (current_track->bitrate * 1000)));
+        progress_min = (int)seconds_passed / 60;
+        progress_sec = seconds_passed % 60;
         bool update_bar = prev_progress_bar != progress_bar;
 
         if (c != PICO_ERROR_TIMEOUT)

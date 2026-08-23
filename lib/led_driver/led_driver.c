@@ -23,7 +23,7 @@
 #define MODE2_OUTDRV  0x04  // 0 = Open-Drain, 1 = Totem-Pole
 
 #define MAX_BRIGHTNESS 4095
-#define DESIRED_BRIGHTNESS 32
+#define DESIRED_BRIGHTNESS 64
 
 static void write8(pca9685_t *dev, uint8_t reg, uint8_t val) {
     uint8_t buf[2] = {reg, val};
@@ -110,11 +110,11 @@ void pca9685_sleep(pca9685_t *dev) {
 void pca9685_wakeup(pca9685_t *dev) {
     // 1. Ensure all outputs are cleared before restoring PWM clock
     pca9685_all_off(dev);
+    sleep_ms(5); // Oscillator spin-up time
 
     // 2. Clear SLEEP bit (keep Auto-Increment intact)
     uint8_t mode1 = read8(dev, MODE1);
     write8(dev, MODE1, (mode1 & ~MODE1_SLEEP) | MODE1_AI);
-    sleep_ms(5); // Oscillator spin-up time
 
     // 3. Trigger RESTART to re-enable PWM control
     write8(dev, MODE1, (mode1 & ~MODE1_SLEEP) | MODE1_AI | MODE1_RESTART);
