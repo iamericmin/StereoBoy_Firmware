@@ -1,5 +1,6 @@
 #include "global_vars.h"
 #include "sb_util.h"
+#include "lib/fram/fram.h"
 
 /* ##########################################################
 JUKEBOX: MAIN PLAY LOOP
@@ -37,13 +38,15 @@ int num_visualizations = 8;
 bool album_art_ready = false;
 uint32_t current_song_idx;
 
-int jukebox()
-{
+int jukebox(int *mode) {
     FIL fil;             // file object
     UINT br;             // pointer to number of bytes read
     uint8_t buffer[2048]; // buffer read from file
     current_song_idx = song_choice;
 
+    // Write track index to FRAM to refresh last played track data
+    fram_write(i2c0, 0x0000, (const uint8_t*)&song_choice, sizeof(song_choice));
+    
     char *filename = current_track->filename;
     uint16_t sampleSpeed = current_track->samplespeed;
     uint16_t bitRate = current_track->bitrate;
@@ -75,11 +78,20 @@ int jukebox()
 
     uint16_t stereo_bit = sampleSpeed & 1;     // LSB indicates mono or stereo (not exactly sure what but this is pretty much always 1)
     uint16_t base_rate = sampleSpeed & 0xFFFE; // sampling speed in upper 15 bits
+    uint32_t song_pos = 0;
     if (visualizer == 0) {
         display_album_art_by_index(img_buffer, current_song_idx);
     }
 
-    f_lseek(&fil, current_track->audio_start);
+    if (*mode == -1) {
+        if (fram_read(i2c0, 0x000F, (uint8_t*)&song_pos, sizeof(song_pos)) < 0) {
+            printf("Failed to read timestamp from F-RAM!\n");
+            song_pos = current_track->audio_start;
+        }
+        f_lseek(&fil, song_pos);
+    } else {
+        f_lseek(&fil, current_track->audio_start);
+    }
     absolute_time_t last_skip_time = get_absolute_time();
 
     selected_band = 0;
@@ -89,9 +101,19 @@ int jukebox()
     uint8_t old_volume = 0;
     // read_lwbt();
     // dac_eq_adjust(selected_band, 0.50f, sampleSpeed); // Bass Boost
+    uint16_t loop_cnt = 0;
+    absolute_time_t loop_timestamp = get_absolute_time();
+    while (1) {
 
-    while (1)
-    {
+        loop_cnt++;
+        if (loop_cnt >= 100) {
+            absolute_time_t now = get_absolute_time();
+            printf("Took %llu us to loop 100 times!\n", absolute_time_diff_us(loop_timestamp, now));
+            
+            // Reset timestamp for the NEXT batch of 100 loops
+            loop_timestamp = get_absolute_time();
+            loop_cnt = 0;
+        }
 
         // Always feed decoder unless fully paused
         if (!paused || warping)
@@ -131,7 +153,7 @@ int jukebox()
         }
 
         //progress bar (should make separate function)
-        long song_pos = f_tell(&fil);
+        song_pos = f_tell(&fil);
         float progress = (float)(song_pos - current_track->audio_start) / (float)(current_track->audio_end - current_track->audio_start);
         if (progress < 0.0f)
             progress = 0.0f;
@@ -143,6 +165,14 @@ int jukebox()
         progress_min = (int)seconds_passed / 60;
         progress_sec = seconds_passed % 60;
         bool update_bar = prev_progress_bar != progress_bar;
+        // Write song position to FRAM to update last played data
+        // Write every second to prevent I2C bus overload
+        static absolute_time_t last_fram_save;
+        if (absolute_time_diff_us(last_fram_save, get_absolute_time()) >= 1000000) {
+            fram_write(i2c0, 0x000F, (const uint8_t*)&song_pos, sizeof(song_pos));
+            last_fram_save = get_absolute_time();
+        }
+
 
         if (c != PICO_ERROR_TIMEOUT)
         {

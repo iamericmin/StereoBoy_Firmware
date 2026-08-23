@@ -538,11 +538,11 @@ void sb_hw_init(vs1053_t *player, st7789_t *display)
         }
     }
     
-    // set I2C0 for DAC at 400KHz
+    // set I2C0 for DAC and FRAM at 400KHz
     gpio_set_function(PIN_I2C0_SCL, GPIO_FUNC_I2C);
     gpio_set_function(PIN_I2C0_SDA, GPIO_FUNC_I2C);
-    i2c_init(i2c0, 400 * 1000);
-    printf("SPI0 and I2C0 initialized.\r\n");
+    i2c_init(i2c0, 400 * 1000); 
+    printf("I2C0 initialized.\r\n");
 
     // set I2C1 for PCA9685 at 400KHz
     gpio_set_function(PIN_I2C1_SDA, GPIO_FUNC_I2C);

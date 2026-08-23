@@ -11,6 +11,7 @@
 #include "hardware/vreg.h"
 #include "hardware/clocks.h"
 #include "lib/sb_util/interface.h"
+#include "lib/fram/fram.h"
 
 // SPI1 configuration for codec & sd card
 #define PIN_SCK  30
@@ -125,6 +126,50 @@ uint16_t browse_artists() {
     return current_artist->start_album;
 }
 
+int play_track() {
+    current_track = &current_track_holder;
+
+    if (!sb_get_track_window_fast(&tracks_cache_file, song_choice, current_track, track_window)) {
+        printf("Error reading track metadata from cache table!\n");
+    }
+
+    printf("\r\n\rNOW PLAYING:\r\n");
+    printf("  Title : %s\r\n", current_track->title);
+    printf("  Artist: %s\r\n", current_track->artist);
+    printf("  Album : %s\r\n", current_track->album);
+    printf("  Bitrate : %d Kbps\r\n", current_track->bitrate);
+    printf("  Sample rate : %d Hz\r\n", current_track->samplespeed);
+    printf("  Channels : %s\r\n", current_track->channels == 1 ? "Mono" : "Stereo");
+    printf("  Header: %X\r\n", current_track->header);
+    printf("  Start: %X\r\n", current_track->audio_start);
+    printf("  Start: %X\r\n", current_track->audio_end);
+
+    set_visualizer(temp_visualizer);
+
+    // Pass it to the playback loop
+    exitCode = jukebox(&exitCode);
+
+    // play next song
+    if (exitCode == 1){
+        song_choice = (song_choice + 1) % track_count;
+        printf("\r\n Next song!\r\n");
+        dprint("Next song!");
+    }
+    // play previous song
+    if (exitCode == 2){
+        song_choice = (song_choice - 1 + track_count) % track_count;
+        dprint("Prev Song!");
+        printf("\r\nPrev Song!\r\n");
+    }
+    // play selected song in menu (visualizer 6)
+    if (exitCode == 3){
+        dprint("Playing picked Song!");
+        printf("\r\nPlaying picked Song!\r\n");
+    }
+
+    return 0;
+}
+
 uint16_t browse_albums() {
     current_track = &current_track_holder;
     current_album = &current_album_holder;
@@ -214,44 +259,7 @@ uint16_t browse_tracks() {
         }
     }
 
-    if (!sb_get_track_window_fast(&tracks_cache_file, song_choice, current_track, track_window)) {
-        printf("Error reading track metadata from cache table!\n");
-    }
-
-    printf("\r\n\rNOW PLAYING:\r\n");
-    printf("  Title : %s\r\n", current_track->title);
-    printf("  Artist: %s\r\n", current_track->artist);
-    printf("  Album : %s\r\n", current_track->album);
-    printf("  Bitrate : %d Kbps\r\n", current_track->bitrate);
-    printf("  Sample rate : %d Hz\r\n", current_track->samplespeed);
-    printf("  Channels : %s\r\n", current_track->channels == 1 ? "Mono" : "Stereo");
-    printf("  Header: %X\r\n", current_track->header);
-    printf("  Start: %X\r\n", current_track->audio_start);
-    printf("  Start: %X\r\n", current_track->audio_end);
-
-    set_visualizer(temp_visualizer);
-
-    // Pass it to the playback loop
-    exitCode = jukebox(&player, current_track, &display);
-
-    // play next song
-    if (exitCode == 1){
-        song_choice = (song_choice + 1) % track_count;
-        printf("\r\n Next song!\r\n");
-        dprint("Next song!");
-    }
-    // play previous song
-    if (exitCode == 2){
-        song_choice = (song_choice - 1 + track_count) % track_count;
-        dprint("Prev Song!");
-        printf("\r\nPrev Song!\r\n");
-    }
-    // play selected song in menu (visualizer 6)
-    if (exitCode == 3){
-        dprint("Playing picked Song!");
-        printf("\r\nPlaying picked Song!\r\n");
-    }
-
+    play_track(&exitCode);
     return 0;
 }
 
@@ -383,11 +391,27 @@ int main() {
                 }
                 break;
             }
-
             // Last Played
-            case 4:
-                break;
+            case 4: {
+                uint16_t saved_song = 0;
+                int status = fram_read(i2c0, 0x0000, (uint8_t*)&saved_song, sizeof(saved_song));
 
+                // Ensure I2C read succeeded AND saved_song is within valid track range
+                if (status > 0 && saved_song < track_count) {
+                    song_choice = saved_song;
+                    printf("[F-RAM] Loaded last track: %d\n", song_choice);
+                } else {
+                    printf("[F-RAM Warning] Invalid read (%d) or bus failure. Defaulting to track 0.\n", saved_song);
+                    song_choice = 0; // Fallback to track 0 safely
+                }
+
+                exitCode = -1; // if exitCode != 0, browse_tracks skips the selection menu and goes straight to jukebox
+                int result = 0;
+                while (result != 65535) {
+                    result = browse_tracks();
+                }
+                break;
+            }
             // Shuffle All
             case 5:
                 break;

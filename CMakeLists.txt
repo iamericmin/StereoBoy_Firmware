@@ -56,6 +56,7 @@ add_executable(StereoBoy_FW
     lib/sb_util/core1_entry.c
     lib/display/display.c
     lib/font/font.c
+    lib/fram/fram.c
     # lib/font/find_font_char.c
     )
 
