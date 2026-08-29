@@ -12,6 +12,14 @@
 #include "lib/pot/pot.h"
 #include "lib/codec/vs1053.h"
 
+// I2C0 for FRAM and DAC
+#define PIN_I2C0_SCL 21
+#define PIN_I2C0_SDA 20
+
+// I2C1 for LED Driver
+#define PIN_I2C1_SDA 42
+#define PIN_I2C1_SCL 43
+
 /* ======== Filehelper =======*/
 uint32_t syncsafe_to_uint(const uint8_t *b);
 void read_text_frame(FIL *fil, uint32_t frame_size, char *out, size_t out_size);

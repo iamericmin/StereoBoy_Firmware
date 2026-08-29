@@ -37,9 +37,6 @@
 #define DAC_REG_HPR_DRIVER      0x29 // HPR driver
 #define DAC_REG_SPK_DRIVER      0x2A // Class-D driver
 
-#define PIN_I2C0_SCL 21
-#define PIN_I2C0_SDA 20
-
 //Constants for chaning eq
 #define NUM_EQ_BANDS 6
 #define MAX_GAIN_DB 6.0f

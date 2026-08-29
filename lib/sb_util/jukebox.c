@@ -16,7 +16,7 @@ uint16_t normal_speed = 1; // 1 = normal
 
 volatile uint16_t potVal = 0;
 
-#define PAUSE_WARP_US 600000   // 0.7 seconds for pause
+#define PAUSE_WARP_US 600000   // 0.6 seconds for pause
 #define RESUME_WARP_US 1200000 // 1.2 seconds for resume
 #define SKIP_INTERVAL_MS 100   // minimum interval between FF/RW jumps
 
@@ -29,11 +29,6 @@ uint8_t progress_min;
 uint8_t progress_sec;
 int prev_progress_bar = 0;
 
-/*******************visualizations not scope*******************/
-#define HISTORY_SIZE 256
-cplx audio_history_l[HISTORY_SIZE];
-cplx audio_history_r[HISTORY_SIZE];
-int history_index = 0;
 int num_visualizations = 8;
 bool album_art_ready = false;
 uint32_t current_song_idx;
@@ -45,7 +40,7 @@ int jukebox(int *mode) {
     current_song_idx = song_choice;
 
     // Write track index to FRAM to refresh last played track data
-    fram_write(i2c0, 0x0000, (const uint8_t*)&song_choice, sizeof(song_choice));
+    fram_write(i2c0, 0x0000, (uint8_t*)&song_choice, sizeof(song_choice));
     
     char *filename = current_track->filename;
     uint16_t sampleSpeed = current_track->samplespeed;
@@ -89,6 +84,14 @@ int jukebox(int *mode) {
             song_pos = current_track->audio_start;
         }
         f_lseek(&fil, song_pos);
+        paused = 0;
+        warp_start_time = get_absolute_time();
+        warp_start_transport = 0.0f;
+        warp_target = 1.0f;
+        warping = true;
+        if (paused) playStatus = pause_icon;
+        else playStatus = play_icon;
+        warp_duration = RESUME_WARP_US;
     } else {
         f_lseek(&fil, current_track->audio_start);
     }
@@ -103,8 +106,8 @@ int jukebox(int *mode) {
     // dac_eq_adjust(selected_band, 0.50f, sampleSpeed); // Bass Boost
     uint16_t loop_cnt = 0;
     absolute_time_t loop_timestamp = get_absolute_time();
+    
     while (1) {
-
         loop_cnt++;
         if (loop_cnt >= 100) {
             absolute_time_t now = get_absolute_time();
@@ -168,8 +171,8 @@ int jukebox(int *mode) {
         // Write song position to FRAM to update last played data
         // Write every second to prevent I2C bus overload
         static absolute_time_t last_fram_save;
-        if (absolute_time_diff_us(last_fram_save, get_absolute_time()) >= 1000000) {
-            fram_write(i2c0, 0x000F, (const uint8_t*)&song_pos, sizeof(song_pos));
+        if (absolute_time_diff_us(last_fram_save, get_absolute_time()) >= 2000000) {
+            fram_write(i2c0, 0x000F, (uint8_t*)&song_pos, sizeof(song_pos));
             last_fram_save = get_absolute_time();
         }
 
