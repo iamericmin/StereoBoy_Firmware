@@ -33,6 +33,10 @@ int num_visualizations = 8;
 bool album_art_ready = false;
 uint32_t current_song_idx;
 
+static uint64_t last_icon_toggle_time = 0;
+static uint64_t last_ff_rw_action_time = 0;
+static bool ff_rw_icon_visible = false;
+
 int jukebox(int *mode) {
     FIL fil;             // file object
     UINT br;             // pointer to number of bytes read
@@ -95,7 +99,6 @@ int jukebox(int *mode) {
     } else {
         f_lseek(&fil, current_track->audio_start);
     }
-    absolute_time_t last_skip_time = get_absolute_time();
 
     selected_band = 0;
     int currEq = 0;
@@ -108,6 +111,7 @@ int jukebox(int *mode) {
     absolute_time_t loop_timestamp = get_absolute_time();
     
     while (1) {
+        // Very simple & jank benchmark
         loop_cnt++;
         if (loop_cnt >= 100) {
             absolute_time_t now = get_absolute_time();
@@ -116,6 +120,19 @@ int jukebox(int *mode) {
             // Reset timestamp for the NEXT batch of 100 loops
             loop_timestamp = get_absolute_time();
             loop_cnt = 0;
+        }
+
+        if (get_absolute_time() - last_ff_rw_action_time >= 750000) {
+            ff_rw_icon_visible = false;
+            playStatus = paused ? pause_icon : play_icon;
+        }
+
+        if (vol_check == 5) {
+            uint16_t vol = (uint32_t)potVal * 0x60 / 4096;
+            dac_set_volume(vol);
+            vol_check = 0;
+        } else {
+            vol_check++;
         }
 
         // Always feed decoder unless fully paused
@@ -138,7 +155,6 @@ int jukebox(int *mode) {
         // janky counter for volume sampling
         if (vol_check == 5) {
             uint16_t vol = (uint32_t)potVal * 0x60 / 4096;
-            ff_rew_status = empty_icon; //update ff/rew icon every 10 as well
             dac_set_volume(vol);
             vol_check = 0;
         } else {
@@ -182,7 +198,6 @@ int jukebox(int *mode) {
             long pos = f_tell(&fil);
             // bool headphonesIn = dac_read(0, 0x43) & 0x20;
             // printf("Headphone prescence: %d\r\n", headphonesIn);
-            absolute_time_t now = get_absolute_time();
 
             // EQ START
             //  Select the band (keys 0-5)
@@ -281,8 +296,8 @@ int jukebox(int *mode) {
                     warp_start_transport = transport;      //
                     warp_target = paused ? 0.0f : 1.0f;
                     warping = true;
-                    if (paused) playStatus = pause_icon;
-                    else playStatus = play_icon;
+                    // if (paused) playStatus = pause_icon;
+                    // else playStatus = play_icon;
 
                     // select duration based on pause/resume
                     warp_duration = paused ? PAUSE_WARP_US : RESUME_WARP_US;
@@ -293,23 +308,40 @@ int jukebox(int *mode) {
                 }
             case 'f':
             case 'F':
-                ff_rew_status = ff_icon;
+                last_ff_rw_action_time = get_absolute_time();
+
+                if (get_absolute_time() - last_icon_toggle_time >= 250000) {
+                    ff_rw_icon_visible = !ff_rw_icon_visible;
+                    last_icon_toggle_time = get_absolute_time();
+                }
+
+                playStatus = ff_rw_icon_visible ? ff_icon : empty_icon;
+
                 pos += skip_bits;
-                if (pos > f_size(&fil))
+                if (pos > f_size(&fil)) {
                     pos = f_size(&fil) - 1;
+                }
                 f_lseek(&fil, pos);
                 printf("\r\nFast-forwarded ~2s\r\n");
-                last_skip_time = now;
                 break;
+
             case 'r':
             case 'R':
-                ff_rew_status = rew_icon;
+                last_ff_rw_action_time = get_absolute_time();
+
+                if (get_absolute_time() - last_icon_toggle_time >= 250000) {
+                    ff_rw_icon_visible = !ff_rw_icon_visible;
+                    last_icon_toggle_time = get_absolute_time();
+                }
+
+                playStatus = ff_rw_icon_visible ? rew_icon : empty_icon;
+
                 pos -= skip_bits;
-                if (pos < 0)
+                if (pos < 0) {
                     pos = 0;
+                }
                 f_lseek(&fil, pos);
                 printf("\r\nRewound ~2s\r\n");
-                last_skip_time = now;
                 break;
             case 'u':
             case 'U':

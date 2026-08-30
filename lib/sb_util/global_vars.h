@@ -44,6 +44,10 @@ extern bool warping;
 #define SCREEN_WIDTH 240
 #define SCREEN_HEIGHT 240
 
+#define LED_R 24
+#define LED_G 25
+#define LED_B 26
+
 extern uint16_t play_icon[400];
 extern uint16_t pause_icon[400];
 extern uint16_t empty_icon[400];

@@ -60,7 +60,7 @@ static void process_audio_batch();
 void addIcons(uint16_t* frame_buffer, bool enabled);
 
 /* ========= Display ========= */
-// void fast_drawline(int x, int y1, int y2, uint16_t color); // Unused?
+void set_backlight_brightness(uint gpio, uint16_t brightness_percent);
 
 // ADD THIS LINE HERE:
 // void update_scope_core1(void);

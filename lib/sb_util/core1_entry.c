@@ -2,11 +2,15 @@
 #include "sb_util.h"
 #include "hardware/vreg.h"
 #include "hardware/clocks.h"
+#include "hardware/pwm.h"
+#include "pico/time.h"
+
+#include <string.h>
+#include <stdio.h>
 
 /* Text Display Stuff */
 mutex_t text_buff_mtx;
 semaphore_t text_sem;
-
 
 char text_buff_temp[120];
 struct Node *head = NULL;
@@ -16,12 +20,20 @@ uint8_t marquee_title_start = 0;
 uint8_t marquee_artist_start = 0;
 uint8_t marquee_album_start = 0;
 
-// In your main C file (global scope)
-// track_info_t runtime_playing_track; 
-// track_info_t *current_track = &runtime_playing_track;
+cplx audio_history_l[HISTORY_SIZE];
+cplx audio_history_r[HISTORY_SIZE];
 
-#include <string.h>
-#include <stdio.h>
+#define LED_R 24
+#define LED_G 25
+#define LED_B 26
+
+static bool repeating_timer_callback(struct repeating_timer *t) {
+    gpio_put(LED_R, !gpio_get(LED_R)); 
+    // gpio_put(LED_G, !gpio_get(LED_G));
+    // gpio_put(LED_B, !gpio_get(LED_B));
+ 
+    return true;
+}
 
 // Helper function to build a wrapped marquee string into a destination buffer
 static void render_marquee_text(char *dest, const char *src, uint16_t scroll_pos, uint8_t window_len, uint8_t gap_len) {
@@ -279,6 +291,9 @@ void core1_entry()
 {
     multicore_lockout_victim_init();
 
+    struct repeating_timer anim_timer;
+    // add_repeating_timer_ms(500, repeating_timer_callback, NULL, &anim_timer);
+
     while (1)
     {
         adc_select_input(POT_CH);
@@ -499,10 +514,7 @@ static void process_audio_batch()
 
 //Adds icons and samples ADC
 void addIcons(uint16_t* frame_buffer, bool enabled) {
-    // adc_select_input(POT_CH);
-    // potVal = adc_read();
     if (enabled) {
-
         //Place pause Icon on screen
         for (int y = 0; y < 20; y++)
         {

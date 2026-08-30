@@ -17,9 +17,9 @@ if(WIN32)
 else()
     set(USERHOME $ENV{HOME})
 endif()
-set(sdkVersion 2.2.0)
+set(sdkVersion 2.3.0)
 set(toolchainVersion 14_2_Rel1)
-set(picotoolVersion 2.2.0-a4)
+set(picotoolVersion 2.3.0)
 set(picoVscode ${USERHOME}/.pico-sdk/cmake/pico-vscode.cmake)
 if (EXISTS ${picoVscode})
     include(${picoVscode})
@@ -43,7 +43,6 @@ add_executable(StereoBoy_FW
     # lib/sb_util/interface.c
     lib/sb_util/sb_util.c
     lib/sb_util/jukebox.c
-    lib/sb_util/sb_init.c
     lib/sb_util/filehelper.c
     lib/codec/vs1053.c
     lib/dac/dac.c

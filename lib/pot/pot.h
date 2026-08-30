@@ -10,9 +10,6 @@
 
 #define POT_ADC_PIN 44     
 #define POT_ADC_CHANNEL 4     // ADC channel 0 maps to GPIO 26
-#define LED_R 24
-#define LED_G 25
-#define LED_B 26
 #define LWBT_GPIO 10
 #define POLLING_RATE_MS 200    // Read the pot every 200
 #define MAX_DAC_VOL 0x60       // Adjust this to your DAC's max register value
