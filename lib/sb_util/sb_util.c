@@ -647,11 +647,13 @@ void sb_hw_init(vs1053_t *player, st7789_t *display)
     gpio_init(LED_R);
     gpio_init(LED_G);
     gpio_init(LED_B);
-
     gpio_set_dir(LED_R, true);
     gpio_set_dir(LED_G, true);
     gpio_set_dir(LED_B, true);
     gpio_set_dir(LWBT_GPIO, false);
+    gpio_put(LED_R, 0);
+    gpio_put(LED_G, 0);
+    gpio_put(LED_B, 0);
 
     gpio_set_function(st7789_cfg.gpio_bl, GPIO_FUNC_PWM);
 

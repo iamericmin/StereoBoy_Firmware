@@ -122,7 +122,7 @@ int jukebox(int *mode) {
             loop_cnt = 0;
         }
 
-        if (get_absolute_time() - last_ff_rw_action_time >= 750000) {
+        if (get_absolute_time() - last_ff_rw_action_time >= 500000) {
             ff_rw_icon_visible = false;
             playStatus = paused ? pause_icon : play_icon;
         }
