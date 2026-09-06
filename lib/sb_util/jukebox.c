@@ -19,6 +19,7 @@ volatile uint16_t potVal = 0;
 #define PAUSE_WARP_US 600000   // 0.6 seconds for pause
 #define RESUME_WARP_US 1200000 // 1.2 seconds for resume
 #define SKIP_INTERVAL_MS 100   // minimum interval between FF/RW jumps
+#define ICON_BLINK_INTERVAL 150000 // play/pause/ff/rew icon blinking half-period
 
 int selected_band = 0;
 uint16_t *playStatus = empty_icon;
@@ -310,7 +311,7 @@ int jukebox(int *mode) {
             case 'F':
                 last_ff_rw_action_time = get_absolute_time();
 
-                if (get_absolute_time() - last_icon_toggle_time >= 250000) {
+                if (get_absolute_time() - last_icon_toggle_time >= ICON_BLINK_INTERVAL) {
                     ff_rw_icon_visible = !ff_rw_icon_visible;
                     last_icon_toggle_time = get_absolute_time();
                 }
@@ -329,7 +330,7 @@ int jukebox(int *mode) {
             case 'R':
                 last_ff_rw_action_time = get_absolute_time();
 
-                if (get_absolute_time() - last_icon_toggle_time >= 250000) {
+                if (get_absolute_time() - last_icon_toggle_time >= ICON_BLINK_INTERVAL) {
                     ff_rw_icon_visible = !ff_rw_icon_visible;
                     last_icon_toggle_time = get_absolute_time();
                 }

@@ -330,7 +330,22 @@ int main() {
             if (pressed > 0){
                 if (pressed & BTN_D)      menu_choice = (menu_choice + 1);
                 if (pressed & BTN_U)      menu_choice = (menu_choice - 1);
-                if (pressed & BTN_A){
+                // if (pressed & BTN_R) {
+                //     while (BTN_R) {
+                //     marquee_scroll_rate = 50;
+                //     }
+                //     marquee_scroll_rate = 100;
+                //     home_marquee_dir = 0;
+                // }
+                // if (pressed & BTN_L) {
+                //     while (BTN_L) {
+                //         home_marquee_dir = 1;
+                //         marquee_scroll_rate = 50;
+                //     }
+                //     marquee_scroll_rate = 100;
+                //     home_marquee_dir = 0;
+                // }
+                if (pressed & BTN_A) {
                     selected = 1;   
                     printf("Poo cum fart shit pee\n");
                 }

@@ -20,6 +20,9 @@ uint8_t marquee_title_start = 0;
 uint8_t marquee_artist_start = 0;
 uint8_t marquee_album_start = 0;
 
+uint8_t marquee_scroll_rate = 100;
+bool home_marquee_dir = false;
+
 cplx audio_history_l[HISTORY_SIZE];
 cplx audio_history_r[HISTORY_SIZE];
 
@@ -65,6 +68,68 @@ static void render_marquee_text(char *dest, const char *src, uint16_t scroll_pos
     dest[window_len] = '\0';
 }
 
+static const char* get_artist_name(size_t idx) { return global_artists[idx].artist_name; }
+static const char* get_album_name(size_t idx)  { return global_albums[idx].album_name;  }
+
+static void render_infinite_list_marquee(char *dest, uint8_t window_len, 
+                                        const char* (*get_name_fn)(size_t idx), 
+                                        size_t total_items, 
+                                        uint16_t *item_idx, 
+                                        uint16_t *char_offset, 
+                                        bool advance_step,
+                                        bool reverse) {
+    if (total_items == 0) {
+        snprintf(dest, window_len + 1, "No Items            ");
+        return;
+    }
+
+    if (advance_step) {
+        char current_str[64];
+        snprintf(current_str, sizeof(current_str), "%zu. %s / ", *item_idx + 1, get_name_fn(*item_idx));
+        size_t len = strlen(current_str);
+
+        if (!reverse) {
+            // Forward scrolling (left to right)
+            (*char_offset)++;
+            if (*char_offset >= len) {
+                *char_offset = 0;
+                *item_idx = (*item_idx + 1) % total_items;
+            }
+        } else {
+            // Reverse scrolling (right to left)
+            if (*char_offset == 0) {
+                // Move to previous item in list
+                *item_idx = (*item_idx + total_items - 1) % total_items;
+                snprintf(current_str, sizeof(current_str), "%zu. %s / ", *item_idx + 1, get_name_fn(*item_idx));
+                *char_offset = strlen(current_str) - 1;
+            } else {
+                (*char_offset)--;
+            }
+        }
+    }
+
+    // Window rendering logic remains unchanged
+    int chars_filled = 0;
+    size_t temp_idx = *item_idx;
+    size_t temp_char = *char_offset;
+
+    while (chars_filled < window_len) {
+        char temp_str[64];
+        snprintf(temp_str, sizeof(temp_str), "%zu. %s / ", temp_idx + 1, get_name_fn(temp_idx));
+        size_t len = strlen(temp_str);
+
+        while (temp_char < len && chars_filled < window_len) {
+            dest[chars_filled++] = temp_str[temp_char++];
+        }
+
+        if (temp_char >= len) {
+            temp_char = 0;
+            temp_idx = (temp_idx + 1) % total_items;
+        }
+    }
+    dest[window_len] = '\0';
+}
+
 void scrolling_menu(int mode) {
     clear_framebuffer();
 
@@ -93,9 +158,7 @@ void scrolling_menu(int mode) {
 
         selected_slot = item_choice - start;
         album_info_t *selected_album = &album_window[selected_slot];
-        track_info_t *selected_album_artist;
 
-        // Format Strings safely
         snprintf(menu_string, sizeof(menu_string), "%s", selected_album->album_name);
         snprintf(info_string_1, sizeof(info_string_1), "%s", current_track->artist);
         if (selected_album->num_tracks == 1) {
@@ -116,16 +179,15 @@ void scrolling_menu(int mode) {
         selected_slot = item_choice - start;
         artist_info_t *selected_artist = &artist_window[selected_slot];
 
-        // Format Strings safely
         snprintf(menu_string, sizeof(menu_string), "%s", selected_artist->artist_name);
-        info_string_1[0] = '\0'; // Clear line 2 metadata for albums
+        info_string_1[0] = '\0';
         if (selected_artist->num_albums == 1) {
-            snprintf(info_string_2, sizeof(info_string_1), "1 Album");
+            snprintf(info_string_2, sizeof(info_string_2), "1 Album");
         } else {
-            snprintf(info_string_2, sizeof(info_string_1), "%u Albums", selected_artist->num_albums);
+            snprintf(info_string_2, sizeof(info_string_2), "%u Albums", selected_artist->num_albums);
         }
-    } else { // TRACKS
-        item_choice = song_choice; // FIX 1: Set item_choice for tracks
+    } else if (mode == 3) { // TRACKS
+        item_choice = song_choice;
         item_count = track_count;
 
         start = (item_choice < 6) ? 0 : item_choice - 5;
@@ -139,39 +201,69 @@ void scrolling_menu(int mode) {
         snprintf(menu_string, sizeof(menu_string), "%s", selected_track->title);
         snprintf(info_string_1, sizeof(info_string_1), "%s", selected_track->artist);
         snprintf(info_string_2, sizeof(info_string_2), "%s", selected_track->album);
+    } else { // HOME SCREEN
+        item_choice = menu_choice;
+        item_count = 8;
+        start = 0;
+
+        selected_slot = item_choice - start;
+
+        switch (item_choice) {
+            case 1:
+                snprintf(menu_string, sizeof(menu_string), "%d %s", artist_count, (artist_count == 1) ? "Artist" : "Artists");
+                break;
+            case 2:
+                snprintf(menu_string, sizeof(menu_string), "%d %s", album_count, (album_count == 1) ? "Album" : "Albums");
+                break;
+            case 3:
+                snprintf(menu_string, sizeof(menu_string), "%d %s", track_count, (track_count == 1) ? "Track" : "Tracks");
+                break;
+            case 4:
+                snprintf(menu_string, sizeof(menu_string), "Last Played");
+                break;
+            case 5:
+                snprintf(menu_string, sizeof(menu_string), "Shuffle All");
+                break;
+            case 6:
+                snprintf(menu_string, sizeof(menu_string), "Extras");
+                break;
+            case 7:
+                snprintf(menu_string, sizeof(menu_string), "Settings");
+                break;
+            default:
+                menu_string[0] = '\0';
+                break;
+        }
+
+        info_string_1[0] = '\0';
+        info_string_2[0] = '\0';
     }
 
     uint16_t marquee_delay = 1000;
     static uint32_t marquee_delay_start_ms = 0;
-    static int last_item_choice = -1;
     static uint32_t last_marquee_update_ms = 0;
 
+    static uint16_t artist_marquee_idx = 0, artist_char_offset = 0;
+    static uint16_t album_marquee_idx  = 0, album_char_offset  = 0;
+
     uint32_t current_time_ms = to_ms_since_boot(get_absolute_time());
+    bool tick = false;
 
-    // Reset marquee timers on selection change
-    if (item_choice != last_item_choice) {
-        marquee_title_start = 0;
-        marquee_artist_start = 0;
-        marquee_album_start = 0;
-        marquee_delay_start_ms = current_time_ms;
-        last_item_choice = item_choice;
-    }
-
-    // Update marquee offsets every 100ms
-    if (current_time_ms - last_marquee_update_ms >= 100) {
+    if (current_time_ms - last_marquee_update_ms >= marquee_scroll_rate) {
         if (current_time_ms - marquee_delay_start_ms >= marquee_delay) {
+            tick = true;
             
             if (strlen(menu_string) > 18) {
                 marquee_title_start++;
                 if (marquee_title_start >= strlen(menu_string) + 6) marquee_title_start = 0;
             }
 
-            if (strlen(info_string_1) > 20) {
+            if (mode != 0 && strlen(info_string_1) > 20) {
                 marquee_artist_start++;
                 if (marquee_artist_start >= strlen(info_string_1) + 8) marquee_artist_start = 0;
             }
 
-            if (strlen(info_string_2) > 20) {
+            if (mode != 0 && strlen(info_string_2) > 20) {
                 marquee_album_start++;
                 if (marquee_album_start >= strlen(info_string_2) + 8) marquee_album_start = 0;
             }
@@ -179,37 +271,78 @@ void scrolling_menu(int mode) {
         last_marquee_update_ms = current_time_ms;
     }
 
-    // Build rendered marquee buffers
-    render_marquee_text(marquee_title,  menu_string,   marquee_title_start,  18, 6);
-    render_marquee_text(marquee_artist, info_string_1,  marquee_artist_start, 20, 8);
-    render_marquee_text(marquee_album,  info_string_2,   marquee_album_start,  20, 8);
+    render_marquee_text(marquee_title, menu_string, marquee_title_start, 18, 6);
 
-    // FIX 2: Dynamic list fetching for tracks vs albums
+    if (mode == 0) {
+        // Blank top line on home screen
+        memset(marquee_artist, ' ', 20);
+        marquee_artist[20] = '\0';
+
+        // Context-sensitive single marquee on the bottom row
+        if (item_choice == 1) { 
+            // "Artists" selected -> Scroll Artist marquee
+            render_infinite_list_marquee(marquee_album, 20, get_artist_name, artist_count, 
+                                        &artist_marquee_idx, &artist_char_offset, tick, home_marquee_dir);
+        } else if (item_choice == 2 || item_choice == 3) { 
+            // "Albums" or "Tracks" selected -> Scroll Album marquee
+            render_infinite_list_marquee(marquee_album, 20, get_album_name, album_count, 
+                                        &album_marquee_idx, &album_char_offset, tick, home_marquee_dir);
+        } else {
+            // Other Home items -> Clear bottom line
+            memset(marquee_album, ' ', 20);
+            marquee_album[20] = '\0';
+        }
+    } else {
+        // Standard Submenus
+        render_marquee_text(marquee_artist, info_string_1, marquee_artist_start, 20, 8);
+        render_marquee_text(marquee_album,  info_string_2, marquee_album_start,  20, 8);
+    }
+
+    // Generate List
     for (int i = 0; i < 10; i++) {
         if (start + i >= item_count) break;
 
         const char *display_name;
+        char temp_home_string[32];
+
         if (mode == 1) {
             display_name = album_window[i].album_name;
         } else if (mode == 2) {
             display_name = artist_window[i].artist_name;
-        } else {
+        } else if (mode == 3) {
             display_name = track_window[i].title;
+        } else if (mode == 0) {
+            switch (start + i) {
+                case 1: snprintf(temp_home_string, sizeof(temp_home_string), "%d Artists", artist_count); break;
+                case 2: snprintf(temp_home_string, sizeof(temp_home_string), "%d Albums", album_count); break;
+                case 3: snprintf(temp_home_string, sizeof(temp_home_string), "%d Tracks", track_count); break;
+                case 4: snprintf(temp_home_string, sizeof(temp_home_string), "Last Played"); break;
+                case 5: snprintf(temp_home_string, sizeof(temp_home_string), "Shuffle All"); break;
+                case 6: snprintf(temp_home_string, sizeof(temp_home_string), "Extras"); break;
+                case 7: snprintf(temp_home_string, sizeof(temp_home_string), "Settings"); break;
+                default: temp_home_string[0] = '\0'; break;
+            }
+            display_name = temp_home_string;
         }
         
-        // Safely format list line
-        snprintf(buf, sizeof(buf), "%d %s", start + i + 1, 
-                 (start + i == item_choice) ? marquee_title : display_name);
+        if (mode == 0) {
+            snprintf(buf, sizeof(buf), "%s", (start + i == item_choice) ? marquee_title : display_name);
+        } else {
+            snprintf(buf, sizeof(buf), "%d %s", start + i + 1, (start + i == item_choice) ? marquee_title : display_name);
+        }
 
         uint16_t color = (start + i == item_choice) ? HIGHLIGHT_COLOR_SECONDARY : WHITE;
         st7789_draw_string(1, 0 + i * font_height, buf, color);
+    }
+
+    if (mode == 0) {
+        st7789_draw_string(1, 0, "Eric's Rock Playlist", HIGHLIGHT_COLOR_PRIMARY);
     }
 
     // Draw bottom metadata bar
     st7789_draw_string(1, -2 + 10 * font_height, marquee_artist, HIGHLIGHT_COLOR_PRIMARY);
     st7789_draw_string(1, -2 + 11 * font_height, marquee_album,  HIGHLIGHT_COLOR_PRIMARY);
 
-    // Push frame buffer to ST7789 display
     st7789_set_cursor(0, 0);
     st7789_ramwr();
     spi_set_format(spi0, 16, SPI_CPOL_0, SPI_CPHA_0, SPI_MSB_FIRST);
@@ -337,55 +470,11 @@ void core1_entry()
             break;
         case 6: // Tracks
             process_audio_batch();
-            scrolling_menu(0);
+            scrolling_menu(3);
             break;
         case 7:
-            // Home Menu:
-            // Cartridge name
-            // x Artists
-            // x Albums
-            // x Tracks
-            // Settings
-            // Extras
-            //
-            //
-            //
-            // (scrolling list of elements in selected menu)
-
-            static char menu_entry[32]; // buffer for scrolling title marquee
-            uint16_t highlight_color;
-
-            clear_framebuffer();
-
-            // cartridge name
-            st7789_draw_string(1, 5 + 0 * font_height, "Eric's Rock Mix", HIGHLIGHT_COLOR_PRIMARY);
-            sprintf(menu_entry, "%d Artists", artist_count);
-            highlight_color = (menu_choice == 1) ? HIGHLIGHT_COLOR_SECONDARY : WHITE;
-            st7789_draw_string(1, 5 + 1 * font_height, menu_entry, highlight_color);
-            sprintf(menu_entry, "%d Albums", album_count);
-            highlight_color = (menu_choice == 2) ? HIGHLIGHT_COLOR_SECONDARY : WHITE;
-            st7789_draw_string(1, 5 + 2 * font_height, menu_entry, highlight_color);
-            sprintf(menu_entry, "%d Tracks", track_count);
-            highlight_color = (menu_choice == 3) ? HIGHLIGHT_COLOR_SECONDARY : WHITE;
-            st7789_draw_string(1, 5 + 3 * font_height, menu_entry, highlight_color);
-            highlight_color = (menu_choice == 4) ? HIGHLIGHT_COLOR_SECONDARY : WHITE;
-            st7789_draw_string(1, 5 + 4 * font_height, "Last Played", highlight_color);
-            highlight_color = (menu_choice == 5) ? HIGHLIGHT_COLOR_SECONDARY : WHITE;
-            st7789_draw_string(1, 5 + 5 * font_height, "Shuffle All", highlight_color);
-            highlight_color = (menu_choice == 6) ? HIGHLIGHT_COLOR_SECONDARY : WHITE;
-            st7789_draw_string(1, 5 + 6 * font_height, "Extras", highlight_color);
-            highlight_color = (menu_choice == 7) ? HIGHLIGHT_COLOR_SECONDARY : WHITE;
-            st7789_draw_string(1, 5 + 7 * font_height, "Settings", highlight_color);
-            st7789_draw_string(1, 5 + 8 * font_height, "", HIGHLIGHT_COLOR_PRIMARY);
-            st7789_draw_string(1, 5 + 9 * font_height, "", HIGHLIGHT_COLOR_PRIMARY);
-            st7789_draw_string(1, 5 + 10 * font_height, "Abbey Road / Back in Black / The Razor's Edge", HIGHLIGHT_COLOR_PRIMARY);
-
-            st7789_set_cursor(0, 0);
-            st7789_ramwr();
-            spi_set_format(spi0, 16, SPI_CPOL_0, SPI_CPHA_0, SPI_MSB_FIRST);
-            spi_write16_blocking(spi0, frame_buffer, 240 * 240);
+            scrolling_menu(0);
             break;
-
         default:
             visualizer = (visualizer == 2 || 3 || 4) ? 6 : 0;
             break;

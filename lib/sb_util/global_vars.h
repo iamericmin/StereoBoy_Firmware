@@ -164,6 +164,9 @@ extern uint16_t album_choice;
 extern uint16_t artist_choice;
 extern uint16_t menu_choice;
 
+extern uint8_t marquee_scroll_rate;
+extern bool home_marquee_dir;
+
 //FFT
 typedef float complex cplx;
 extern cplx audio_history_l[HISTORY_SIZE];
