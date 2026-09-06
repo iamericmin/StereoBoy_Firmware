@@ -85,7 +85,7 @@ static void render_infinite_list_marquee(char *dest, uint8_t window_len,
 
     if (advance_step) {
         char current_str[64];
-        snprintf(current_str, sizeof(current_str), "%zu. %s / ", *item_idx + 1, get_name_fn(*item_idx));
+        snprintf(current_str, sizeof(current_str), "%zu. %s   ", *item_idx + 1, get_name_fn(*item_idx));
         size_t len = strlen(current_str);
 
         if (!reverse) {
@@ -100,7 +100,7 @@ static void render_infinite_list_marquee(char *dest, uint8_t window_len,
             if (*char_offset == 0) {
                 // Move to previous item in list
                 *item_idx = (*item_idx + total_items - 1) % total_items;
-                snprintf(current_str, sizeof(current_str), "%zu. %s / ", *item_idx + 1, get_name_fn(*item_idx));
+                snprintf(current_str, sizeof(current_str), "%zu. %s   ", *item_idx + 1, get_name_fn(*item_idx));
                 *char_offset = strlen(current_str) - 1;
             } else {
                 (*char_offset)--;
@@ -115,7 +115,7 @@ static void render_infinite_list_marquee(char *dest, uint8_t window_len,
 
     while (chars_filled < window_len) {
         char temp_str[64];
-        snprintf(temp_str, sizeof(temp_str), "%zu. %s / ", temp_idx + 1, get_name_fn(temp_idx));
+        snprintf(temp_str, sizeof(temp_str), "%zu. %s   ", temp_idx + 1, get_name_fn(temp_idx));
         size_t len = strlen(temp_str);
 
         while (temp_char < len && chars_filled < window_len) {
@@ -209,30 +209,14 @@ void scrolling_menu(int mode) {
         selected_slot = item_choice - start;
 
         switch (item_choice) {
-            case 1:
-                snprintf(menu_string, sizeof(menu_string), "%d %s", artist_count, (artist_count == 1) ? "Artist" : "Artists");
-                break;
-            case 2:
-                snprintf(menu_string, sizeof(menu_string), "%d %s", album_count, (album_count == 1) ? "Album" : "Albums");
-                break;
-            case 3:
-                snprintf(menu_string, sizeof(menu_string), "%d %s", track_count, (track_count == 1) ? "Track" : "Tracks");
-                break;
-            case 4:
-                snprintf(menu_string, sizeof(menu_string), "Last Played");
-                break;
-            case 5:
-                snprintf(menu_string, sizeof(menu_string), "Shuffle All");
-                break;
-            case 6:
-                snprintf(menu_string, sizeof(menu_string), "Extras");
-                break;
-            case 7:
-                snprintf(menu_string, sizeof(menu_string), "Settings");
-                break;
-            default:
-                menu_string[0] = '\0';
-                break;
+            case 1: snprintf(menu_string, sizeof(menu_string), "%d %s", artist_count, (artist_count == 1) ? "Artist" : "Artists"); break;
+            case 2: snprintf(menu_string, sizeof(menu_string), "%d %s", album_count, (album_count == 1) ? "Album" : "Albums"); break;
+            case 3: snprintf(menu_string, sizeof(menu_string), "%d %s", track_count, (track_count == 1) ? "Track" : "Tracks"); break;
+            case 4: snprintf(menu_string, sizeof(menu_string), "Last Played"); break;
+            case 5: snprintf(menu_string, sizeof(menu_string), "Shuffle All"); break;
+            case 6: snprintf(menu_string, sizeof(menu_string), "Extras"); break;
+            case 7: snprintf(menu_string, sizeof(menu_string), "Settings"); break;
+            default: menu_string[0] = '\0'; break;
         }
 
         info_string_1[0] = '\0';
@@ -253,16 +237,26 @@ void scrolling_menu(int mode) {
         if (current_time_ms - marquee_delay_start_ms >= marquee_delay) {
             tick = true;
             
+            // Scroll selected menu title
             if (strlen(menu_string) > 18) {
                 marquee_title_start++;
                 if (marquee_title_start >= strlen(menu_string) + 6) marquee_title_start = 0;
             }
 
-            if (mode != 0 && strlen(info_string_1) > 20) {
+            // Scroll top metadata line
+            if (mode == 0 && item_choice == 4) {
+                // Home Screen: "Last Played" track title scrolling
+                if (strlen(current_track->title) > 20) {
+                    marquee_artist_start++;
+                    if (marquee_artist_start >= strlen(current_track->title) + 8) marquee_artist_start = 0;
+                }
+            } else if (mode != 0 && strlen(info_string_1) > 20) {
+                // Submenu artist line scrolling
                 marquee_artist_start++;
                 if (marquee_artist_start >= strlen(info_string_1) + 8) marquee_artist_start = 0;
             }
 
+            // Scroll bottom metadata line in submenus
             if (mode != 0 && strlen(info_string_2) > 20) {
                 marquee_album_start++;
                 if (marquee_album_start >= strlen(info_string_2) + 8) marquee_album_start = 0;
@@ -274,23 +268,31 @@ void scrolling_menu(int mode) {
     render_marquee_text(marquee_title, menu_string, marquee_title_start, 18, 6);
 
     if (mode == 0) {
-        // Blank top line on home screen
-        memset(marquee_artist, ' ', 20);
-        marquee_artist[20] = '\0';
+        if (item_choice == 4) { // "Last Played" selected
+            // Safely format song title (top line) with marquee scrolling/truncation
+            render_marquee_text(marquee_artist, current_track->title, marquee_artist_start, 20, 8);
 
-        // Context-sensitive single marquee on the bottom row
-        if (item_choice == 1) { 
-            // "Artists" selected -> Scroll Artist marquee
-            render_infinite_list_marquee(marquee_album, 20, get_artist_name, artist_count, 
-                                        &artist_marquee_idx, &artist_char_offset, tick, home_marquee_dir);
-        } else if (item_choice == 2 || item_choice == 3) { 
-            // "Albums" or "Tracks" selected -> Scroll Album marquee
-            render_infinite_list_marquee(marquee_album, 20, get_album_name, album_count, 
-                                        &album_marquee_idx, &album_char_offset, tick, home_marquee_dir);
+            // Safely format progress time (bottom line)
+            snprintf(marquee_album, sizeof(marquee_album), "%d:%02d", progress_min, progress_sec);
         } else {
-            // Other Home items -> Clear bottom line
-            memset(marquee_album, ' ', 20);
-            marquee_album[20] = '\0';
+            // Blank top line on home screen for other options
+            memset(marquee_artist, ' ', 20);
+            marquee_artist[20] = '\0';
+
+            // Context-sensitive marquee on the bottom row
+            if (item_choice == 1) { 
+                // "Artists" selected -> Scroll Artist marquee
+                render_infinite_list_marquee(marquee_album, 20, get_artist_name, artist_count, 
+                                            &artist_marquee_idx, &artist_char_offset, tick, home_marquee_dir);
+            } else if (item_choice == 2 || item_choice == 3) { 
+                // "Albums" or "Tracks" selected -> Scroll Album marquee
+                render_infinite_list_marquee(marquee_album, 20, get_album_name, album_count, 
+                                            &album_marquee_idx, &album_char_offset, tick, home_marquee_dir);
+            } else {
+                // Other Home items -> Clear bottom line
+                memset(marquee_album, ' ', 20);
+                marquee_album[20] = '\0';
+            }
         }
     } else {
         // Standard Submenus
@@ -323,11 +325,10 @@ void scrolling_menu(int mode) {
                 default: temp_home_string[0] = '\0'; break;
             }
             display_name = temp_home_string;
+            snprintf(buf, sizeof(buf), "%s", (start + i == item_choice) ? marquee_title : display_name);
         }
         
-        if (mode == 0) {
-            snprintf(buf, sizeof(buf), "%s", (start + i == item_choice) ? marquee_title : display_name);
-        } else {
+        if (mode != 0) {
             snprintf(buf, sizeof(buf), "%d %s", start + i + 1, (start + i == item_choice) ? marquee_title : display_name);
         }
 

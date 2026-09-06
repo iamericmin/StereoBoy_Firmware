@@ -313,6 +313,33 @@ int main() {
         }
     }
 
+    uint16_t saved_song = 0;
+    uint32_t song_pos = 0;
+    // read last played song
+    int status = fram_read(i2c0, 0x0000, (uint8_t*)&saved_song, sizeof(saved_song));
+    if (status > 0 && saved_song < track_count) {
+        song_choice = saved_song;
+        printf("[F-RAM] Loaded last track: %d\n", song_choice);
+    } else {
+        printf("[F-RAM Warning] Invalid read (%d) or bus failure. Defaulting to track 0.\n", saved_song);
+        song_choice = 0; // Fallback to track 0 safely
+    }
+    // read last played song's timestamp
+    if (fram_read(i2c0, 0x000F, (uint8_t*)&song_pos, sizeof(song_pos)) < 0) {
+        printf("Failed to read timestamp from F-RAM!\n");
+        song_pos = current_track->audio_start;
+    }
+    
+    current_track = &current_track_holder;
+    if (!sb_get_track_window_fast(&tracks_cache_file, song_choice, current_track, track_window)) {
+        printf("Error reading track metadata from cache table!\n");
+    }
+
+    float progress = (float)(song_pos - current_track->audio_start) / (float)(current_track->audio_end - current_track->audio_start);
+    uint16_t seconds_passed = (uint16_t)(progress * (((current_track->audio_end - current_track->audio_start) * 8) / (current_track->bitrate * 1000)));
+    progress_min = (int)seconds_passed / 60;
+    progress_sec = seconds_passed % 60;
+
     printf("%d Artists\n", artist_count);
     printf("%d Albums\n", album_count);
     printf("%d Tracks\n", track_count);
