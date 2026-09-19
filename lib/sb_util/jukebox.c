@@ -1,25 +1,26 @@
 #include "global_vars.h"
 #include "sb_util.h"
 #include "lib/fram/fram.h"
-
-/* ##########################################################
-JUKEBOX: MAIN PLAY LOOP
-########################################################## */
-
-bool paused = false;
-bool warping = false;
-bool stopped = false;
-bool fast_forward = false;
-bool audio_rewind = false;
-bool enableIcons;
-uint16_t normal_speed = 1; // 1 = normal
-
-volatile uint16_t potVal = 0;
+#include "hardware/pwm.h"
 
 #define PAUSE_WARP_US 600000   // 0.6 seconds for pause
 #define RESUME_WARP_US 1200000 // 1.2 seconds for resume
 #define SKIP_INTERVAL_MS 100   // minimum interval between FF/RW jumps
 #define ICON_BLINK_INTERVAL 150000 // play/pause/ff/rew icon blinking half-period
+#define RGB_BRIGHTNESS 4096 // RGB LED indicator brightness
+
+/* ##########################################################
+JUKEBOX: MAIN PLAY LOOP
+########################################################## */
+
+// status flags for states
+bool paused = false;
+bool warping = false;
+bool stopped = false;
+bool ff_or_rew = false; // 1 for ff, 0 for rewind
+bool enableIcons = true;
+
+volatile uint16_t potVal = 0;
 
 int selected_band = 0;
 uint16_t *playStatus = empty_icon;
@@ -42,20 +43,21 @@ int jukebox(int *mode) {
     FIL fil;             // file object
     UINT br;             // pointer to number of bytes read
     uint8_t buffer[2048]; // buffer read from file
-    current_song_idx = song_choice;
+
+    current_song_idx = song_choice; // separate buffer to decouple currently playing track and the selected track in the menu
 
     // Write track index to FRAM to refresh last played track data
     fram_write(i2c0, 0x0000, (uint8_t*)&song_choice, sizeof(song_choice));
     
+    // get one-time parsed metadata
     char *filename = current_track->filename;
     uint16_t sampleSpeed = current_track->samplespeed;
     uint16_t bitRate = current_track->bitrate;
     uint32_t skip_bits = bitRate * 256; // bitrate * 1024 / 4 = approx. 2 seconds
     int exitType = 0;
     sci_write(&player, 0x05, sampleSpeed + 1); // initialize codec sampling speed (+1 at the end for stereo)
-    selected_band = '0' - '0';
 
-    // status bits for &player state and warp effect
+    // set status bits
     paused = false;
     playStatus = play_icon;
     warping = false;
@@ -79,10 +81,13 @@ int jukebox(int *mode) {
     uint16_t stereo_bit = sampleSpeed & 1;     // LSB indicates mono or stereo (not exactly sure what but this is pretty much always 1)
     uint16_t base_rate = sampleSpeed & 0xFFFE; // sampling speed in upper 15 bits
     uint32_t song_pos = 0;
+
+    // fetch album art if necessary
     if (visualizer == 0) {
         display_album_art_by_index(img_buffer, current_song_idx);
     }
 
+    // mode -1 is when picking up from last played track & time
     if (*mode == -1) {
         if (fram_read(i2c0, 0x000F, (uint8_t*)&song_pos, sizeof(song_pos)) < 0) {
             printf("Failed to read timestamp from F-RAM!\n");
@@ -98,18 +103,18 @@ int jukebox(int *mode) {
         else playStatus = play_icon;
         warp_duration = RESUME_WARP_US;
     } else {
+        // if not in mode 1, just start from the beginning
         f_lseek(&fil, current_track->audio_start);
     }
 
     selected_band = 0;
     int currEq = 0;
     dac_eq_init(sampleSpeed); // init with default sample rated
-    uint8_t vol_check = 5;
+    uint8_t vol_check = 5; // interval to poll volume knob - very jank!!! Need to move this out someday
     uint8_t old_volume = 0;
-    // read_lwbt();
-    // dac_eq_adjust(selected_band, 0.50f, sampleSpeed); // Bass Boost
     uint16_t loop_cnt = 0;
-    absolute_time_t loop_timestamp = get_absolute_time();
+
+    absolute_time_t loop_timestamp = get_absolute_time(); // very jank benchmark
     
     while (1) {
         // Very simple & jank benchmark
@@ -123,17 +128,17 @@ int jukebox(int *mode) {
             loop_cnt = 0;
         }
 
-        if (get_absolute_time() - last_ff_rw_action_time >= 500000) {
+        // --- FF / RW Action Timeout & Blinking Logic ---
+        bool ff_rw_active = (get_absolute_time() - last_ff_rw_action_time < 500000);
+        if (ff_rw_active) {
+            if (get_absolute_time() - last_icon_toggle_time >= ICON_BLINK_INTERVAL) {
+                ff_rw_icon_visible = !ff_rw_icon_visible;
+                last_icon_toggle_time = get_absolute_time();
+            }
+            playStatus = ff_rw_icon_visible ? (ff_or_rew ? ff_icon : rew_icon) : empty_icon;
+        } else {
             ff_rw_icon_visible = false;
             playStatus = paused ? pause_icon : play_icon;
-        }
-
-        if (vol_check == 5) {
-            uint16_t vol = (uint32_t)potVal * 0x60 / 4096;
-            dac_set_volume(vol);
-            vol_check = 0;
-        } else {
-            vol_check++;
         }
 
         // Always feed decoder unless fully paused
@@ -310,14 +315,7 @@ int jukebox(int *mode) {
             case 'f':
             case 'F':
                 last_ff_rw_action_time = get_absolute_time();
-
-                if (get_absolute_time() - last_icon_toggle_time >= ICON_BLINK_INTERVAL) {
-                    ff_rw_icon_visible = !ff_rw_icon_visible;
-                    last_icon_toggle_time = get_absolute_time();
-                }
-
-                playStatus = ff_rw_icon_visible ? ff_icon : empty_icon;
-
+                ff_or_rew = 1;
                 pos += skip_bits;
                 if (pos > f_size(&fil)) {
                     pos = f_size(&fil) - 1;
@@ -329,14 +327,7 @@ int jukebox(int *mode) {
             case 'r':
             case 'R':
                 last_ff_rw_action_time = get_absolute_time();
-
-                if (get_absolute_time() - last_icon_toggle_time >= ICON_BLINK_INTERVAL) {
-                    ff_rw_icon_visible = !ff_rw_icon_visible;
-                    last_icon_toggle_time = get_absolute_time();
-                }
-
-                playStatus = ff_rw_icon_visible ? rew_icon : empty_icon;
-
+                ff_or_rew = 0;
                 pos -= skip_bits;
                 if (pos < 0) {
                     pos = 0;
@@ -465,7 +456,7 @@ int jukebox(int *mode) {
             }
         }
 
-        // --- Warp logic ---
+        // --- Warp & LED logic (Active-Low: 0 = Full On, 65535 = Off) ---
         if (warping)
         {
             int64_t elapsed = absolute_time_diff_us(warp_start_time, get_absolute_time());
@@ -486,14 +477,34 @@ int jukebox(int *mode) {
                     printf("\r\nPaused.\r\n");
                     f_close(&fil);
                     vs1053_stop(&player);
+                    pwm_set_gpio_level(LED_R, 65535); // 65535 = Completely OFF (Active Low)
                     return 0;
                 }
             }
             else
             {
                 float t = (float)elapsed / (float)warp_duration;
-                transport = warp_start_transport +
-                            (warp_target - warp_start_transport) * t;
+                float eased_t = paused ? (t * t) : (t * (2.0f - t));
+                transport = warp_start_transport + (warp_target - warp_start_transport) * eased_t;
+            }
+
+            // Calculate LED brightness during warp
+            uint16_t led_duty = 65535 - RGB_BRIGHTNESS + (uint16_t)(transport * RGB_BRIGHTNESS);
+            pwm_set_gpio_level(LED_R, led_duty);
+        }
+        else 
+        {
+            if (ff_rw_active)
+            {
+                // Active-Low: 32768 = 50% brightness, 65535 = fully OFF
+                uint16_t led_duty = ff_rw_icon_visible ? 65535 - RGB_BRIGHTNESS : 65535;
+                pwm_set_gpio_level(LED_R, led_duty);
+            }
+            else
+            {
+                // Active-Low normal playback brightness
+                uint16_t led_duty = 65535 - RGB_BRIGHTNESS + (uint16_t)(transport * RGB_BRIGHTNESS);
+                pwm_set_gpio_level(LED_R, led_duty);
             }
         }
     }

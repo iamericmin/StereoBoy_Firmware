@@ -38,6 +38,28 @@ static bool repeating_timer_callback(struct repeating_timer *t) {
     return true;
 }
 
+static void marquee_plus(uint8_t *scroll_pos, uint32_t *last_update_ms, const char *src, 
+                            uint8_t window_len, uint8_t gap_len, 
+                            uint32_t scroll_speed_ms, uint32_t pause_ms) {
+    size_t src_len = strlen(src);
+
+    // If text fits in window, keep position at 0
+    if (src_len <= window_len) {
+        *scroll_pos = 0;
+        return;
+    }
+
+    uint32_t current_time_ms = to_ms_since_boot(get_absolute_time());
+    
+    // Pause longer if at start (scroll_pos == 0), otherwise use normal scroll speed
+    uint32_t required_delay = (*scroll_pos == 0) ? pause_ms : scroll_speed_ms;
+
+    if (current_time_ms - *last_update_ms >= required_delay) {
+        *scroll_pos = (*scroll_pos + 1) % (src_len + gap_len);
+        *last_update_ms = current_time_ms;
+    }
+}
+
 // Helper function to build a wrapped marquee string into a destination buffer
 static void render_marquee_text(char *dest, const char *src, uint16_t scroll_pos, uint8_t window_len, uint8_t gap_len) {
     uint8_t src_len = strlen(src);
@@ -603,16 +625,17 @@ static void process_audio_batch()
 #define GAP_PX 2
 
 //Adds icons and samples ADC
+// Adds icons and samples ADC
 void addIcons(uint16_t* frame_buffer, bool enabled) {
     if (enabled) {
-        //Place pause Icon on screen
+        // Place pause Icon on screen
         for (int y = 0; y < 20; y++)
         {
             uint16_t *dst = &frame_buffer[y * SCREEN_WIDTH];
             uint16_t *src = &playStatus[y * 20];
             memcpy(dst, src, 20 * sizeof(uint16_t));
         }
-        //Place rewind/fastforward Icon on screen (Starts at x = 24)
+        // Place rewind/fastforward Icon on screen (Starts at x = 24)
         int icon_spacing = 34; // 20px icon width + 4px gap
         for (int y = 0; y < 20; y++)
         {
@@ -620,7 +643,7 @@ void addIcons(uint16_t* frame_buffer, bool enabled) {
             uint16_t *src = &ff_rew_status[y * 20];
             memcpy(dst, src, 20 * sizeof(uint16_t));
         }
-        //progress bar
+        // Progress bar
         for (int y = 235; y < 240; y++)
         {
             for (int x = 0; x < 240; x++)
@@ -633,16 +656,24 @@ void addIcons(uint16_t* frame_buffer, bool enabled) {
                 {
                     frame_buffer[y * 240 + x] = background_progress_color; // Remaining part
                 }
-                // print time elapsed
             }
         }
 
-        // track info
-        // TODO: keep song info intact even while user scrolls through menu
+        // Track info
         char progress_time[6];
-        sprintf(progress_time, "%d:%02d", progress_min, progress_sec);
+        snprintf(progress_time, sizeof(progress_time), "%d:%02d", progress_min, progress_sec);
         st7789_draw_string(0, 10 + 10 * font_height, progress_time, WHITE);
-        char *current_title = current_track->title;
-        st7789_draw_string(60, 1, current_title, WHITE);
+
+        // --- SCROLLING TITLE IMPLEMENTATION ---
+        static uint8_t scope_pos = 0;
+        static uint32_t scope_last_update = 0;
+
+        // Advance position (150ms scroll speed, 2000ms start pause)
+        marquee_plus(&scope_pos, &scope_last_update, current_track->title, 18, 6, 150, 2000);
+
+        // Render string
+        char title_buf[21];
+        render_marquee_text(title_buf, current_track->title, scope_pos, 18, 6);
+        st7789_draw_string(30, 1, title_buf, WHITE);
     }
 }

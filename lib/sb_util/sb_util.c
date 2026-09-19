@@ -644,16 +644,33 @@ void sb_hw_init(vs1053_t *player, st7789_t *display)
 
     adc_gpio_init(POT_ADC_PIN);
     gpio_init(LWBT_GPIO);
-    gpio_init(LED_R);
-    gpio_init(LED_G);
-    gpio_init(LED_B);
-    gpio_set_dir(LED_R, true);
-    gpio_set_dir(LED_G, true);
-    gpio_set_dir(LED_B, true);
+
+    // 1. Assign GPIO functions to PWM
+    gpio_set_function(LED_R, GPIO_FUNC_PWM);
+    gpio_set_function(LED_G, GPIO_FUNC_PWM);
+    gpio_set_function(LED_B, GPIO_FUNC_PWM);
+
+    // 2. Identify PWM slices
+    uint slice_r = pwm_gpio_to_slice_num(LED_R);
+    uint slice_g = pwm_gpio_to_slice_num(LED_G);
+    uint slice_b = pwm_gpio_to_slice_num(LED_B);
+
+    // 3. Set Wraps (65535 gives full 16-bit resolution)
+    pwm_set_wrap(slice_r, 65535);
+    pwm_set_wrap(slice_g, 65535);
+    pwm_set_wrap(slice_b, 65535);
+
+    // 4. Set initial pin levels (65535 = OFF for active-low / common-anode)
+    pwm_set_gpio_level(LED_R, 65535);
+    pwm_set_gpio_level(LED_G, 65535);
+    pwm_set_gpio_level(LED_B, 65535);
+
+    // 5. Enable slices
+    pwm_set_enabled(slice_r, true);
+    pwm_set_enabled(slice_g, true);
+    pwm_set_enabled(slice_b, true);
+
     gpio_set_dir(LWBT_GPIO, false);
-    gpio_put(LED_R, 0);
-    gpio_put(LED_G, 0);
-    gpio_put(LED_B, 0);
 
     gpio_set_function(st7789_cfg.gpio_bl, GPIO_FUNC_PWM);
 
