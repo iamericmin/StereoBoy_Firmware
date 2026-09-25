@@ -153,15 +153,13 @@ int jukebox(int *mode) {
         }
 
         // Always feed decoder unless fully paused
-        if (!paused || warping)
-        {
+        if (!paused || warping) {
             uint16_t new_rate = (uint16_t)(base_rate * transport) & 0xFFFE;
             if (new_rate < 9000)
                 new_rate = 9000;
             sci_write(&player, 0x05, new_rate | stereo_bit);
 
-            if (f_read(&fil, buffer, sizeof(buffer), &br) != FR_OK || br == 0)
-            {
+            if (f_read(&fil, buffer, sizeof(buffer), &br) != FR_OK || br == 0) {
                 exitType = 1; // Default return when no bytes read (end of song)
                 break;
             }
@@ -177,16 +175,6 @@ int jukebox(int *mode) {
         } else {
             vol_check++;
         }
-        
-        // int c = getchar_timeout_us(0); // nonblocking getchar
-
-        // get value from buttons
-        // if (c == PICO_ERROR_TIMEOUT)
-        // {
-        //     char btn_char = get_button_jukebox(selected_band);
-        //     if (btn_char != 0)
-        //         c = (int)btn_char; // Inject the button character into the logic
-        // }
 
         //progress bar (should make separate function)
         song_pos = f_tell(&fil);
@@ -211,7 +199,7 @@ int jukebox(int *mode) {
         
         long pos = f_tell(&fil);
         switch (current_button_states) {
-            case 0b11101111: 
+            case BTN_L: 
                 if (visualizer == 6) {
                     // multicore_lockout_start_blocking();
                     if (song_choice + 10 > track_count) {
@@ -233,7 +221,7 @@ int jukebox(int *mode) {
                     vs1053_stop(&player);
                     return exitType;
                 }
-            case 0b01111111:
+            case BTN_R:
                 if (visualizer == 6) { // scroll through menu without actually changing the track
                     // multicore_lockout_start_blocking();
                     if (song_choice - 10 < 1) {
@@ -262,7 +250,7 @@ int jukebox(int *mode) {
                         return exitType;
                     }
                 }
-            case 0b11110111:
+            case BTN_A:
                 if (visualizer == 6) {
                     paused = 0;
                     warping = 0;
@@ -287,7 +275,7 @@ int jukebox(int *mode) {
                                 : "\r\nTape resuming...\r\n");
                     break;
                 }
-            case 0b11101110:
+            case BTN_SELECT & BTN_L:
                 if (get_absolute_time() - last_ff_rw_action_time >= 10000) {
                     ff_or_rew = 1;
                     pos += skip_bits;
@@ -306,7 +294,7 @@ int jukebox(int *mode) {
                 }
                 break;
 
-            case 0b01111110:
+            case BTN_SELECT & BTN_R:
                 if (get_absolute_time() - last_ff_rw_action_time >= 10000) {
                     ff_or_rew = 0;
                     pos -= skip_bits;
@@ -325,7 +313,7 @@ int jukebox(int *mode) {
                     printf("\r\nRewound ~2s\r\n");
                 }
                 break;
-            case 0b10111111:
+            case BTN_U:
                 if (visualizer == 6) { // scroll through menu without actually changing the track
                     if (song_choice - 1 < 1) {
                         song_choice = track_count - 1;
@@ -352,7 +340,7 @@ int jukebox(int *mode) {
                     }
                 }
                 break;
-            case 0b11011111:
+            case BTN_D:
                 if (visualizer == 6) {
                     if (song_choice + 1 > track_count) {
                         song_choice = 0;
@@ -372,11 +360,10 @@ int jukebox(int *mode) {
                     return exitType;
                 }
                 break;
-            case 'l':
-            case 'L':
+            case BTN_SELECT & BTN_B:
                 pca9685_toggleSleep(&vu_meter);
                 break;
-            case 0b11111101:
+            case BTN_START:
                 visualizer = (visualizer + 1) % (num_visualizations - 1);
                 if (visualizer == 0) {
                     display_album_art_by_index(img_buffer, current_song_idx);
@@ -421,7 +408,7 @@ int jukebox(int *mode) {
             // case 'M':
             //     enableIcons = !enableIcons;
             //     break;
-            case 0b11111011:
+            case BTN_B:
                 if (paused)
                 {
                     exitType = 0;

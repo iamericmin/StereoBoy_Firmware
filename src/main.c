@@ -46,22 +46,7 @@ st7789_t display = {
     .gpio_bl  = 5,
 };
 
-#define LCD_WIDTH  240
-#define LCD_HEIGHT 240
-
 folder_info_t folders[MAX_FOLDERS];
-
-track_info_t track_window[10];
-track_info_t *current_track = NULL;
-track_info_t current_track_holder;
-
-album_info_t album_window[10];
-album_info_t *current_album = NULL;
-album_info_t current_album_holder;
-
-artist_info_t artist_window[10];
-artist_info_t *current_artist = NULL;
-artist_info_t current_artist_holder;
 
 // file that contains all tracks' metadata
 // VERY IMPORTANT
@@ -70,214 +55,7 @@ FIL tracks_cache_file;
 char folder_names[20][64];
 int folder_file_counts[20];
 
-uint16_t song_choice = 0;
-uint16_t album_choice = 0;
-uint16_t artist_choice = 0;
-uint16_t prev_choice = 0;
-uint16_t menu_choice = 0;
-uint16_t selected = 0; 
-
-int temp_visualizer = 6;
 int exitCode = 0;
-
-uint16_t browse_artists() {
-    current_artist = &current_artist_holder;
-    if (!sb_get_artist_window(artist_choice, current_artist, artist_window)) {
-        printf("Error reading track metadata from cache table!\n");
-    }
-    // read_lwbt();
-    temp_visualizer = (visualizer == 7) ? 1 : visualizer;
-    //Return to main menu with list selection:
-    if (exitCode == 0) {
-        // pca9685_all_off(&vu_meter);
-        selected = false;
-        set_visualizer(4);
-        prev_choice = artist_choice;
-        while (selected == false) {
-            switch (current_button_states) {
-            case BTN_D:
-                artist_choice = (artist_choice + 1) % artist_count;
-                break;
-            case BTN_U:
-                artist_choice = (artist_choice - 1 + artist_count) % artist_count; //added roll-over
-                break;
-            case BTN_R:
-                artist_choice = (artist_choice - 10 + artist_count) % artist_count;
-                break;
-            case BTN_L:
-                artist_choice = (artist_choice + 10) % artist_count;
-                break;
-            case BTN_B:
-                return 65535;
-            case BTN_A:
-                selected = 1;   
-                printf("Poo cum fart shit pee\n");
-            default:
-                break;
-            }
-            sb_get_artist_window(artist_choice, current_artist, artist_window);
-            if (prev_choice != artist_count){
-                printf("\r\nArtist %d/%d: ", artist_choice+1, artist_count);
-                prev_choice = artist_choice;
-            }
-            sleep_ms(100);
-        }
-    }
-
-    // if (!sb_get_artist_window(artist_choice, current_artist, artist_window)) {
-    //     printf("Error reading track metadata from cache table!\n");
-    // }
-
-    return current_artist->start_album;
-}
-
-int play_track() {
-    current_track = &current_track_holder;
-
-    if (!sb_get_track_window_fast(&tracks_cache_file, song_choice, current_track, track_window)) {
-        printf("Error reading track metadata from cache table!\n");
-    }
-
-    printf("\r\n\rNOW PLAYING:\r\n");
-    printf("  Title : %s\r\n", current_track->title);
-    printf("  Artist: %s\r\n", current_track->artist);
-    printf("  Album : %s\r\n", current_track->album);
-    printf("  Bitrate : %d Kbps\r\n", current_track->bitrate);
-    printf("  Sample rate : %d Hz\r\n", current_track->samplespeed);
-    printf("  Channels : %s\r\n", current_track->channels == 1 ? "Mono" : "Stereo");
-    printf("  Header: %X\r\n", current_track->header);
-    printf("  Start: %X\r\n", current_track->audio_start);
-    printf("  Start: %X\r\n", current_track->audio_end);
-
-    set_visualizer(temp_visualizer);
-
-    // Pass it to the playback loop
-    exitCode = jukebox(&exitCode);
-
-    // play next song
-    if (exitCode == 1){
-        song_choice = (song_choice + 1) % track_count;
-        printf("\r\n Next song!\r\n");
-        dprint("Next song!");
-    }
-    // play previous song
-    if (exitCode == 2){
-        song_choice = (song_choice - 1 + track_count) % track_count;
-        dprint("Prev Song!");
-        printf("\r\nPrev Song!\r\n");
-    }
-    // play selected song in menu (visualizer 6)
-    if (exitCode == 3){
-        dprint("Playing picked Song!");
-        printf("\r\nPlaying picked Song!\r\n");
-    }
-
-    return 0;
-}
-
-uint16_t browse_albums() {
-    current_track = &current_track_holder;
-    current_album = &current_album_holder;
-    if (!sb_get_album_window(album_choice, current_album, album_window)) {
-        printf("Error reading track metadata from cache table!\n");
-    }
-    sb_get_track_window_fast(&tracks_cache_file, current_album->start_track, current_track, track_window);
-    // read_lwbt();
-    temp_visualizer = (visualizer == 7) ? 1 : visualizer;
-    //Return to main menu with list selection:
-    if (exitCode == 0) {
-        // pca9685_all_off(&vu_meter);
-        selected = false;
-        set_visualizer(5);
-        prev_choice = album_choice;
-        while (selected == false) {
-            switch (current_button_states) {
-            case BTN_D:
-                album_choice = (album_choice + 1) % album_count;
-                break;
-            case BTN_U:
-                album_choice = (album_choice - 1 + album_count) % album_count; //added roll-over
-                break;
-            case BTN_R:
-                album_choice = (album_choice - 10 + album_count) % album_count;
-                break;
-            case BTN_L:
-                album_choice = (album_choice + 10) % album_count;
-                break;
-            case BTN_B:
-                return 65535;
-            case BTN_A:
-                selected = 1;   
-                printf("Poo cum fart shit pee\n");
-            default:
-                break;
-            }
-            sb_get_album_window(album_choice, current_album, album_window);
-            sb_get_track_window_fast(&tracks_cache_file, current_album->start_track, current_track, track_window);
-            if (prev_choice != album_choice){
-                printf("\r\nAlbum Fuck %d/%d: ", album_choice+1, album_count);
-                prev_choice = album_choice;
-            }
-            sleep_ms(100);
-        }
-    }
-
-    // if (!sb_get_album_window(album_choice, current_album, album_window)) {
-    //     printf("Error reading track metadata from cache table!\n");
-    // }
-
-    return current_album->start_track;
-}
-
-uint16_t browse_tracks() {
-    current_track = &current_track_holder;
-    if (!sb_get_track_window_fast(&tracks_cache_file, song_choice, current_track, track_window)) {
-        printf("Error reading track metadata from cache table!\n");
-    }
-    // read_lwbt();
-    temp_visualizer = (visualizer == 5 || visualizer == 7) ? 1 : visualizer;
-    //Return to main menu with list selection:
-    if (exitCode == 0) {
-        // pca9685_all_off(&vu_meter);
-        selected = false;
-        set_visualizer(6);
-        printf("\r\nSong %d/%d: ", song_choice+1, track_count);
-        prev_choice = song_choice;
-        while (selected == false) {
-            switch (current_button_states) {
-            case BTN_D:
-                song_choice = (song_choice + 1) % track_count;
-                break;
-            case BTN_U:
-                song_choice = (song_choice - 1 + track_count) % track_count; //added roll-over
-                break;
-            case BTN_R:
-                song_choice = (song_choice - 10 + track_count) % track_count;
-                break;
-            case BTN_L:
-                song_choice = (song_choice + 10) % track_count;
-                break;
-            case BTN_B:
-                return 65535;
-            case BTN_A:
-                selected = 1;   
-                printf("Poo cum fart shit pee\n");
-            default:
-                break;
-            }
-            sb_get_track_window_fast(&tracks_cache_file, song_choice, current_track, track_window);
-            if (prev_choice != song_choice){
-                printf("\r\nSong %d/%d: ", song_choice+1, track_count);
-                prev_choice = song_choice;
-            }
-            
-            sleep_ms(100);
-        }
-    }
-
-    play_track(&exitCode);
-    return 0;
-}
 
 int main() {
     // set_visualizer(6);
@@ -285,7 +63,7 @@ int main() {
     // P = V^2 * f, so 0.1V drop results in quadratic change
     // Before: 1.1 ^ 2 * 150 = 181.5
     // Now: 1.0 ^ 2 * 150 = 150
-    // vreg_set_voltage(VREG_VOLTAGE_1_00);
+    vreg_set_voltage(VREG_VOLTAGE_1_00);
 
     stdio_init_all();
 
@@ -293,7 +71,7 @@ int main() {
     
     // Boot-up banner
 
-    // printf("\033c"); // clear screen
+    printf("\033c"); // clear screen
 
     printf(R"(
    _____ __                       ____             
@@ -320,7 +98,7 @@ int main() {
 
     dprint("Starting Track Scan");
 
-    // Load your main relational pointers into RAM first
+    // parse .sbc cache files and load library metadata
     sb_load_library();
     if (sb_load_tracks_cache(&tracks_cache_file) != FR_OK) {
         while(1) {
@@ -361,9 +139,10 @@ int main() {
     printf("%d Tracks\n", track_count);
 
     menu_choice = 1;
-    selected = 65535;
+    uint16_t selected = 65535;
 
     while (1) {
+        exitCode = 0;
         menu_choice = 1;
         selected = 65535;
         
@@ -395,14 +174,14 @@ int main() {
             // Artists -> Albums -> Tracks
             case 1: {
                 selected = 0;
-                uint16_t start_album = browse_artists();
+                uint16_t start_album = browse_artists(&exitCode);
                 if (start_album == 65535) {
                     break;
                 }
                 album_choice = start_album;
 
                 selected = 0;
-                uint16_t start_track = browse_albums();
+                uint16_t start_track = browse_albums(&exitCode);
                 if (start_track == 65535) {
                     break;
                 }
@@ -410,7 +189,7 @@ int main() {
 
                 int result = 0;
                 while (result != 65535) {
-                    result = browse_tracks();
+                    result = browse_tracks(&exitCode);
                 }
                 break;
             }
@@ -418,7 +197,7 @@ int main() {
             // Albums -> Tracks
             case 2: {
                 selected = 0;
-                uint16_t start_track = browse_albums();
+                uint16_t start_track = browse_albums(&exitCode);
                 if (start_track == 65535) {
                     break;
                 }
@@ -426,7 +205,7 @@ int main() {
 
                 int result = 0;
                 while (result != 65535) {
-                    result = browse_tracks();
+                    result = browse_tracks(&exitCode);
                 }
                 break;
             }
@@ -435,7 +214,7 @@ int main() {
             case 3: {
                 int result = 0;
                 while (result != 65535) {
-                    result = browse_tracks();
+                    result = browse_tracks(&exitCode);
                 }
                 break;
             }
@@ -456,7 +235,7 @@ int main() {
                 exitCode = -1; // if exitCode != 0, browse_tracks skips the selection menu and goes straight to jukebox
                 int result = 0;
                 while (result != 65535) {
-                    result = browse_tracks();
+                    result = browse_tracks(&exitCode);
                 }
                 break;
             }
