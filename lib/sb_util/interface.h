@@ -1,11 +1,14 @@
+// interface.h
 #ifndef INTERFACE_H
 #define INTERFACE_H
 
+#include <stdint.h>
 #include "global_vars.h"
 
-uint16_t browse_tracks();
-int play_track();
-uint16_t browse_artists();
-uint16_t browse_albums();
+// Declarations of your functions:
+uint16_t browse_artists(int *exitCode);
+int play_track(int *exitCode);
+uint16_t browse_albums(int *exitCode);
+uint16_t browse_tracks(int *exitCode);
 
-#endif
+#endif // INTERFACE_H

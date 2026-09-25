@@ -63,8 +63,8 @@ uint8_t buttons_get_just_pressed(void) {
     // Snapshot current state
     uint8_t current = current_button_states;
     
-    // Detect rising edges (0 -> 1)
-    uint8_t just_pressed = (current ^ last_button_states) & current;
+    // Detect falling edges (1 -> 0)
+    uint8_t just_pressed = ~current & last_button_states;
     
     // Update history
     last_button_states = current;

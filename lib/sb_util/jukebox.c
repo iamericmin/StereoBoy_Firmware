@@ -40,12 +40,30 @@ static uint64_t last_icon_toggle_time = 0;
 static uint64_t last_ff_rw_action_time = 0;
 static bool ff_rw_icon_visible = false;
 
-volatile uint8_t just_pressed;
-uint8_t button_state;
+uint8_t prev_buttons = 0xFF;
+uint8_t current_buttons = 0xFF;
+uint8_t hold_counter = 0;
 
-// slower loop to calculate status info (progress bar, FRAM writes, etc.)
-int update_status_slow() {
+uint32_t pos = 0;
 
+bool slow_callback_flag = 0;
+bool fast_callback_flag = 0;
+bool long_press_flag = 0;
+
+// slower loop to calculate status info (long press, FRAM writes, file pos, etc.)
+// repeats every 500ms
+static bool slow_callback(struct repeating_timer *t) {
+    if (!slow_callback_flag) {
+        slow_callback_flag = 1;
+    }
+}
+
+// fast loop to calculate other stuff (progress bar, volume, etc.)
+// repeats every 100ms
+static bool fast_callback(struct repeating_timer *t) {
+    if (!fast_callback_flag) {
+        fast_callback_flag = 1;
+    }
 }
 
 int jukebox(int *mode) {
@@ -89,7 +107,6 @@ int jukebox(int *mode) {
 
     uint16_t stereo_bit = sampleSpeed & 1;     // LSB indicates mono or stereo (not exactly sure what but this is pretty much always 1)
     uint16_t base_rate = sampleSpeed & 0xFFFE; // sampling speed in upper 15 bits
-    uint32_t song_pos = 0;
 
     // fetch album art if necessary
     if (visualizer == 0) {
@@ -98,11 +115,11 @@ int jukebox(int *mode) {
 
     // mode -1 is when picking up from last played track & time
     if (*mode == -1) {
-        if (fram_read(i2c0, 0x000F, (uint8_t*)&song_pos, sizeof(song_pos)) < 0) {
+        if (fram_read(i2c0, 0x000F, (uint8_t*)&pos, sizeof(pos)) < 0) {
             printf("Failed to read timestamp from F-RAM!\n");
-            song_pos = current_track->audio_start;
+            pos = current_track->audio_start;
         }
-        f_lseek(&fil, song_pos);
+        f_lseek(&fil, pos);
         paused = 0;
         warp_start_time = get_absolute_time();
         warp_start_transport = 0.0f;
@@ -124,10 +141,15 @@ int jukebox(int *mode) {
     uint16_t loop_cnt = 0;
 
     absolute_time_t loop_timestamp = get_absolute_time(); // very jank benchmark
+
+    static struct repeating_timer timer_500;
+    add_repeating_timer_ms(500, slow_callback, NULL, &timer_500);
+
+    static struct repeating_timer timer_50;
+    add_repeating_timer_ms(50, fast_callback, NULL, &timer_50);
     
     while (1) {
-        just_pressed = buttons_get_just_pressed();
-        // printf("Buttons: %08b\n", just_pressed);
+        // printf("Buttons: %08b\n", buttons_get_just_pressed());
         // Very simple & jank benchmark
         loop_cnt++;
         if (loop_cnt >= 100) {
@@ -140,7 +162,7 @@ int jukebox(int *mode) {
         }
 
         // --- FF / RW Action Timeout & Blinking Logic ---
-        ff_rw_active = (get_absolute_time() - last_ff_rw_action_time < 500000);
+        ff_rw_active = (get_absolute_time() - last_ff_rw_action_time < 100); // FIX THIS LATER!!!!!!!!
         if (ff_rw_active) {
             if (get_absolute_time() - last_icon_toggle_time >= ICON_BLINK_INTERVAL) {
                 ff_rw_icon_visible = !ff_rw_icon_visible;
@@ -166,39 +188,51 @@ int jukebox(int *mode) {
 
             vs1053_play_data(&player, buffer, br);
         }
+
+        if (slow_callback_flag) {
+            slow_callback_flag = 0; // clear flag
+            fram_write(i2c0, 0x000F, (uint8_t*)&pos, sizeof(pos)); // save current timestampt to FRAM
+
+            pos = f_tell(&fil); // update file position
+        }
         
-        // janky counter for volume sampling
-        if (vol_check == 5) {
+        if (fast_callback_flag) {
+            fast_callback_flag = 0;
+            //progress bar (should make separate function)
+            float progress = (float)(pos - current_track->audio_start) / (float)(current_track->audio_end - current_track->audio_start);
+            if (progress < 0.0f)
+                progress = 0.0f;
+            if (progress > 1.0f)
+                progress = 1.0f;
+            prev_progress_bar = progress_bar;
+            progress_bar = 240 * progress;
+            uint16_t seconds_passed = (uint16_t)(progress * (((current_track->audio_end - current_track->audio_start) * 8) / (current_track->bitrate * 1000)));
+            progress_min = (int)seconds_passed / 60;
+            progress_sec = seconds_passed % 60;
+            bool update_bar = prev_progress_bar != progress_bar;
+
+            // janky counter for volume sampling
             uint16_t vol = (uint32_t)potVal * 0x60 / 4096;
             dac_set_volume(vol);
-            vol_check = 0;
-        } else {
-            vol_check++;
+            
+            if (buttons_get_just_pressed()) {
+                current_buttons = current_button_states;
+                hold_counter = 0;
+            } else if (current_button_states != 1) {
+                hold_counter++;
+                if (hold_counter >= 20) {
+                    current_buttons = current_button_states;
+                } else {
+                    current_buttons = 0xFF;
+                }
+            } else {
+                hold_counter = 0;
+                current_buttons = 0xFF;
+            }
+            prev_buttons = current_button_states;
         }
 
-        //progress bar (should make separate function)
-        song_pos = f_tell(&fil);
-        float progress = (float)(song_pos - current_track->audio_start) / (float)(current_track->audio_end - current_track->audio_start);
-        if (progress < 0.0f)
-            progress = 0.0f;
-        if (progress > 1.0f)
-            progress = 1.0f;
-        prev_progress_bar = progress_bar;
-        progress_bar = 240 * progress;
-        uint16_t seconds_passed = (uint16_t)(progress * (((current_track->audio_end - current_track->audio_start) * 8) / (current_track->bitrate * 1000)));
-        progress_min = (int)seconds_passed / 60;
-        progress_sec = seconds_passed % 60;
-        bool update_bar = prev_progress_bar != progress_bar;
-        // Write song position to FRAM to update last played data
-        // Write every second to prevent I2C bus overload
-        static absolute_time_t last_fram_save;
-        if (absolute_time_diff_us(last_fram_save, get_absolute_time()) >= 2000000) {
-            fram_write(i2c0, 0x000F, (uint8_t*)&song_pos, sizeof(song_pos));
-            last_fram_save = get_absolute_time();
-        }
-        
-        long pos = f_tell(&fil);
-        switch (current_button_states) {
+        switch (current_buttons) {
             case BTN_L: 
                 if (visualizer == 6) {
                     // multicore_lockout_start_blocking();

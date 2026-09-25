@@ -62,7 +62,5 @@ static void dac_apply_eq(float sampleRate);
 
 
 void dac_int_callback(uint gpio, uint32_t events);
-void dac_interrupt_init(void);
-
 
 #endif

@@ -30,14 +30,6 @@ cplx audio_history_r[HISTORY_SIZE];
 #define LED_G 25
 #define LED_B 26
 
-static bool repeating_timer_callback(struct repeating_timer *t) {
-    gpio_put(LED_R, !gpio_get(LED_R)); 
-    // gpio_put(LED_G, !gpio_get(LED_G));
-    // gpio_put(LED_B, !gpio_get(LED_B));
- 
-    return true;
-}
-
 static void marquee_plus(uint8_t *scroll_pos, uint32_t *last_update_ms, const char *src, 
                             uint8_t window_len, uint8_t gap_len, 
                             uint32_t scroll_speed_ms, uint32_t pause_ms) {
@@ -447,7 +439,7 @@ void core1_entry()
 {
     multicore_lockout_victim_init();
 
-    struct repeating_timer anim_timer;
+    // struct repeating_timer anim_timer;
     // add_repeating_timer_ms(500, repeating_timer_callback, NULL, &anim_timer);
 
     while (1)
@@ -516,7 +508,7 @@ void update_scope_core1()
     static int x = 0;
     static int last_y_l = OFFSET_L;
     static int last_y_r = OFFSET_R;
-    static int led_throttle = 0;
+    // static int led_throttle = 0;
 
     // 1. Sample Channels
     adc_select_input(ADC_CH_L);

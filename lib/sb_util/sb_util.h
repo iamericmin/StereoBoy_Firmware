@@ -72,7 +72,6 @@ void set_backlight_brightness(uint gpio, uint16_t brightness_percent);
 /* ========= sb_util.c ========== */
 
 void process_image(track_info_t *track, const char *filename, float output_size);
-static void process_audio_batch();
 
 void set_visualizer(int num);
 void clear_framebuffer();
