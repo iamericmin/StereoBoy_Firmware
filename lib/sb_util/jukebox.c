@@ -18,6 +18,7 @@ bool paused = false;
 bool warping = false;
 bool stopped = false;
 bool ff_or_rew = false; // 1 for ff, 0 for rewind
+bool ff_rw_active = false; // 1 if either ffing or rewinding
 bool enableIcons = true;
 
 volatile uint16_t potVal = 0;
@@ -38,6 +39,11 @@ uint32_t current_song_idx;
 static uint64_t last_icon_toggle_time = 0;
 static uint64_t last_ff_rw_action_time = 0;
 static bool ff_rw_icon_visible = false;
+
+// slower loop to calculate status info (progress bar, FRAM writes, etc.)
+int update_status_slow() {
+
+}
 
 int jukebox(int *mode) {
     FIL fil;             // file object
@@ -117,6 +123,7 @@ int jukebox(int *mode) {
     absolute_time_t loop_timestamp = get_absolute_time(); // very jank benchmark
     
     while (1) {
+        // printf("Buttons: %08b\n", current_button_states);
         // Very simple & jank benchmark
         loop_cnt++;
         if (loop_cnt >= 100) {
@@ -129,7 +136,7 @@ int jukebox(int *mode) {
         }
 
         // --- FF / RW Action Timeout & Blinking Logic ---
-        bool ff_rw_active = (get_absolute_time() - last_ff_rw_action_time < 500000);
+        ff_rw_active = (get_absolute_time() - last_ff_rw_action_time < 500000);
         if (ff_rw_active) {
             if (get_absolute_time() - last_icon_toggle_time >= ICON_BLINK_INTERVAL) {
                 ff_rw_icon_visible = !ff_rw_icon_visible;
@@ -167,15 +174,15 @@ int jukebox(int *mode) {
             vol_check++;
         }
         
-        int c = getchar_timeout_us(0); // nonblocking getchar
+        // int c = getchar_timeout_us(0); // nonblocking getchar
 
         // get value from buttons
-        if (c == PICO_ERROR_TIMEOUT)
-        {
-            char btn_char = get_button_jukebox(selected_band);
-            if (btn_char != 0)
-                c = (int)btn_char; // Inject the button character into the logic
-        }
+        // if (c == PICO_ERROR_TIMEOUT)
+        // {
+        //     char btn_char = get_button_jukebox(selected_band);
+        //     if (btn_char != 0)
+        //         c = (int)btn_char; // Inject the button character into the logic
+        // }
 
         //progress bar (should make separate function)
         song_pos = f_tell(&fil);
@@ -199,42 +206,40 @@ int jukebox(int *mode) {
         }
 
 
-        if (c != PICO_ERROR_TIMEOUT)
-        {
+        // if (c != PICO_ERROR_TIMEOUT)
+        // {
+        //     long pos = f_tell(&fil);
+        //     // bool headphonesIn = dac_read(0, 0x43) & 0x20;
+        //     // printf("Headphone prescence: %d\r\n", headphonesIn);
+
+        //     // EQ START
+        //     //  Select the band (keys 0-5)
+        //     if (c >= '0' && c <= '5')
+        //     {
+        //         selected_band = c - '0';
+        //         printf("\nSelected Band: %d Hz\n", dac_eq_get_freq(selected_band));
+        //     }
+
+        //     // Adjust the band (+ or -)
+        //     if (c == '+' || c == '=')
+        //     {
+        //         // dac_write(0, 0x3F, 0b11111110); // set audio output to mono
+        //         // transport += 0.05;
+        //         dac_eq_adjust(selected_band, 0.25f, sampleSpeed); // Boost
+        //         // printf("Band %d Gain: %.1f dB\n", selected_band, dac_eq_get_gain(selected_band));
+        //     }
+        //     if (c == '-')
+        //     {
+        //         // dac_write(0, 0x3F, 0b11010110); // set audio output to stereo
+        //         // transport -= 0.05;
+        //         dac_eq_adjust(selected_band, -0.25f, sampleSpeed); // Cut
+        //         // printf("Band %d Gain: %.1f dB\n", selected_band, dac_eq_get_gain(selected_band));
+        //     }
+        //     // EQ END
+        if (1) {
             long pos = f_tell(&fil);
-            // bool headphonesIn = dac_read(0, 0x43) & 0x20;
-            // printf("Headphone prescence: %d\r\n", headphonesIn);
-
-            // EQ START
-            //  Select the band (keys 0-5)
-            if (c >= '0' && c <= '5')
-            {
-                selected_band = c - '0';
-                printf("\nSelected Band: %d Hz\n", dac_eq_get_freq(selected_band));
-            }
-
-            // Adjust the band (+ or -)
-            if (c == '+' || c == '=')
-            {
-                // dac_write(0, 0x3F, 0b11111110); // set audio output to mono
-                // transport += 0.05;
-                dac_eq_adjust(selected_band, 0.25f, sampleSpeed); // Boost
-                // printf("Band %d Gain: %.1f dB\n", selected_band, dac_eq_get_gain(selected_band));
-            }
-            if (c == '-')
-            {
-                // dac_write(0, 0x3F, 0b11010110); // set audio output to stereo
-                // transport -= 0.05;
-                dac_eq_adjust(selected_band, -0.25f, sampleSpeed); // Cut
-                // printf("Band %d Gain: %.1f dB\n", selected_band, dac_eq_get_gain(selected_band));
-            }
-            // EQ END
-
-            switch (c)
-            {
-            // new **
-            case 'n':
-            case 'N':
+            switch (current_button_states) {
+            case 0b11101111: 
                 if (visualizer == 6) {
                     // multicore_lockout_start_blocking();
                     if (song_choice + 10 > track_count) {
@@ -256,8 +261,7 @@ int jukebox(int *mode) {
                     vs1053_stop(&player);
                     return exitType;
                 }
-            case 'o':
-            case 'O':
+            case 0b01111111:
                 if (visualizer == 6) { // scroll through menu without actually changing the track
                     // multicore_lockout_start_blocking();
                     if (song_choice - 10 < 1) {
@@ -286,8 +290,7 @@ int jukebox(int *mode) {
                         return exitType;
                     }
                 }
-            case 'p':
-            case 'P':
+            case 0b11110111:
                 if (visualizer == 6) {
                     paused = 0;
                     warping = 0;
@@ -312,31 +315,45 @@ int jukebox(int *mode) {
                                 : "\r\nTape resuming...\r\n");
                     break;
                 }
-            case 'f':
-            case 'F':
-                last_ff_rw_action_time = get_absolute_time();
-                ff_or_rew = 1;
-                pos += skip_bits;
-                if (pos > f_size(&fil)) {
-                    pos = f_size(&fil) - 1;
+            case 0b11101110:
+                if (get_absolute_time() - last_ff_rw_action_time >= 10000) {
+                    ff_or_rew = 1;
+                    pos += skip_bits;
+                    if (pos > f_size(&fil)) {
+                        pos = f_size(&fil) - 1;
+                    }
+                    f_lseek(&fil, pos);
+                    if (f_read(&fil, buffer, sizeof(buffer), &br) != FR_OK || br == 0)
+                    {
+                        exitType = 1; // Default return when no bytes read (end of song)
+                        break;
+                    }
+                    vs1053_play_data(&player, buffer, br);
+                    last_ff_rw_action_time = get_absolute_time();
+                    printf("\r\nFast-forwarded ~2s\r\n");
                 }
-                f_lseek(&fil, pos);
-                printf("\r\nFast-forwarded ~2s\r\n");
                 break;
 
-            case 'r':
-            case 'R':
-                last_ff_rw_action_time = get_absolute_time();
-                ff_or_rew = 0;
-                pos -= skip_bits;
-                if (pos < 0) {
-                    pos = 0;
+            case 0b01111110:
+                if (get_absolute_time() - last_ff_rw_action_time >= 10000) {
+                    ff_or_rew = 0;
+                    pos -= skip_bits;
+                    if (pos < 0) {
+                        pos = 0;
+                    }
+                    f_lseek(&fil, pos);
+                    if (f_read(&fil, buffer, sizeof(buffer), &br) != FR_OK || br == 0)
+                    {
+                        exitType = 1; // Default return when no bytes read (end of song)
+                        break;
+                    }
+
+                    vs1053_play_data(&player, buffer, br);
+                    last_ff_rw_action_time = get_absolute_time();
+                    printf("\r\nRewound ~2s\r\n");
                 }
-                f_lseek(&fil, pos);
-                printf("\r\nRewound ~2s\r\n");
                 break;
-            case 'u':
-            case 'U':
+            case 0b10111111:
                 if (visualizer == 6) { // scroll through menu without actually changing the track
                     if (song_choice - 1 < 1) {
                         song_choice = track_count - 1;
@@ -363,8 +380,7 @@ int jukebox(int *mode) {
                     }
                 }
                 break;
-            case 'd':
-            case 'D':
+            case 0b11011111:
                 if (visualizer == 6) {
                     if (song_choice + 1 > track_count) {
                         song_choice = 0;
@@ -388,8 +404,7 @@ int jukebox(int *mode) {
             case 'L':
                 pca9685_toggleSleep(&vu_meter);
                 break;
-            case 'v':
-            case 'V':
+            case 0b11111101:
                 visualizer = (visualizer + 1) % (num_visualizations - 1);
                 if (visualizer == 0) {
                     display_album_art_by_index(img_buffer, current_song_idx);
@@ -419,23 +434,22 @@ int jukebox(int *mode) {
                     dprint("Main Menu");
                 }
                 break;
-            case 'i':
-            case 'I':
-                printf("\r\n\rNOW PLAYING:\r\n");
-                printf("  Title : %s\r\n", current_track->title);
-                printf("  Artist: %s\r\n", current_track->artist);
-                printf("  Album : %s\r\n", current_track->album);
-                printf("  Bitrate : %d Kbps\r\n", current_track->bitrate);
-                printf("  Sample rate : %d Hz\r\n", current_track->samplespeed);
-                printf("  Channels : %s\r\n", current_track->channels == 1 ? "Mono" : "Stereo");
-                printf("  Header: %X\r\n", current_track->header);
-                break;
-            case 'm':
-            case 'M':
-                enableIcons = !enableIcons;
-                break;
-            case 's':
-            case 'S':
+            // case 'i':
+            // case 'I':
+            //     printf("\r\n\rNOW PLAYING:\r\n");
+            //     printf("  Title : %s\r\n", current_track->title);
+            //     printf("  Artist: %s\r\n", current_track->artist);
+            //     printf("  Album : %s\r\n", current_track->album);
+            //     printf("  Bitrate : %d Kbps\r\n", current_track->bitrate);
+            //     printf("  Sample rate : %d Hz\r\n", current_track->samplespeed);
+            //     printf("  Channels : %s\r\n", current_track->channels == 1 ? "Mono" : "Stereo");
+            //     printf("  Header: %X\r\n", current_track->header);
+            //     break;
+            // case 'm':
+            // case 'M':
+            //     enableIcons = !enableIcons;
+            //     break;
+            case 0b11111011:
                 if (paused)
                 {
                     exitType = 0;
