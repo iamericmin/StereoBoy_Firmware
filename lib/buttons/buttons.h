@@ -9,10 +9,10 @@
 #define BTN_START  0b11111101
 #define BTN_B      0b11111011
 #define BTN_A      0b11110111
-#define BTN_L      0b11101111
+#define BTN_R      0b11101111
 #define BTN_D      0b11011111
 #define BTN_U      0b10111111
-#define BTN_R      0b01111111
+#define BTN_L      0b01111111
 
 void buttons_init(int32_t scan_time);
 

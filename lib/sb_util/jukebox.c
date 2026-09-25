@@ -8,6 +8,8 @@
 #define SKIP_INTERVAL_MS 100   // minimum interval between FF/RW jumps
 #define ICON_BLINK_INTERVAL 150000 // play/pause/ff/rew icon blinking half-period
 #define RGB_BRIGHTNESS 4096 // RGB LED indicator brightness
+#define FF_BLINK_INTERVAL  150000 // 150ms for Fast-Forward
+#define REW_BLINK_INTERVAL (FF_BLINK_INTERVAL / 2) // 75ms for Rewind
 
 /* ##########################################################
 JUKEBOX: MAIN PLAY LOOP
@@ -37,7 +39,6 @@ bool album_art_ready = false;
 uint32_t current_song_idx;
 
 static uint64_t last_icon_toggle_time = 0;
-static uint64_t last_ff_rw_action_time = 0;
 static bool ff_rw_icon_visible = false;
 
 uint8_t prev_buttons = 0xFF;
@@ -161,15 +162,17 @@ int jukebox(int *mode) {
             loop_cnt = 0;
         }
 
-        // --- FF / RW Action Timeout & Blinking Logic ---
-        ff_rw_active = (get_absolute_time() - last_ff_rw_action_time < 100); // FIX THIS LATER!!!!!!!!
-        if (ff_rw_active) {
-            if (get_absolute_time() - last_icon_toggle_time >= ICON_BLINK_INTERVAL) {
+        // Determine active interval based on direction (1 = FF, 0 = REW)
+        uint64_t current_blink_interval = ff_or_rew ? FF_BLINK_INTERVAL : REW_BLINK_INTERVAL;
+        if (current_button_states == (BTN_SELECT & BTN_L) || current_button_states == (BTN_SELECT & BTN_R)) {
+            ff_rw_active = 1;
+            if (get_absolute_time() - last_icon_toggle_time >= current_blink_interval) {
                 ff_rw_icon_visible = !ff_rw_icon_visible;
                 last_icon_toggle_time = get_absolute_time();
             }
             playStatus = ff_rw_icon_visible ? (ff_or_rew ? ff_icon : rew_icon) : empty_icon;
         } else {
+            ff_rw_active = 0;
             ff_rw_icon_visible = false;
             playStatus = paused ? pause_icon : play_icon;
         }
@@ -192,12 +195,13 @@ int jukebox(int *mode) {
         if (slow_callback_flag) {
             slow_callback_flag = 0; // clear flag
             fram_write(i2c0, 0x000F, (uint8_t*)&pos, sizeof(pos)); // save current timestampt to FRAM
-
-            pos = f_tell(&fil); // update file position
         }
         
         if (fast_callback_flag) {
             fast_callback_flag = 0;
+
+            pos = f_tell(&fil); // update file position
+            
             //progress bar (should make separate function)
             float progress = (float)(pos - current_track->audio_start) / (float)(current_track->audio_end - current_track->audio_start);
             if (progress < 0.0f)
@@ -215,13 +219,25 @@ int jukebox(int *mode) {
             uint16_t vol = (uint32_t)potVal * 0x60 / 4096;
             dac_set_volume(vol);
             
-            if (buttons_get_just_pressed()) {
-                current_buttons = current_button_states;
-                hold_counter = 0;
-            } else if (current_button_states != 1) {
-                hold_counter++;
-                if (hold_counter >= 20) {
+            if (buttons_get_just_pressed()) { // if falling edge detected (buttons are active low)
+                current_buttons = current_button_states; // capture raw button states
+                hold_counter = 0; // reset hold counter to zero
+            } else if (current_button_states != 0xFF) { // if holding
+                // These are buttons that trigger auto-fire after a ~500ms delay
+                if (current_button_states == BTN_L || current_button_states == BTN_R || current_button_states == BTN_U || current_button_states == BTN_D) {
+                    hold_counter++;
+                    if (hold_counter >= 10) {
+                        current_buttons = current_button_states;
+                    } else {
+                        current_buttons = 0xFF;
+                    }
+                // These are buttons that auto-fire right away with no delay
+                } else if ((current_button_states == (BTN_SELECT & BTN_L)) || (current_button_states == (BTN_SELECT & BTN_R))) {
                     current_buttons = current_button_states;
+                // These are buttons that fire once and never trigger again until it's pressed again
+                } else if ((current_button_states == BTN_A) || (current_button_states == BTN_B)) {
+                    hold_counter = 0;
+                    current_buttons = 0xFF;
                 } else {
                     current_buttons = 0xFF;
                 }
@@ -233,9 +249,8 @@ int jukebox(int *mode) {
         }
 
         switch (current_buttons) {
-            case BTN_L: 
+            case BTN_R: 
                 if (visualizer == 6) {
-                    // multicore_lockout_start_blocking();
                     if (song_choice + 10 > track_count) {
                         song_choice = track_count % 10;
                     } else {
@@ -255,7 +270,7 @@ int jukebox(int *mode) {
                     vs1053_stop(&player);
                     return exitType;
                 }
-            case BTN_R:
+            case BTN_L:
                 if (visualizer == 6) { // scroll through menu without actually changing the track
                     // multicore_lockout_start_blocking();
                     if (song_choice - 10 < 1) {
@@ -309,12 +324,12 @@ int jukebox(int *mode) {
                                 : "\r\nTape resuming...\r\n");
                     break;
                 }
-            case BTN_SELECT & BTN_L:
-                if (get_absolute_time() - last_ff_rw_action_time >= 10000) {
+            case BTN_SELECT & BTN_R:
                     ff_or_rew = 1;
-                    pos += skip_bits;
                     if (pos > f_size(&fil)) {
                         pos = f_size(&fil) - 1;
+                    } else {
+                        pos += skip_bits;
                     }
                     f_lseek(&fil, pos);
                     if (f_read(&fil, buffer, sizeof(buffer), &br) != FR_OK || br == 0)
@@ -322,18 +337,16 @@ int jukebox(int *mode) {
                         exitType = 1; // Default return when no bytes read (end of song)
                         break;
                     }
-                    vs1053_play_data(&player, buffer, br);
-                    last_ff_rw_action_time = get_absolute_time();
+                    vs1053_play_data(&player, buffer, br); // play current pos for scrubbing sound effect
                     printf("\r\nFast-forwarded ~2s\r\n");
-                }
                 break;
 
-            case BTN_SELECT & BTN_R:
-                if (get_absolute_time() - last_ff_rw_action_time >= 10000) {
+            case BTN_SELECT & BTN_L:
                     ff_or_rew = 0;
-                    pos -= skip_bits;
-                    if (pos < 0) {
-                        pos = 0;
+                    if (pos < current_track->audio_start + skip_bits) {
+                        pos = current_track->audio_start;
+                    } else {
+                        pos -= skip_bits;
                     }
                     f_lseek(&fil, pos);
                     if (f_read(&fil, buffer, sizeof(buffer), &br) != FR_OK || br == 0)
@@ -342,10 +355,8 @@ int jukebox(int *mode) {
                         break;
                     }
 
-                    vs1053_play_data(&player, buffer, br);
-                    last_ff_rw_action_time = get_absolute_time();
+                    vs1053_play_data(&player, buffer, br); // play current pos for scrubbing sound effect
                     printf("\r\nRewound ~2s\r\n");
-                }
                 break;
             case BTN_U:
                 if (visualizer == 6) { // scroll through menu without actually changing the track
@@ -482,7 +493,9 @@ int jukebox(int *mode) {
                     printf("\r\nPaused.\r\n");
                     f_close(&fil);
                     vs1053_stop(&player);
-                    pwm_set_gpio_level(LED_R, 65535); // 65535 = Completely OFF (Active Low)
+                    if (visualizer == 6) {
+                        pwm_set_gpio_level(LED_R, 65535); // 65535 = Completely OFF (Active Low)
+                    }
                     return 0;
                 }
             }
@@ -494,10 +507,12 @@ int jukebox(int *mode) {
             }
 
             // Calculate LED brightness during warp
-            uint16_t led_duty = 65535 - RGB_BRIGHTNESS + (uint16_t)(transport * RGB_BRIGHTNESS);
-            pwm_set_gpio_level(LED_R, led_duty);
+            if (visualizer == 6) {
+                uint16_t led_duty = 65535 - RGB_BRIGHTNESS + (uint16_t)(transport * RGB_BRIGHTNESS);
+                pwm_set_gpio_level(LED_R, led_duty);
+            }
         } else {
-            if (ff_rw_active)
+            if (ff_rw_active && visualizer == 6)
             {
                 // Active-Low: 32768 = 50% brightness, 65535 = fully OFF
                 uint16_t led_duty = ff_rw_icon_visible ? 65535 - RGB_BRIGHTNESS : 65535;
@@ -507,7 +522,9 @@ int jukebox(int *mode) {
             {
                 // Active-Low normal playback brightness
                 uint16_t led_duty = 65535 - RGB_BRIGHTNESS + (uint16_t)(transport * RGB_BRIGHTNESS);
-                pwm_set_gpio_level(LED_R, led_duty);
+                if (visualizer == 6) {
+                    pwm_set_gpio_level(LED_R, led_duty);
+                }
             }
         }
     }
