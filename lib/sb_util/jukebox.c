@@ -127,7 +127,7 @@ int jukebox(int *mode) {
     
     while (1) {
         just_pressed = buttons_get_just_pressed();
-        printf("Buttons: %08b\n", just_pressed);
+        // printf("Buttons: %08b\n", just_pressed);
         // Very simple & jank benchmark
         loop_cnt++;
         if (loop_cnt >= 100) {
