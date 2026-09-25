@@ -684,7 +684,7 @@ void sb_hw_init(vs1053_t *player, st7789_t *display)
     printf("Audio init complete.\r\n");
 
     // Initialize buttons with a 50ms scan rate
-    buttons_init(50);
+    buttons_init(100);
     printf("\r\nButtons intializedr\n");
 
     pot_init();

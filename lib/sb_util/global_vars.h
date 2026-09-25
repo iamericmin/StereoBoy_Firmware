@@ -195,6 +195,7 @@ extern int selected_band;
 extern volatile uint16_t potVal;
 
 extern volatile uint8_t current_button_states;
+extern volatile uint8_t just_pressed;
 
 
 

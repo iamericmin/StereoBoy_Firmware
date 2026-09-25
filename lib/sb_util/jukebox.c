@@ -40,6 +40,9 @@ static uint64_t last_icon_toggle_time = 0;
 static uint64_t last_ff_rw_action_time = 0;
 static bool ff_rw_icon_visible = false;
 
+volatile uint8_t just_pressed;
+uint8_t button_state;
+
 // slower loop to calculate status info (progress bar, FRAM writes, etc.)
 int update_status_slow() {
 
@@ -123,7 +126,8 @@ int jukebox(int *mode) {
     absolute_time_t loop_timestamp = get_absolute_time(); // very jank benchmark
     
     while (1) {
-        // printf("Buttons: %08b\n", current_button_states);
+        just_pressed = buttons_get_just_pressed();
+        printf("Buttons: %08b\n", just_pressed);
         // Very simple & jank benchmark
         loop_cnt++;
         if (loop_cnt >= 100) {
@@ -204,41 +208,9 @@ int jukebox(int *mode) {
             fram_write(i2c0, 0x000F, (uint8_t*)&song_pos, sizeof(song_pos));
             last_fram_save = get_absolute_time();
         }
-
-
-        // if (c != PICO_ERROR_TIMEOUT)
-        // {
-        //     long pos = f_tell(&fil);
-        //     // bool headphonesIn = dac_read(0, 0x43) & 0x20;
-        //     // printf("Headphone prescence: %d\r\n", headphonesIn);
-
-        //     // EQ START
-        //     //  Select the band (keys 0-5)
-        //     if (c >= '0' && c <= '5')
-        //     {
-        //         selected_band = c - '0';
-        //         printf("\nSelected Band: %d Hz\n", dac_eq_get_freq(selected_band));
-        //     }
-
-        //     // Adjust the band (+ or -)
-        //     if (c == '+' || c == '=')
-        //     {
-        //         // dac_write(0, 0x3F, 0b11111110); // set audio output to mono
-        //         // transport += 0.05;
-        //         dac_eq_adjust(selected_band, 0.25f, sampleSpeed); // Boost
-        //         // printf("Band %d Gain: %.1f dB\n", selected_band, dac_eq_get_gain(selected_band));
-        //     }
-        //     if (c == '-')
-        //     {
-        //         // dac_write(0, 0x3F, 0b11010110); // set audio output to stereo
-        //         // transport -= 0.05;
-        //         dac_eq_adjust(selected_band, -0.25f, sampleSpeed); // Cut
-        //         // printf("Band %d Gain: %.1f dB\n", selected_band, dac_eq_get_gain(selected_band));
-        //     }
-        //     // EQ END
-        if (1) {
-            long pos = f_tell(&fil);
-            switch (current_button_states) {
+        
+        long pos = f_tell(&fil);
+        switch (current_button_states) {
             case 0b11101111: 
                 if (visualizer == 6) {
                     // multicore_lockout_start_blocking();
@@ -467,12 +439,10 @@ int jukebox(int *mode) {
                 warping = true;
                 // album_art_ready = false;
                 break;
-            }
         }
-
+    
         // --- Warp & LED logic (Active-Low: 0 = Full On, 65535 = Off) ---
-        if (warping)
-        {
+        if (warping) {
             int64_t elapsed = absolute_time_diff_us(warp_start_time, get_absolute_time());
 
             if (elapsed >= warp_duration)
@@ -505,9 +475,7 @@ int jukebox(int *mode) {
             // Calculate LED brightness during warp
             uint16_t led_duty = 65535 - RGB_BRIGHTNESS + (uint16_t)(transport * RGB_BRIGHTNESS);
             pwm_set_gpio_level(LED_R, led_duty);
-        }
-        else 
-        {
+        } else {
             if (ff_rw_active)
             {
                 // Active-Low: 32768 = 50% brightness, 65535 = fully OFF

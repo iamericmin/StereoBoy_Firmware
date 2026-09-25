@@ -94,34 +94,39 @@ uint16_t browse_artists() {
         set_visualizer(4);
         prev_choice = artist_choice;
         while (selected == false) {
-            uint8_t pressed = buttons_get_just_pressed();
-            if (pressed > 0){
-                if (pressed & BTN_D)      artist_choice = (artist_choice + 1) % artist_count;
-                if (pressed & BTN_U)      artist_choice = (artist_choice - 1 + artist_count) % artist_count; //added roll-over
-                    // shift songs down by one and insert new song on top
-                if (pressed & BTN_R)      artist_choice = (artist_choice + 10) % artist_count;
-                if (pressed & BTN_L)      artist_choice = (artist_choice - 10 + artist_count) % artist_count;
-                if (pressed & BTN_B) {
-                    return 65535;
-                }
-                if (pressed & BTN_A) {
-                    selected = true;   
-                    printf("Poo cum fart shit pee\n");
-                }       
-                sb_get_artist_window(artist_choice, current_artist, artist_window);
+            switch (current_button_states) {
+            case BTN_D:
+                artist_choice = (artist_choice + 1) % artist_count;
+                break;
+            case BTN_U:
+                artist_choice = (artist_choice - 1 + artist_count) % artist_count; //added roll-over
+                break;
+            case BTN_R:
+                artist_choice = (artist_choice - 10 + artist_count) % artist_count;
+                break;
+            case BTN_L:
+                artist_choice = (artist_choice + 10) % artist_count;
+                break;
+            case BTN_B:
+                return 65535;
+            case BTN_A:
+                selected = 1;   
+                printf("Poo cum fart shit pee\n");
+            default:
+                break;
             }
-            if (prev_choice != artist_choice){
+            sb_get_artist_window(artist_choice, current_artist, artist_window);
+            if (prev_choice != artist_count){
                 printf("\r\nArtist %d/%d: ", artist_choice+1, artist_count);
                 prev_choice = artist_choice;
             }
-            
-            sleep_ms(10);
+            sleep_ms(100);
         }
     }
 
-    if (!sb_get_artist_window(artist_choice, current_artist, artist_window)) {
-        printf("Error reading track metadata from cache table!\n");
-    }
+    // if (!sb_get_artist_window(artist_choice, current_artist, artist_window)) {
+    //     printf("Error reading track metadata from cache table!\n");
+    // }
 
     return current_artist->start_album;
 }
@@ -186,35 +191,40 @@ uint16_t browse_albums() {
         set_visualizer(5);
         prev_choice = album_choice;
         while (selected == false) {
-            uint8_t pressed = buttons_get_just_pressed();
-            if (pressed > 0){
-                if (pressed & BTN_D)      album_choice = (album_choice + 1) % album_count;
-                if (pressed & BTN_U)      album_choice = (album_choice - 1 + album_count) % album_count; //added roll-over
-                    // shift songs down by one and insert new song on top
-                if (pressed & BTN_R)      album_choice = (album_choice + 10) % album_count;
-                if (pressed & BTN_L)      album_choice = (album_choice - 10 + album_count) % album_count;
-                if (pressed & BTN_B) {
-                    return 65535;
-                }
-                if (pressed & BTN_A) {
-                    selected = true;   
-                    printf("Poo cum fart shit pee\n");
-                }       
-                sb_get_album_window(album_choice, current_album, album_window);
-                sb_get_track_window_fast(&tracks_cache_file, current_album->start_track, current_track, track_window);
+            switch (current_button_states) {
+            case BTN_D:
+                album_choice = (album_choice + 1) % album_count;
+                break;
+            case BTN_U:
+                album_choice = (album_choice - 1 + album_count) % album_count; //added roll-over
+                break;
+            case BTN_R:
+                album_choice = (album_choice - 10 + album_count) % album_count;
+                break;
+            case BTN_L:
+                album_choice = (album_choice + 10) % album_count;
+                break;
+            case BTN_B:
+                return 65535;
+            case BTN_A:
+                selected = 1;   
+                printf("Poo cum fart shit pee\n");
+            default:
+                break;
             }
+            sb_get_album_window(album_choice, current_album, album_window);
+            sb_get_track_window_fast(&tracks_cache_file, current_album->start_track, current_track, track_window);
             if (prev_choice != album_choice){
                 printf("\r\nAlbum Fuck %d/%d: ", album_choice+1, album_count);
                 prev_choice = album_choice;
             }
-            
-            sleep_ms(10);
+            sleep_ms(100);
         }
     }
 
-    if (!sb_get_album_window(album_choice, current_album, album_window)) {
-        printf("Error reading track metadata from cache table!\n");
-    }
+    // if (!sb_get_album_window(album_choice, current_album, album_window)) {
+    //     printf("Error reading track metadata from cache table!\n");
+    // }
 
     return current_album->start_track;
 }
@@ -234,28 +244,34 @@ uint16_t browse_tracks() {
         printf("\r\nSong %d/%d: ", song_choice+1, track_count);
         prev_choice = song_choice;
         while (selected == false) {
-            uint8_t pressed = buttons_get_just_pressed();
-            if (pressed > 0){
-                if (pressed & BTN_D)      song_choice = (song_choice + 1) % track_count;
-                if (pressed & BTN_U)      song_choice = (song_choice - 1 + track_count) % track_count; //added roll-over
-                    // shift songs down by one and insert new song on top
-                if (pressed & BTN_R)      song_choice = (song_choice + 10) % track_count;
-                if (pressed & BTN_L)      song_choice = (song_choice - 10 + track_count) % track_count;
-                if (pressed & BTN_B) {
-                    return 65535;
-                }
-                if (pressed & BTN_A) {
-                    selected = true;   
-                    printf("Poo cum fart shit pee\n");
-                }       
-                sb_get_track_window_fast(&tracks_cache_file, song_choice, current_track, track_window);
+            switch (current_button_states) {
+            case BTN_D:
+                song_choice = (song_choice + 1) % track_count;
+                break;
+            case BTN_U:
+                song_choice = (song_choice - 1 + track_count) % track_count; //added roll-over
+                break;
+            case BTN_R:
+                song_choice = (song_choice - 10 + track_count) % track_count;
+                break;
+            case BTN_L:
+                song_choice = (song_choice + 10) % track_count;
+                break;
+            case BTN_B:
+                return 65535;
+            case BTN_A:
+                selected = 1;   
+                printf("Poo cum fart shit pee\n");
+            default:
+                break;
             }
+            sb_get_track_window_fast(&tracks_cache_file, song_choice, current_track, track_window);
             if (prev_choice != song_choice){
                 printf("\r\nSong %d/%d: ", song_choice+1, track_count);
                 prev_choice = song_choice;
             }
             
-            sleep_ms(10);
+            sleep_ms(100);
         }
     }
 
@@ -353,36 +369,26 @@ int main() {
         
         set_visualizer(7);
         while(selected == 65535) {
-            uint8_t pressed = buttons_get_just_pressed();
-            if (pressed > 0){
-                if (pressed & BTN_D)      menu_choice = (menu_choice + 1);
-                if (pressed & BTN_U)      menu_choice = (menu_choice - 1);
-                // if (pressed & BTN_R) {
-                //     while (BTN_R) {
-                //     marquee_scroll_rate = 50;
-                //     }
-                //     marquee_scroll_rate = 100;
-                //     home_marquee_dir = 0;
-                // }
-                // if (pressed & BTN_L) {
-                //     while (BTN_L) {
-                //         home_marquee_dir = 1;
-                //         marquee_scroll_rate = 50;
-                //     }
-                //     marquee_scroll_rate = 100;
-                //     home_marquee_dir = 0;
-                // }
-                if (pressed & BTN_A) {
-                    selected = 1;   
-                    printf("Poo cum fart shit pee\n");
-                }
-                if (menu_choice < 1) {
-                    menu_choice = 1;
-                } else if (menu_choice > 7) {
-                    menu_choice = 7;
-                }
+            // TODO: add left and right for fast scrolling
+            switch (current_button_states) {
+            case BTN_D:
+                menu_choice = (menu_choice + 1);
+                break;
+            case BTN_U:
+                menu_choice = (menu_choice - 1);
+                break;
+            case BTN_A:
+                selected = 1;   
+                printf("Poo cum fart shit pee\n");
+            default:
+                break;
             }
-            sleep_ms(50);
+            if (menu_choice < 1) {
+                menu_choice = 1;
+            } else if (menu_choice > 7) {
+                menu_choice = 7;
+            }
+            sleep_ms(100);
         }
 
         switch (menu_choice) {
