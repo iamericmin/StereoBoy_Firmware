@@ -22,4 +22,6 @@ uint8_t buttons_get_raw_state(void);
 // Useful for triggering single events (like toggling a menu).
 uint8_t buttons_get_just_pressed(void);
 
+uint8_t buttons_read_long_press();
+
 #endif // BUTTONS_H

@@ -53,7 +53,7 @@ uint16_t browse_artists(int *exitCode) {
         set_visualizer(4);
         prev_choice = artist_choice;
         while (selected == false) {
-            switch (current_button_states) {
+            switch (buttons_read_long_press()) {
             case BTN_D:
                 artist_choice = (artist_choice + 1) % artist_count;
                 break;
@@ -61,10 +61,10 @@ uint16_t browse_artists(int *exitCode) {
                 artist_choice = (artist_choice - 1 + artist_count) % artist_count; //added roll-over
                 break;
             case BTN_R:
-                artist_choice = (artist_choice - 10 + artist_count) % artist_count;
+                artist_choice = (artist_choice + 10) % artist_count;
                 break;
             case BTN_L:
-                artist_choice = (artist_choice + 10) % artist_count;
+                artist_choice = (artist_choice - 10 + artist_count) % artist_count;
                 break;
             case BTN_B:
                 return 65535;
@@ -79,7 +79,7 @@ uint16_t browse_artists(int *exitCode) {
                 printf("\r\nArtist %d/%d: ", artist_choice+1, artist_count);
                 prev_choice = artist_choice;
             }
-            sleep_ms(100);
+            sleep_ms(50);
         }
     }
 
@@ -150,7 +150,7 @@ uint16_t browse_albums(int *exitCode) {
         set_visualizer(5);
         prev_choice = album_choice;
         while (selected == false) {
-            switch (current_button_states) {
+            switch (buttons_read_long_press()) {
             case BTN_D:
                 album_choice = (album_choice + 1) % album_count;
                 break;
@@ -158,10 +158,10 @@ uint16_t browse_albums(int *exitCode) {
                 album_choice = (album_choice - 1 + album_count) % album_count; //added roll-over
                 break;
             case BTN_R:
-                album_choice = (album_choice - 10 + album_count) % album_count;
+                album_choice = (album_choice + 10) % album_count;
                 break;
             case BTN_L:
-                album_choice = (album_choice + 10) % album_count;
+                album_choice = (album_choice - 10 + album_count) % album_count;
                 break;
             case BTN_B:
                 return 65535;
@@ -177,7 +177,7 @@ uint16_t browse_albums(int *exitCode) {
                 printf("\r\nAlbum Fuck %d/%d: ", album_choice+1, album_count);
                 prev_choice = album_choice;
             }
-            sleep_ms(100);
+            sleep_ms(50);
         }
     }
 
@@ -202,8 +202,9 @@ uint16_t browse_tracks(int *exitCode) {
         set_visualizer(6);
         printf("\r\nSong %d/%d: ", song_choice+1, track_count);
         prev_choice = song_choice;
+        // buttons_read_long_press(&current_buttons, &prev_buttons);
         while (selected == false) {
-            switch (current_button_states) {
+            switch (buttons_read_long_press()) {
             case BTN_D:
                 song_choice = (song_choice + 1) % track_count;
                 break;
@@ -211,10 +212,10 @@ uint16_t browse_tracks(int *exitCode) {
                 song_choice = (song_choice - 1 + track_count) % track_count; //added roll-over
                 break;
             case BTN_R:
-                song_choice = (song_choice - 10 + track_count) % track_count;
+                song_choice = (song_choice + 10) % track_count;
                 break;
             case BTN_L:
-                song_choice = (song_choice + 10) % track_count;
+                song_choice = (song_choice - 10 + track_count) % track_count;
                 break;
             case BTN_B:
                 return 65535;
@@ -230,7 +231,7 @@ uint16_t browse_tracks(int *exitCode) {
                 prev_choice = song_choice;
             }
             
-            sleep_ms(100);
+            sleep_ms(50);
         }
     }
 

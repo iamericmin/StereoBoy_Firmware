@@ -41,10 +41,6 @@ uint32_t current_song_idx;
 static uint64_t last_icon_toggle_time = 0;
 static bool ff_rw_icon_visible = false;
 
-uint8_t prev_buttons = 0xFF;
-uint8_t current_buttons = 0xFF;
-uint8_t hold_counter = 0;
-
 uint32_t pos = 0;
 
 bool slow_callback_flag = 0;
@@ -150,7 +146,7 @@ int jukebox(int *mode) {
     add_repeating_timer_ms(50, fast_callback, NULL, &timer_50);
     
     while (1) {
-        // printf("Buttons: %08b\n", buttons_get_just_pressed());
+        // printf("Buttons: %08b\n", current_button_states);
         // Very simple & jank benchmark
         loop_cnt++;
         if (loop_cnt >= 100) {
@@ -163,7 +159,9 @@ int jukebox(int *mode) {
         }
 
         // Determine active interval based on direction (1 = FF, 0 = REW)
-        uint64_t current_blink_interval = ff_or_rew ? FF_BLINK_INTERVAL : REW_BLINK_INTERVAL;
+        // Handles blinking of fast-forward/rewind icon, or red LED in visualizer 6 (track menu)
+        // Blinks at FF_BLINK_INTERVAL speeds normally, but twice as fast (REW_BLINK_INTERVAL) when blinking LED during rewind
+        uint64_t current_blink_interval = ff_or_rew ? FF_BLINK_INTERVAL : (visualizer == 6) ? REW_BLINK_INTERVAL : FF_BLINK_INTERVAL;
         if (current_button_states == (BTN_SELECT & BTN_L) || current_button_states == (BTN_SELECT & BTN_R)) {
             ff_rw_active = 1;
             if (get_absolute_time() - last_icon_toggle_time >= current_blink_interval) {
@@ -219,36 +217,9 @@ int jukebox(int *mode) {
             uint16_t vol = (uint32_t)potVal * 0x60 / 4096;
             dac_set_volume(vol);
             
-            if (buttons_get_just_pressed()) { // if falling edge detected (buttons are active low)
-                current_buttons = current_button_states; // capture raw button states
-                hold_counter = 0; // reset hold counter to zero
-            } else if (current_button_states != 0xFF) { // if holding
-                // These are buttons that trigger auto-fire after a ~500ms delay
-                if (current_button_states == BTN_L || current_button_states == BTN_R || current_button_states == BTN_U || current_button_states == BTN_D) {
-                    hold_counter++;
-                    if (hold_counter >= 10) {
-                        current_buttons = current_button_states;
-                    } else {
-                        current_buttons = 0xFF;
-                    }
-                // These are buttons that auto-fire right away with no delay
-                } else if ((current_button_states == (BTN_SELECT & BTN_L)) || (current_button_states == (BTN_SELECT & BTN_R))) {
-                    current_buttons = current_button_states;
-                // These are buttons that fire once and never trigger again until it's pressed again
-                } else if ((current_button_states == BTN_A) || (current_button_states == BTN_B)) {
-                    hold_counter = 0;
-                    current_buttons = 0xFF;
-                } else {
-                    current_buttons = 0xFF;
-                }
-            } else {
-                hold_counter = 0;
-                current_buttons = 0xFF;
-            }
-            prev_buttons = current_button_states;
         }
 
-        switch (current_buttons) {
+        switch (buttons_read_long_press()) {
             case BTN_R: 
                 if (visualizer == 6) {
                     if (song_choice + 10 > track_count) {

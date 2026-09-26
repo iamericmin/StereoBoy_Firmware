@@ -71,3 +71,38 @@ uint8_t buttons_get_just_pressed(void) {
     
     return just_pressed;
 }
+
+uint8_t buttons_read_long_press() {
+    static uint8_t hold_counter;
+    static uint8_t current_buttons;
+    static uint8_t prev_buttons;
+    if (buttons_get_just_pressed()) { // if falling edge detected (buttons are active low)
+        current_buttons = current_button_states; // capture raw button states
+        hold_counter = 0; // reset hold counter to zero
+    } else if (current_button_states != 0xFF) { // if holding
+        // These are buttons that trigger auto-fire after a ~500ms delay
+        if (current_button_states == BTN_L || current_button_states == BTN_R || current_button_states == BTN_U || current_button_states == BTN_D) {
+            hold_counter++;
+            if (hold_counter >= 10) {
+                current_buttons = current_button_states;
+            } else {
+                current_buttons = 0xFF;
+            }
+        // These are buttons that auto-fire right away with no delay
+        } else if ((current_button_states == (BTN_SELECT & BTN_L)) || (current_button_states == (BTN_SELECT & BTN_R))) {
+            current_buttons = current_button_states;
+        // These are buttons that fire once and never trigger again until it's pressed again
+        } else if ((current_button_states == BTN_A) || (current_button_states == BTN_B)) {
+            hold_counter = 0;
+            current_buttons = 0xFF;
+        } else {
+            current_buttons = 0xFF;
+        }
+    } else {
+        hold_counter = 0;
+        current_buttons = 0xFF;
+    }
+    prev_buttons = current_button_states;
+
+    return current_buttons;
+}
