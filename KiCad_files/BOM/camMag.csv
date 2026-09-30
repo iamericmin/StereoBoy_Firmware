@@ -1,0 +1,27 @@
+Id;Designator;Footprint;Quantity;Designation;Supplier and ref
+1;J1;GameBoy_GamePak_CGB-002_P1.50mm_Edge;1;GameBoy_GamePak_CGB-002;
+2;C12,C16,C22,C18,C9,C14;C_0402_1005Metric_Pad0.74x0.62mm_HandSolder;6;10n;
+3;C3,C15,C5,C13,C17,C4,C23;C_0402_1005Metric_Pad0.74x0.62mm_HandSolder;7;0.1u;
+4;R5;R_0402_1005Metric_Pad0.72x0.64mm_HandSolder;1;1M;
+5;J6;microSD_External_Pin;1;microSD;
+6;R4;R_0402_1005Metric_Pad0.72x0.64mm_HandSolder;1;1.69k;
+7;FB1;L_0603_1608Metric_Pad1.05x0.95mm_HandSolder;1;FerriteBead_Small;
+8;C2,C1;C_1206_3216Metric;2;0.1uF;
+9;D1;LED_0603_1608Metric_Green;1;Green;
+10;C21,C20;C_0402_1005Metric_Pad0.74x0.62mm_HandSolder;2;47p;
+11;U2;CP_32_12_ADI;1;ADV7180BCP32Z;
+12;C19;C_0402_1005Metric_Pad0.74x0.62mm_HandSolder;1;82n;
+13;U4;SOT-23-5;1;AP2112K-1.8;
+14;C10,C11;C_0603_1608Metric;2;0.1u;
+15;J2;JST_ZH_B4B-ZR_1x04_P1.50mm_Vertical;1;Conn_01x04_Pin;
+16;R6;R_0603_1608Metric;1;4k;
+17;R3;R_0402_1005Metric_Pad0.72x0.64mm_HandSolder;1;36;
+18;R1;R_0603_1608Metric;1;470;
+19;Y1;Crystal_SMD_Abracon_ABM8AIG-4Pin_3.2x2.5mm;1;ABM8-25.000MHZ-B2-T;
+20;JP1;R_0603_1608Metric;1;Jumper_2_Open;
+21;R7;R_0603_1608Metric;1;470;
+22;D2;LED_0603_1608Metric;1;Blue;
+23;C8;C_0603_1608Metric_Pad1.08x0.95mm_HandSolder;1;0.1u;
+24;C6;C_0603_1608Metric;1;0.1uF;
+25;R2;R_0402_1005Metric_Pad0.72x0.64mm_HandSolder;1;39;
+26;U1;SOIC-8_5.3x5.3mm_P1.27mm;1;W25Q16JVSS;

@@ -1,0 +1,727 @@
+05-03 22:46:47 com_github_MitjaNemec_Archive3DModels.action_archive_3d_models 238:Plugin executed on: 'linux'
+05-03 22:46:47 com_github_MitjaNemec_Archive3DModels.action_archive_3d_models 239:Plugin executed with python version: '3.13.7 (main, Mar  3 2026, 12:19:54) [GCC 15.2.0]'
+05-03 22:46:47 com_github_MitjaNemec_Archive3DModels.action_archive_3d_models 240:KiCad build version: 9.0.3+dfsg-1
+05-03 22:46:47 com_github_MitjaNemec_Archive3DModels.action_archive_3d_models 241:Plugin version: 1.0.15
+05-03 22:46:47 com_github_MitjaNemec_Archive3DModels.action_archive_3d_models 246:Screen sizes: [wx.Size(1920, 1200)]
+05-03 22:46:47 com_github_MitjaNemec_Archive3DModels.action_archive_3d_models 253:Dialog size: wx.Size(213, 81)
+05-03 22:46:47 com_github_MitjaNemec_Archive3DModels.action_archive_3d_models 255:Char size: 20
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 30:Starting to archive 3D models
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: G***
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: R54
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Resistor/R_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Resistor/R_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: C46
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: ${KICAD9_3DMODEL_DIR}/Capacitor_SMD.3dshapes/C_1206_3216Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: ${KICAD9_3DMODEL_DIR}/Capacitor_SMD.3dshapes/C_1206_3216Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: R4
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: ${KICAD9_3DMODEL_DIR}/Capacitor_SMD.3dshapes/C_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: ${KICAD9_3DMODEL_DIR}/Capacitor_SMD.3dshapes/C_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: R16
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Resistor/R_0603_1608Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Resistor/R_0603_1608Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: C33
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Capacitor/C_1206_3216Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Capacitor/C_1206_3216Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: +0
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: G***
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: R30
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: ${KICAD9_3DMODEL_DIR}/Resistor_SMD.3dshapes/R_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: ${KICAD9_3DMODEL_DIR}/Resistor_SMD.3dshapes/R_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: C69
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: ${KICAD9_3DMODEL_DIR}/Capacitor_SMD.3dshapes/C_0805_2012Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: ${KICAD9_3DMODEL_DIR}/Capacitor_SMD.3dshapes/C_0805_2012Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: TP33
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: C49
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Capacitor/C_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Capacitor/C_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: C22
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Capacitor/C_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Capacitor/C_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: R39
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Resistor/R_0603_1608Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Resistor/R_0603_1608Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: R13
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: ${KICAD9_3DMODEL_DIR}/Capacitor_SMD.3dshapes/C_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: ${KICAD9_3DMODEL_DIR}/Capacitor_SMD.3dshapes/C_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: C1
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: ${KICAD9_3DMODEL_DIR}/Capacitor_Tantalum_SMD.3dshapes/CP_EIA-7343-31_Kemet-D.wrl
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: ${KICAD9_3DMODEL_DIR}/Capacitor_Tantalum_SMD.3dshapes/CP_EIA-7343-31_Kemet-D.wrl
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: R14
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: ${KICAD9_3DMODEL_DIR}/Capacitor_SMD.3dshapes/C_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: ${KICAD9_3DMODEL_DIR}/Capacitor_SMD.3dshapes/C_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: 
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: C57
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Capacitor/C_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Capacitor/C_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: C47
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Capacitor/C_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Capacitor/C_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: C82
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: ${KICAD9_3DMODEL_DIR}/Capacitor_SMD.3dshapes/C_0402_1005Metric.wrl
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: ${KICAD9_3DMODEL_DIR}/Capacitor_SMD.3dshapes/C_0402_1005Metric.wrl
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: C61
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: ${KICAD9_3DMODEL_DIR}/Capacitor_SMD.3dshapes/C_0805_2012Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: ${KICAD9_3DMODEL_DIR}/Capacitor_SMD.3dshapes/C_0805_2012Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: C78
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Capacitor/C_1206_3216Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Capacitor/C_1206_3216Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: R71
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Resistor/R_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Resistor/R_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: 
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: C37
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Capacitor/C_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Capacitor/C_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: C54
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Capacitor/C_0603_1608Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Capacitor/C_0603_1608Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: L7
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: ${KICAD9_3DMODEL_DIR}/Inductor_SMD.3dshapes/L_0603_1608Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: ${KICAD9_3DMODEL_DIR}/Inductor_SMD.3dshapes/L_0603_1608Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: C88
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: ${KICAD9_3DMODEL_DIR}/Capacitor_SMD.3dshapes/C_1206_3216Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: ${KICAD9_3DMODEL_DIR}/Capacitor_SMD.3dshapes/C_1206_3216Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: L8
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: ${KICAD9_3DMODEL_DIR}/Capacitor_SMD.3dshapes/C_0603_1608Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: ${KICAD9_3DMODEL_DIR}/Capacitor_SMD.3dshapes/C_0603_1608Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: C19
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Capacitor/C_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Capacitor/C_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: C74
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: ${KICAD9_3DMODEL_DIR}/Capacitor_SMD.3dshapes/C_1206_3216Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: ${KICAD9_3DMODEL_DIR}/Capacitor_SMD.3dshapes/C_1206_3216Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: 
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: TP31
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: TP27
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: 
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: R62
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Resistor/R_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Resistor/R_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: C68
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: ${KICAD9_3DMODEL_DIR}/Capacitor_SMD.3dshapes/C_0805_2012Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: ${KICAD9_3DMODEL_DIR}/Capacitor_SMD.3dshapes/C_0805_2012Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: R50
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: ${KICAD9_3DMODEL_DIR}/Resistor_SMD.3dshapes/R_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: ${KICAD9_3DMODEL_DIR}/Resistor_SMD.3dshapes/R_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: G***
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: C23
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Capacitor/C_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Capacitor/C_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: R20
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Resistor/R_0603_1608Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Resistor/R_0603_1608Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: Y1
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: ${KICAD9_3DMODEL_DIR}/Crystal.3dshapes/Crystal_SMD_3225-4Pin_3.2x2.5mm.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: ${KICAD9_3DMODEL_DIR}/Crystal.3dshapes/Crystal_SMD_3225-4Pin_3.2x2.5mm.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: 
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: C11
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Capacitor/C_0805_2012Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Capacitor/C_0805_2012Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: C14
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: ${KICAD9_3DMODEL_DIR}/Capacitor_SMD.3dshapes/C_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: ${KICAD9_3DMODEL_DIR}/Capacitor_SMD.3dshapes/C_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: R34
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Resistor/R_0603_1608Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Resistor/R_0603_1608Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: 
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: R58
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Resistor/R_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Resistor/R_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: G***
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: R49
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Resistor/R_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Resistor/R_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: C52
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Capacitor/C_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Capacitor/C_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: G***
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: UNK_HOLE_5
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: UNK_HOLE_9
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: C38
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Capacitor/C_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Capacitor/C_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: C40
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Capacitor/C_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Capacitor/C_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: C18
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Capacitor/C_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Capacitor/C_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: UNK_HOLE_7
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: R48
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: ${KICAD9_3DMODEL_DIR}/Resistor_SMD.3dshapes/R_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: ${KICAD9_3DMODEL_DIR}/Resistor_SMD.3dshapes/R_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: J8
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: ${SPARKFUN_KICAD_LIBRARY}/Footprints/SparkFun-3D-models/Connector/PinHeader_1x02_P2.54mm_Vertical.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 78:Can not find model defined with enviroment variable:
+${SPARKFUN_KICAD_LIBRARY}/Footprints/SparkFun-3D-models/Connector/PinHeader_1x02_P2.54mm_Vertical.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 146:Did not copy: ${SPARKFUN_KICAD_LIBRARY}/Footprints/SparkFun-3D-models/Connector/PinHeader_1x02_P2.54mm_Vertical.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: ${SPARKFUN_KICAD_LIBRARY}/Footprints/SparkFun-3D-models/Connector/PinHeader_1x02_P2.54mm_Vertical.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: J7
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: ${KICAD9_3DMODEL_DIR}/Connector_USB.3dshapes/USB_C_Receptacle_GCT_USB4105-xx-A_16P_TopMnt_Horizontal.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: ${KICAD9_3DMODEL_DIR}/Connector_USB.3dshapes/USB_C_Receptacle_GCT_USB4105-xx-A_16P_TopMnt_Horizontal.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: R15
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: ${KICAD9_3DMODEL_DIR}/Capacitor_SMD.3dshapes/C_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: ${KICAD9_3DMODEL_DIR}/Capacitor_SMD.3dshapes/C_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: C36
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: ${KICAD9_3DMODEL_DIR}/Capacitor_SMD.3dshapes/C_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: ${KICAD9_3DMODEL_DIR}/Capacitor_SMD.3dshapes/C_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: R65
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Resistor/R_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Resistor/R_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: TP10
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: R2
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: ${KICAD9_3DMODEL_DIR}/Resistor_SMD.3dshapes/R_0603_1608Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: ${KICAD9_3DMODEL_DIR}/Resistor_SMD.3dshapes/R_0603_1608Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: UNK_HOLE_11
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: R36
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Resistor/R_0603_1608Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Resistor/R_0603_1608Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: C25
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Capacitor/C_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Capacitor/C_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: C72
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: ${KICAD9_3DMODEL_DIR}/Capacitor_SMD.3dshapes/C_1206_3216Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: ${KICAD9_3DMODEL_DIR}/Capacitor_SMD.3dshapes/C_1206_3216Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: C39
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Capacitor/C_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Capacitor/C_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: C70
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: ${KICAD9_3DMODEL_DIR}/Capacitor_SMD.3dshapes/C_1206_3216Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: ${KICAD9_3DMODEL_DIR}/Capacitor_SMD.3dshapes/C_1206_3216Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: J6
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: ${SPARKFUN_KICAD_LIBRARY}/Footprints/SparkFun-3D-models/Connector/PinHeader_1x09_P2.54mm_Vertical.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 78:Can not find model defined with enviroment variable:
+${SPARKFUN_KICAD_LIBRARY}/Footprints/SparkFun-3D-models/Connector/PinHeader_1x09_P2.54mm_Vertical.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 146:Did not copy: ${SPARKFUN_KICAD_LIBRARY}/Footprints/SparkFun-3D-models/Connector/PinHeader_1x09_P2.54mm_Vertical.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: ${SPARKFUN_KICAD_LIBRARY}/Footprints/SparkFun-3D-models/Connector/PinHeader_1x09_P2.54mm_Vertical.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: R31
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Resistor/R_0603_1608Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Resistor/R_0603_1608Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: G***
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: R70
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Resistor/R_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Resistor/R_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: UNK_HOLE_1
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: G***
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: TP2
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: C67
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: ${KICAD9_3DMODEL_DIR}/Capacitor_SMD.3dshapes/C_1206_3216Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: ${KICAD9_3DMODEL_DIR}/Capacitor_SMD.3dshapes/C_1206_3216Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: R64
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Resistor/R_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Resistor/R_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: D22
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: ${KICAD9_3DMODEL_DIR}/Diode_SMD.3dshapes/D_SOD-323.wrl
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: ${KICAD9_3DMODEL_DIR}/Diode_SMD.3dshapes/D_SOD-323.wrl
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: UNK_HOLE_12
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: R61
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Resistor/R_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Resistor/R_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: C34
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: ${KICAD9_3DMODEL_DIR}/Capacitor_SMD.3dshapes/C_1206_3216Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: ${KICAD9_3DMODEL_DIR}/Capacitor_SMD.3dshapes/C_1206_3216Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: C83
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Capacitor/C_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Capacitor/C_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: Q3
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: ${KICAD9_3DMODEL_DIR}/Package_TO_SOT_SMD.3dshapes/SOT-23.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: ${KICAD9_3DMODEL_DIR}/Package_TO_SOT_SMD.3dshapes/SOT-23.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: U5
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: ${KICAD9_3DMODEL_DIR}/Package_TO_SOT_SMD.3dshapes/SOT-23.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: ${KICAD9_3DMODEL_DIR}/Package_TO_SOT_SMD.3dshapes/SOT-23.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: R51
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: ${KICAD9_3DMODEL_DIR}/Resistor_SMD.3dshapes/R_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: ${KICAD9_3DMODEL_DIR}/Resistor_SMD.3dshapes/R_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: C41
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: ${KICAD9_3DMODEL_DIR}/Capacitor_SMD.3dshapes/C_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: ${KICAD9_3DMODEL_DIR}/Capacitor_SMD.3dshapes/C_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: U12
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: ${KICAD9_3DMODEL_DIR}/Package_TO_SOT_SMD.3dshapes/SOT-666.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: ${KICAD9_3DMODEL_DIR}/Package_TO_SOT_SMD.3dshapes/SOT-666.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: G***
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: UNK_HOLE_6
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: 
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: U11
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Semiconductor-Standard/QFN-80-1EP_10x10mm_P0.4mm_EP3.4x3.4mm.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Semiconductor-Standard/QFN-80-1EP_10x10mm_P0.4mm_EP3.4x3.4mm.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: R35
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Resistor/R_0603_1608Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Resistor/R_0603_1608Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: C15
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Capacitor/C_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Capacitor/C_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: R24
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Resistor/R_0603_1608Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Resistor/R_0603_1608Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: U10
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: ${KICAD9_3DMODEL_DIR}/Package_DFN_QFN.3dshapes/QFN-32-1EP_5x5mm_P0.5mm_EP3.45x3.45mm.wrl
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: ${KICAD9_3DMODEL_DIR}/Package_DFN_QFN.3dshapes/QFN-32-1EP_5x5mm_P0.5mm_EP3.45x3.45mm.wrl
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: R69
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Resistor/R_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Resistor/R_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: C55
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: ${KICAD9_3DMODEL_DIR}/Capacitor_SMD.3dshapes/C_1206_3216Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: ${KICAD9_3DMODEL_DIR}/Capacitor_SMD.3dshapes/C_1206_3216Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: 
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: R67
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Resistor/R_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Resistor/R_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: TP14
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: R47
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: ${KICAD9_3DMODEL_DIR}/Resistor_SMD.3dshapes/R_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: ${KICAD9_3DMODEL_DIR}/Resistor_SMD.3dshapes/R_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: R37
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Resistor/R_0603_1608Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Resistor/R_0603_1608Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: 
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: C31
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: ${KICAD9_3DMODEL_DIR}/Capacitor_SMD.3dshapes/C_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: ${KICAD9_3DMODEL_DIR}/Capacitor_SMD.3dshapes/C_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: TP24
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: 
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: 
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: C51
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: ${KICAD9_3DMODEL_DIR}/Capacitor_SMD.3dshapes/C_1206_3216Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: ${KICAD9_3DMODEL_DIR}/Capacitor_SMD.3dshapes/C_1206_3216Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: TP23
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: R23
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Resistor/R_0603_1608Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Resistor/R_0603_1608Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: R59
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Resistor/R_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Resistor/R_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: G***
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: R68
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Resistor/R_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Resistor/R_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: R32
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Resistor/R_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Resistor/R_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: R45
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: ${KICAD9_3DMODEL_DIR}/Resistor_SMD.3dshapes/R_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: ${KICAD9_3DMODEL_DIR}/Resistor_SMD.3dshapes/R_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: L9
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: ${KICAD9_3DMODEL_DIR}/Inductor_SMD.3dshapes/L_Cenker_CKCS201610.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: ${KICAD9_3DMODEL_DIR}/Inductor_SMD.3dshapes/L_Cenker_CKCS201610.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: R22
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Resistor/R_0603_1608Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Resistor/R_0603_1608Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: U1
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: /home/iamericmin/Documents/KiCad_User/VS1053b/VS1053b.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: /home/iamericmin/Documents/KiCad_User/VS1053b/VS1053b.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: R25
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: ${KICAD9_3DMODEL_DIR}/Resistor_SMD.3dshapes/R_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: ${KICAD9_3DMODEL_DIR}/Resistor_SMD.3dshapes/R_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: R72
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Resistor/R_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Resistor/R_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: R46
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: ${KICAD9_3DMODEL_DIR}/Resistor_SMD.3dshapes/R_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: ${KICAD9_3DMODEL_DIR}/Resistor_SMD.3dshapes/R_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: C9
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Capacitor/C_0805_2012Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Capacitor/C_0805_2012Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: SW3
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: C71
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Capacitor/C_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Capacitor/C_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: C45
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: ${KICAD9_3DMODEL_DIR}/Capacitor_SMD.3dshapes/C_1206_3216Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: ${KICAD9_3DMODEL_DIR}/Capacitor_SMD.3dshapes/C_1206_3216Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: C84
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Capacitor/C_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Capacitor/C_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: R66
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Resistor/R_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Resistor/R_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: J3
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: UNK_HOLE_4
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: 
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: C4
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Capacitor/C_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Capacitor/C_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: UNK_HOLE_0
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: C27
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Capacitor/C_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Capacitor/C_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: R44
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Resistor/R_0805_2012Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Resistor/R_0805_2012Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: R60
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Resistor/R_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Resistor/R_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: C53
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: ${KICAD9_3DMODEL_DIR}/Capacitor_SMD.3dshapes/C_1206_3216Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: ${KICAD9_3DMODEL_DIR}/Capacitor_SMD.3dshapes/C_1206_3216Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: C80
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Capacitor/C_1206_3216Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Capacitor/C_1206_3216Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: C81
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: ${KICAD9_3DMODEL_DIR}/Capacitor_SMD.3dshapes/C_0402_1005Metric.wrl
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: ${KICAD9_3DMODEL_DIR}/Capacitor_SMD.3dshapes/C_0402_1005Metric.wrl
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: UNK_HOLE_8
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: -0
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: C16
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Capacitor/C_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Capacitor/C_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: J10
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Connector/PinHeader_1x05_P2.54mm_Vertical.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Connector/PinHeader_1x05_P2.54mm_Vertical.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: TP26
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: TP32
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: R63
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Resistor/R_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Resistor/R_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: C32
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Capacitor/C_1206_3216Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Capacitor/C_1206_3216Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: R21
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Resistor/R_0603_1608Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Resistor/R_0603_1608Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: C2
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: ${KICAD9_3DMODEL_DIR}/Capacitor_Tantalum_SMD.3dshapes/CP_EIA-7343-31_Kemet-D.wrl
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: ${KICAD9_3DMODEL_DIR}/Capacitor_Tantalum_SMD.3dshapes/CP_EIA-7343-31_Kemet-D.wrl
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: R38
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Resistor/R_0603_1608Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Resistor/R_0603_1608Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: C20
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Capacitor/C_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Capacitor/C_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: R33
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Resistor/R_0603_1608Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Resistor/R_0603_1608Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: SPK_CONN1
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: ${SPARKFUN_KICAD_LIBRARY}/Footprints/SparkFun-3D-models/Connector/PRPC040SAAN-RC.STEP
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 78:Can not find model defined with enviroment variable:
+${SPARKFUN_KICAD_LIBRARY}/Footprints/SparkFun-3D-models/Connector/PRPC040SAAN-RC.STEP
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 146:Did not copy: ${SPARKFUN_KICAD_LIBRARY}/Footprints/SparkFun-3D-models/Connector/PRPC040SAAN-RC.STEP
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: ${SPARKFUN_KICAD_LIBRARY}/Footprints/SparkFun-3D-models/Connector/PRPC040SAAN-RC.STEP
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: R26
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: ${KICAD9_3DMODEL_DIR}/Resistor_SMD.3dshapes/R_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: ${KICAD9_3DMODEL_DIR}/Resistor_SMD.3dshapes/R_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: J11
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Connector/PinHeader_1x05_P2.54mm_Vertical.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Connector/PinHeader_1x05_P2.54mm_Vertical.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: UNK_HOLE_10
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: C28
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Capacitor/C_0603_1608Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Capacitor/C_0603_1608Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: R29
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Resistor/R_0603_1608Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Resistor/R_0603_1608Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: C3
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Capacitor/C_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Capacitor/C_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: J4
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: ${SPARKFUN_KICAD_LIBRARY}/Footprints/SparkFun-3D-models/Connector/PinHeader_1x02_P2.54mm_Vertical.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 78:Can not find model defined with enviroment variable:
+${SPARKFUN_KICAD_LIBRARY}/Footprints/SparkFun-3D-models/Connector/PinHeader_1x02_P2.54mm_Vertical.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 146:Did not copy: ${SPARKFUN_KICAD_LIBRARY}/Footprints/SparkFun-3D-models/Connector/PinHeader_1x02_P2.54mm_Vertical.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: ${SPARKFUN_KICAD_LIBRARY}/Footprints/SparkFun-3D-models/Connector/PinHeader_1x02_P2.54mm_Vertical.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: C21
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Capacitor/C_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Capacitor/C_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: BZ1
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: ${KICAD9_3DMODEL_DIR}/Buzzer_Beeper.3dshapes/Buzzer_Murata_PKMCS0909E.wrl
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: ${KICAD9_3DMODEL_DIR}/Buzzer_Beeper.3dshapes/Buzzer_Murata_PKMCS0909E.wrl
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: R53
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: ${KICAD9_3DMODEL_DIR}/Resistor_SMD.3dshapes/R_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: ${KICAD9_3DMODEL_DIR}/Resistor_SMD.3dshapes/R_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: C75
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Capacitor/C_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Capacitor/C_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: C73
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: ${KICAD9_3DMODEL_DIR}/Capacitor_SMD.3dshapes/C_1206_3216Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: ${KICAD9_3DMODEL_DIR}/Capacitor_SMD.3dshapes/C_1206_3216Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: Q2
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: ${KICAD9_3DMODEL_DIR}/Package_TO_SOT_SMD.3dshapes/SOT-23.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: ${KICAD9_3DMODEL_DIR}/Package_TO_SOT_SMD.3dshapes/SOT-23.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: C6
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: ${KICAD9_3DMODEL_DIR}/Capacitor_SMD.3dshapes/C_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: ${KICAD9_3DMODEL_DIR}/Capacitor_SMD.3dshapes/C_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: C66
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: ${KICAD9_3DMODEL_DIR}/Capacitor_SMD.3dshapes/C_1206_3216Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: ${KICAD9_3DMODEL_DIR}/Capacitor_SMD.3dshapes/C_1206_3216Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: C76
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: ${KICAD9_3DMODEL_DIR}/Capacitor_SMD.3dshapes/C_0805_2012Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: ${KICAD9_3DMODEL_DIR}/Capacitor_SMD.3dshapes/C_0805_2012Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: R28
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Resistor/R_0603_1608Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Resistor/R_0603_1608Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: Y2
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: ${KICAD9_3DMODEL_DIR}/Crystal.3dshapes/Crystal_SMD_3225-4Pin_3.2x2.5mm.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: ${KICAD9_3DMODEL_DIR}/Crystal.3dshapes/Crystal_SMD_3225-4Pin_3.2x2.5mm.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: C17
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Capacitor/C_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Capacitor/C_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: TP12
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: C24
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: ${KICAD9_3DMODEL_DIR}/Capacitor_SMD.3dshapes/C_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: ${KICAD9_3DMODEL_DIR}/Capacitor_SMD.3dshapes/C_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: C79
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Capacitor/C_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Capacitor/C_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: 
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: C26
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Capacitor/C_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Capacitor/C_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: Q1
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: ${KICAD9_3DMODEL_DIR}/Package_TO_SOT_SMD.3dshapes/SOT-23.wrl
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: ${KICAD9_3DMODEL_DIR}/Package_TO_SOT_SMD.3dshapes/SOT-23.wrl
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: TP1
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: G***
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: C13
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: ${KICAD9_3DMODEL_DIR}/Capacitor_SMD.3dshapes/C_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: ${KICAD9_3DMODEL_DIR}/Capacitor_SMD.3dshapes/C_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: C56
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: ${KICAD9_3DMODEL_DIR}/Capacitor_SMD.3dshapes/C_1206_3216Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: ${KICAD9_3DMODEL_DIR}/Capacitor_SMD.3dshapes/C_1206_3216Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: 
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: VR1
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: /home/iamericmin/Documents/KiCad_User/RK10J11R0A0L/RK10J11R0A0L.stp
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: /home/iamericmin/Documents/KiCad_User/RK10J11R0A0L/RK10J11R0A0L.stp
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: 
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: C77
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Capacitor/C_1206_3216Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Capacitor/C_1206_3216Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: R12
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Resistor/R_0603_1608Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Resistor/R_0603_1608Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: D5
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: ${KICAD9_3DMODEL_DIR}/LED_THT.3dshapes/LED_D3.0mm_Green.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: ${KICAD9_3DMODEL_DIR}/LED_THT.3dshapes/LED_D3.0mm_Green.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: C7
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Capacitor/C_0603_1608Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Capacitor/C_0603_1608Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: U7
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: ${KICAD9_3DMODEL_DIR}/Package_TO_SOT_SMD.3dshapes/SOT-583-8.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: ${KICAD9_3DMODEL_DIR}/Package_TO_SOT_SMD.3dshapes/SOT-583-8.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: R19
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Resistor/R_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Resistor/R_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: D12
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: ${KICAD9_3DMODEL_DIR}/LED_THT.3dshapes/LED_D3.0mm_Green.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: ${KICAD9_3DMODEL_DIR}/LED_THT.3dshapes/LED_D3.0mm_Green.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: R11
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Resistor/R_0603_1608Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Resistor/R_0603_1608Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: C43
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Capacitor/CAP_POLAR_WURTH_6.3_4.5.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Capacitor/CAP_POLAR_WURTH_6.3_4.5.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: R1
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Resistor/R_0603_1608Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Resistor/R_0603_1608Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: C62
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Capacitor/C_1206_3216Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Capacitor/C_1206_3216Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: D8
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: ${KICAD9_3DMODEL_DIR}/LED_THT.3dshapes/LED_D3.0mm_Green.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: ${KICAD9_3DMODEL_DIR}/LED_THT.3dshapes/LED_D3.0mm_Green.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: J5
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: /home/iamericmin/Documents/KiCad_User/SJ_43514/SJ-43514.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: /home/iamericmin/Documents/KiCad_User/SJ_43514/SJ-43514.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: L6
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: ${KICAD9_3DMODEL_DIR}/Inductor_SMD.3dshapes/L_0603_1608Metric.wrl
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: ${KICAD9_3DMODEL_DIR}/Inductor_SMD.3dshapes/L_0603_1608Metric.wrl
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: L4
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: ${KICAD9_3DMODEL_DIR}/Inductor_SMD.3dshapes/L_APV_ANR3012.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: ${KICAD9_3DMODEL_DIR}/Inductor_SMD.3dshapes/L_APV_ANR3012.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: D3
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: ${KICAD9_3DMODEL_DIR}/LED_THT.3dshapes/LED_D3.0mm_Yellow.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: ${KICAD9_3DMODEL_DIR}/LED_THT.3dshapes/LED_D3.0mm_Yellow.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: C65
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Capacitor/C_0603_1608Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Capacitor/C_0603_1608Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: C85
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Capacitor/C_0603_1608Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Capacitor/C_0603_1608Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: D2
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: ${KICAD9_3DMODEL_DIR}/LED_THT.3dshapes/LED_D3.0mm_Yellow.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: ${KICAD9_3DMODEL_DIR}/LED_THT.3dshapes/LED_D3.0mm_Yellow.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: C59
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Capacitor/C_0805_2012Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Capacitor/C_0805_2012Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: U14
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: ${KICAD9_3DMODEL_DIR}/Package_SO.3dshapes/SOIC-8_3.9x4.9mm_P1.27mm.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: ${KICAD9_3DMODEL_DIR}/Package_SO.3dshapes/SOIC-8_3.9x4.9mm_P1.27mm.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: U3
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: ${KICAD9_3DMODEL_DIR}/Package_DFN_QFN.3dshapes/Texas_RSA_VQFN-16-1EP_4x4mm_P0.65mm_EP2.7x2.7mm.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: ${KICAD9_3DMODEL_DIR}/Package_DFN_QFN.3dshapes/Texas_RSA_VQFN-16-1EP_4x4mm_P0.65mm_EP2.7x2.7mm.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: BTN_R1
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: R7
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Resistor/R_0603_1608Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Resistor/R_0603_1608Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: D9
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: ${KICAD9_3DMODEL_DIR}/LED_THT.3dshapes/LED_D3.0mm.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: ${KICAD9_3DMODEL_DIR}/LED_THT.3dshapes/LED_D3.0mm.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: START1
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: L1
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: ${KICAD9_3DMODEL_DIR}/Inductor_SMD.3dshapes/L_APV_APH0620.wrl
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: ${KICAD9_3DMODEL_DIR}/Inductor_SMD.3dshapes/L_APV_APH0620.wrl
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: C8
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Capacitor/C_1206_3216Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Capacitor/C_1206_3216Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: D11
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: ${KICAD9_3DMODEL_DIR}/LED_THT.3dshapes/LED_D3.0mm_Yellow.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: ${KICAD9_3DMODEL_DIR}/LED_THT.3dshapes/LED_D3.0mm_Yellow.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: C60
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Capacitor/C_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Capacitor/C_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: U8
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: ${KICAD9_3DMODEL_DIR}/Package_TO_SOT_SMD.3dshapes/SOT-23-5.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: ${KICAD9_3DMODEL_DIR}/Package_TO_SOT_SMD.3dshapes/SOT-23-5.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: R18
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Resistor/R_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Resistor/R_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: J1
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: /home/iamericmin/Documents/KiCad_User/1.54_IPS_LCD_Adafruit/LCD 1.54 inch 240x240 ST7789.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: /home/iamericmin/Documents/KiCad_User/1.54_IPS_LCD_Adafruit/LCD 1.54 inch 240x240 ST7789.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: SW2
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Switch/Push_SMD_4.6x2.8mm_h1.9mm.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Switch/Push_SMD_4.6x2.8mm_h1.9mm.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: C58
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Capacitor/C_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Capacitor/C_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: D10
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: ${KICAD9_3DMODEL_DIR}/LED_THT.3dshapes/LED_D3.0mm_Yellow.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: ${KICAD9_3DMODEL_DIR}/LED_THT.3dshapes/LED_D3.0mm_Yellow.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: R27
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: ${KICAD9_3DMODEL_DIR}/Resistor_SMD.3dshapes/R_0603_1608Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: ${KICAD9_3DMODEL_DIR}/Resistor_SMD.3dshapes/R_0603_1608Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: BTN_A1
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: D1
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: ${KICAD9_3DMODEL_DIR}/LED_THT.3dshapes/LED_D3.0mm.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: ${KICAD9_3DMODEL_DIR}/LED_THT.3dshapes/LED_D3.0mm.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: BTN_D1
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: R3
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Resistor/R_0603_1608Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Resistor/R_0603_1608Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: D6
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: ${KICAD9_3DMODEL_DIR}/LED_THT.3dshapes/LED_D3.0mm_Green.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: ${KICAD9_3DMODEL_DIR}/LED_THT.3dshapes/LED_D3.0mm_Green.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: R17
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Resistor/R_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Resistor/R_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: D4
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: ${KICAD9_3DMODEL_DIR}/LED_THT.3dshapes/LED_D3.0mm_Green.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: ${KICAD9_3DMODEL_DIR}/LED_THT.3dshapes/LED_D3.0mm_Green.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: D7
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: ${KICAD9_3DMODEL_DIR}/LED_THT.3dshapes/LED_D3.0mm_Green.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: ${KICAD9_3DMODEL_DIR}/LED_THT.3dshapes/LED_D3.0mm_Green.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: U2
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: ${KICAD9_3DMODEL_DIR}/Package_SO.3dshapes/TSSOP-28_4.4x9.7mm_P0.65mm.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: ${KICAD9_3DMODEL_DIR}/Package_SO.3dshapes/TSSOP-28_4.4x9.7mm_P0.65mm.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: BTN_B1
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: C5
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: ${KICAD9_3DMODEL_DIR}/Capacitor_SMD.3dshapes/C_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: ${KICAD9_3DMODEL_DIR}/Capacitor_SMD.3dshapes/C_0402_1005Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: C44
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Capacitor/CAP_POLAR_WURTH_6.3_4.5.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Capacitor/CAP_POLAR_WURTH_6.3_4.5.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: D14
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: ${KICAD9_3DMODEL_DIR}/LED_THT.3dshapes/LED_D3.0mm_Green.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: ${KICAD9_3DMODEL_DIR}/LED_THT.3dshapes/LED_D3.0mm_Green.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: J2
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Connector/JST_SMD_1.0mm-3.STEP
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Connector/JST_SMD_1.0mm-3.STEP
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: J13
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: ${KIPRJMOD}/PSU_module.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: ${KIPRJMOD}/PSU_module.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: C64
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: ${KICAD9_3DMODEL_DIR}/Capacitor_SMD.3dshapes/C_0805_2012Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: ${KICAD9_3DMODEL_DIR}/Capacitor_SMD.3dshapes/C_0805_2012Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: R6
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Resistor/R_0603_1608Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Resistor/R_0603_1608Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: L10
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: ${KICAD9_3DMODEL_DIR}/Inductor_SMD.3dshapes/L_0805_2012Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: ${KICAD9_3DMODEL_DIR}/Inductor_SMD.3dshapes/L_0805_2012Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: BTN_L1
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: R8
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Resistor/R_0603_1608Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Resistor/R_0603_1608Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: C10
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Capacitor/C_0805_2012Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Capacitor/C_0805_2012Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: R56
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Resistor/R_0603_1608Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Resistor/R_0603_1608Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: U6
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: ${KICAD9_3DMODEL_DIR}/Package_SO.3dshapes/SSOP-16_4.4x5.2mm_P0.65mm.wrl
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: ${KICAD9_3DMODEL_DIR}/Package_SO.3dshapes/SSOP-16_4.4x5.2mm_P0.65mm.wrl
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: C30
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Capacitor/C_0805_2012Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Capacitor/C_0805_2012Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: D16
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: ${KICAD9_3DMODEL_DIR}/LED_THT.3dshapes/LED_D3.0mm_Green.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: ${KICAD9_3DMODEL_DIR}/LED_THT.3dshapes/LED_D3.0mm_Green.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: C87
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: ${KICAD9_3DMODEL_DIR}/Capacitor_SMD.3dshapes/C_0805_2012Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: ${KICAD9_3DMODEL_DIR}/Capacitor_SMD.3dshapes/C_0805_2012Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: C12
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Capacitor/C_0805_2012Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Capacitor/C_0805_2012Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: U4
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: ${KICAD9_3DMODEL_DIR}/Package_TO_SOT_SMD.3dshapes/SOT-23-5.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: ${KICAD9_3DMODEL_DIR}/Package_TO_SOT_SMD.3dshapes/SOT-23-5.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: D23
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/LED/LED_1206_3216Metric_Castellated_Green.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/LED/LED_1206_3216Metric_Castellated_Green.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: D13
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: ${KICAD9_3DMODEL_DIR}/LED_THT.3dshapes/LED_D3.0mm_Green.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: ${KICAD9_3DMODEL_DIR}/LED_THT.3dshapes/LED_D3.0mm_Green.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: D17
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: /home/iamericmin/Documents/KiCad_User/CREE_LED_2mm_x_2mm_Common_Anode/CREE_LED_2mm_x_2mm_Common_Anode.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: /home/iamericmin/Documents/KiCad_User/CREE_LED_2mm_x_2mm_Common_Anode/CREE_LED_2mm_x_2mm_Common_Anode.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: C63
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Capacitor/C_0603_1608Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Capacitor/C_0603_1608Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: C42
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Capacitor/C_1206_3216Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Capacitor/C_1206_3216Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: L5
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: ${KICAD9_3DMODEL_DIR}/Inductor_SMD.3dshapes/L_APV_ANR3012.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: ${KICAD9_3DMODEL_DIR}/Inductor_SMD.3dshapes/L_APV_ANR3012.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: SW1
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Switch/Push_SMD_4.6x2.8mm_h1.9mm.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Switch/Push_SMD_4.6x2.8mm_h1.9mm.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: R73
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Resistor/R_0603_1608Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Resistor/R_0603_1608Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: R55
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Resistor/R_0603_1608Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Resistor/R_0603_1608Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: BTN_U1
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: C86
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Capacitor/C_0805_2012Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Capacitor/C_0805_2012Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: D15
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: ${KICAD9_3DMODEL_DIR}/LED_THT.3dshapes/LED_D3.0mm_Green.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: ${KICAD9_3DMODEL_DIR}/LED_THT.3dshapes/LED_D3.0mm_Green.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: SELECT1
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: R9
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Resistor/R_0603_1608Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Resistor/R_0603_1608Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: L3
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: ${KICAD9_3DMODEL_DIR}/Inductor_SMD.3dshapes/L_0603_1608Metric.wrl
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: ${KICAD9_3DMODEL_DIR}/Inductor_SMD.3dshapes/L_0603_1608Metric.wrl
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: R5
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Resistor/R_0603_1608Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Resistor/R_0603_1608Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: L2
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: ${KICAD9_3DMODEL_DIR}/Inductor_SMD.3dshapes/L_0603_1608Metric.wrl
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: ${KICAD9_3DMODEL_DIR}/Inductor_SMD.3dshapes/L_0603_1608Metric.wrl
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: C48
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Capacitor/C_1206_3216Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Capacitor/C_1206_3216Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: R10
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Resistor/R_0603_1608Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Resistor/R_0603_1608Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 51:Getting 3D models for footprint of: C29
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 63:Trying to copy: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Capacitor/C_0805_2012Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 150:Remapping: /home/iamericmin/Documents/KiCad_User/SparkFun-KiCad-Libraries-main/Footprints/SparkFun-3D-models/Capacitor/C_0805_2012Metric.step
+05-03 22:46:58 com_github_MitjaNemec_Archive3DModels.archive_3d_models 164:Did not succeed to copy 3D models!
+('J8', '${SPARKFUN_KICAD_LIBRARY}/Footprints/SparkFun-3D-models/Connector/PinHeader_1x02_P2.54mm_Vertical.step')
+('J6', '${SPARKFUN_KICAD_LIBRARY}/Footprints/SparkFun-3D-models/Connector/PinHeader_1x09_P2.54mm_Vertical.step')
+('SPK_CONN1', '${SPARKFUN_KICAD_LIBRARY}/Footprints/SparkFun-3D-models/Connector/PRPC040SAAN-RC.STEP')
+('J4', '${SPARKFUN_KICAD_LIBRARY}/Footprints/SparkFun-3D-models/Connector/PinHeader_1x02_P2.54mm_Vertical.step')

@@ -149,7 +149,7 @@ int main() {
         set_visualizer(7);
         while(selected == 65535) {
             // TODO: add left and right for fast scrolling
-            switch (current_button_states) {
+            switch (buttons_read_long_press()) {
             case BTN_D:
                 menu_choice = (menu_choice + 1);
                 break;
@@ -167,7 +167,7 @@ int main() {
             } else if (menu_choice > 7) {
                 menu_choice = 7;
             }
-            sleep_ms(100);
+            sleep_ms(50);
         }
 
         switch (menu_choice) {

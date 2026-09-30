@@ -1,0 +1,65 @@
+﻿Index,LCSC#,MPN,Manufacturer,Package,Customer #,Description,RoHS,Quantity,MOQ,Multiple,Unit Price($),Extended Price($),Product Link
+1,C179677,TLV320DAC3100IRHBR,TI,HVQFN-32-EP(5x5),,2.7V~5.5V Class D HVQFN-32-EP(5x5) ADCs/DACs - Special Purpose RoHS,yes,3,1,1,1.5544,4.66,https://www.lcsc.com/product-detail/C179677.html
+2,C9829,FM24CL64B-GTR,Infineon/CYPRESS,SOIC-8-150mil,,64Kbit 2.7V~3.65V 1MHz I2C SOIC-8-150mil Memory (ICs) RoHS,yes,4,1,1,1.0979,4.39,https://www.lcsc.com/product-detail/C9829.html
+3,C3235557,TPS2116DRLR,TI,SOT-583,,2 Channel 2.5A SOT-583,yes,4,1,1,0.4034,1.61,https://www.lcsc.com/product-detail/C3235557.html
+4,C141836,TLV62569DBVR,TI,SOT-23-5,,1.5MHz Buck Adjustable 600mV~5.5V 2A SOT-23-5 Voltage Regulators - DC DC Switching Regulators RoHS,yes,10,10,10,0.0633,0.63,https://www.lcsc.com/product-detail/C141836.html
+5,C15999,USBLC6-2P6,ST,SOT-666-6,,17VC Clamp 5A@8/20us Ipp ESD DIODE SOT-666-6,yes,10,5,5,0.1790,1.79,https://www.lcsc.com/product-detail/C15999.html
+6,C20182909,SJ-43514,CUI,-,,Audio Connectors RoHS,yes,3,1,1,1.2924,3.88,https://www.lcsc.com/product-detail/C20182909.html
+7,C5184243,USB4105-GF-A-120,Global Connector Technology,SMD,,USB-C (USB TYPE-C) Receptacle Connector 16 Position Surface Mount,yes,2,1,1,0.9256,1.85,https://www.lcsc.com/product-detail/C5184243.html
+8,C115407,W25Q16JVSNIQ,Winbond,SOIC-8,,2.7V~3.6V 16Mbit 133MHz SPI SOIC-8 Memory (ICs) RoHS,yes,2,1,1,1.5671,3.13,https://www.lcsc.com/product-detail/C115407.html
+9,C470766,RK10J11R0A0H,ALPSALPINE,SMD,,±30% 30mW 10kΩ SMD Trimmer Potentiometers RoHS,yes,4,1,1,0.6546,2.62,https://www.lcsc.com/product-detail/C470766.html
+10,C910763,PKMCS0909E4000-R1,muRata,-,,Buzzers Passive (Externally Driven) Piezoelectric 12.5V 4kHz 65dB,yes,4,1,1,0.7740,3.10,https://www.lcsc.com/product-detail/C910763.html
+11,C154510,FDN306P,onsemi,SOT-23,,P-Channel 12V 2.6A 0.5W Surface Mount SOT-23,yes,5,5,5,0.2449,1.22,https://www.lcsc.com/product-detail/C154510.html
+12,C6466184,APX803L-35SA-7,DIODES,SOT-23-3,,20ms Active Low 900mV~5.5V 1 SOT-23-3 Supervisors RoHS,yes,5,5,5,0.1602,0.80,https://www.lcsc.com/product-detail/C6466184.html
+13,C82045,BSS138LT1G,onsemi,SOT-23,,N-Channel 50V 200mA 225mW Surface Mount SOT-23,yes,10,10,10,0.0407,0.41,https://www.lcsc.com/product-detail/C82045.html
+14,C507236,SN74HC165DBR,TI,SSOP-16-208mil,,"2V~6V 4mA 26ns@6V,50pF Parallel or Serial to Serial SSOP-16-208mil Shift Registers RoHS",yes,3,1,1,0.4240,1.27,https://www.lcsc.com/product-detail/C507236.html
+15,C102619,DMG2301L-7,DIODES,SOT-23,,P-Channel 20V 3A 1.5W Surface Mount SOT-23,yes,10,10,10,0.0725,0.73,https://www.lcsc.com/product-detail/C102619.html
+16,C486306,VS1063A-L,VLSI,LQFP-48(7x7),,48kHz LQFP-48(7x7) Audio Special Purpose RoHS,yes,4,1,1,9.4263,37.71,https://www.lcsc.com/product-detail/C486306.html
+17,C20625731,ABM8-272-T3,ABRACON,SMD3225-4P,,±30ppm 10pF ±30ppm SMD3225-4P Crystals RoHS,yes,5,5,5,0.2923,1.46,https://www.lcsc.com/product-detail/C20625731.html
+18,C779389,TPD1E01B04DPYR,TI,X1-SON-2(0.6x1),,15VC Clamp 2.5A@8/20us Ipp ESD DIODE X1-SON-2(0.6x1),yes,20,10,10,0.0591,1.18,https://www.lcsc.com/product-detail/C779389.html
+19,C367058,SIT1533AI-H4-DCC-32.768E,SiTime,SMD2012-4P,,LVCMOS Programmable Oscillator 32.768kHz 1.5V~3.63V SMD2012-4P,yes,4,1,1,1.0084,4.03,https://www.lcsc.com/product-detail/C367058.html
+20,C497472,TPA6111A2DR,TI,SOIC-8,,2-Channel SOIC-8 Audio Amplifiers RoHS,yes,4,1,1,0.5808,2.32,https://www.lcsc.com/product-detail/C497472.html
+21,C92489,BME280,Bosch,LGA-8(2.5x2.5),,"±3%RH -40℃~+85℃ 0%RH~100%RH LGA-8(2.5x2.5) Humidity, Moisture Sensors RoHS",yes,4,1,1,5.7962,23.18,https://www.lcsc.com/product-detail/C92489.html
+22,C2651516,"PCF8523T/1,118",NXP,SO-8,,Built-in Yes SO-8 Real Time Clocks RoHS,yes,5,5,5,1.1599,5.80,https://www.lcsc.com/product-detail/C2651516.html
+23,C14308,BAT54CLT1G,onsemi,SOT-23,,Diode Array 1 Pair Common Cathode 30V 200mA Surface Mount SOT-23,yes,20,20,20,0.0280,0.56,https://www.lcsc.com/product-detail/C14308.html
+24,C2878944,TPS61092RSAR,TI,QFN-16-EP(4x4),,600kHz Boost Fixed 5V QFN-16-EP(4x4) Voltage Regulators - DC DC Switching Regulators RoHS,yes,3,1,1,2.5409,7.62,https://www.lcsc.com/product-detail/C2878944.html
+25,C107335,MPZ1608S601ATA00,TDK,0603,,600Ω@100MHz 1 Line Ferrite Bead 0603 1A 150mΩ,yes,20,10,10,0.0123,0.25,https://www.lcsc.com/product-detail/C107335.html
+26,C94034,GRM31CR61A476ME15L,muRata,1206,,47uF ±20% 10V Ceramic Capacitor X5R 1206,yes,20,10,10,0.0677,1.35,https://www.lcsc.com/product-detail/C94034.html
+27,C15008,CL31A107MQHNNNE,Samsung Electro-Mechanics,1206,,100uF ±20% 6.3V Ceramic Capacitor X5R 1206,yes,30,10,10,0.0610,1.83,https://www.lcsc.com/product-detail/C15008.html
+28,C98192,CL21A475KBQNNNE,Samsung Electro-Mechanics,0805,,4.7uF ±10% 50V Ceramic Capacitor X5R 0805,yes,20,10,10,0.0205,0.41,https://www.lcsc.com/product-detail/C98192.html
+29,C7226,TAJD337K010RNJ,Kyocera AVX,CASE-D-7343-31(mm),,330uF ±10% 10V Tantalum Capacitors 900mΩ@100kHz CASE-D-7343,yes,10,1,1,0.5494,5.49,https://www.lcsc.com/product-detail/C7226.html
+30,C440152,GJM1555C1H150GB01D,muRata,0402,,15pF ±2% 50V Ceramic Capacitor C0G 0402,yes,20,20,20,0.0258,0.52,https://www.lcsc.com/product-detail/C440152.html
+31,C161520,GRM1555C1H100FA01D,muRata,0402,,10pF ±1% 50V Ceramic Capacitor C0G 0402,yes,100,100,100,0.0081,0.81,https://www.lcsc.com/product-detail/C161520.html
+32,C137880,RC0402JR-0733RL,YAGEO,0402,,62.5mW 33Ω 50V Thick Film Resistor ±100ppm/℃ ±5% 0402 Chip Resistor - Surface Mount RoHS,yes,100,100,100,0.0007,0.07,https://www.lcsc.com/product-detail/C137880.html
+33,C519995,CC0805BRNPO9BN6R8,YAGEO,0805,,6.8pF 50V Ceramic Capacitor NP0 0805,yes,50,50,50,0.0196,0.98,https://www.lcsc.com/product-detail/C519995.html
+34,C160403,SM03B-SRSS-TB(LF)(SN),JST,"SMD,P=1mm,Surface Mount,Right Angle",,"Connector Header 3 position 1mm Pitch 1A Surface Mount, Right Angle -25℃~+85℃",yes,5,5,5,0.1734,0.87,https://www.lcsc.com/product-detail/C160403.html
+35,C20613191,TF-01A-ZYD9AH1.85,XYECONN,SMD,,Micro SD card (TF card) Surface Mount,yes,20,5,5,0.0705,1.41,https://www.lcsc.com/product-detail/C20613191.html
+36,C92361,CL05A474KA5NNNC,Samsung Electro-Mechanics,0402,,470nF ±10% 25V Ceramic Capacitor X5R 0402,yes,20,10,10,0.0128,0.26,https://www.lcsc.com/product-detail/C92361.html
+37,C24497,CL31B104KBCNNNC,Samsung Electro-Mechanics,1206,,100nF ±10% 50V Ceramic Capacitor X7R 1206,yes,40,20,20,0.0155,0.62,https://www.lcsc.com/product-detail/C24497.html
+38,C106205,CC0402KRX7R9BB102,YAGEO,0402,,1nF ±10% 50V Ceramic Capacitor X7R 0402,yes,100,100,100,0.0011,0.11,https://www.lcsc.com/product-detail/C106205.html
+39,C77177,GRM1555C1H101JA01D,muRata,0402,,100pF ±5% 50V Ceramic Capacitor C0G 0402,yes,100,100,100,0.0032,0.32,https://www.lcsc.com/product-detail/C77177.html
+40,C107017,CC0402KRX7R7BB223,YAGEO,0402,,22nF ±10% 16V Ceramic Capacitor X7R 0402,yes,100,100,100,0.0020,0.20,https://www.lcsc.com/product-detail/C107017.html
+41,C703734,LQW15CAR27J00D,muRata,0402,,480mA 270nH 380mΩ Unshielded Inductor ±5% 0402 Fixed Inductors RoHS,yes,5,5,5,0.1150,0.58,https://www.lcsc.com/product-detail/C703734.html
+42,C138033,RC0402FR-071ML,YAGEO,0402,,62.5mW 1MΩ 50V Thick Film Resistor ±100ppm/℃ ±1% 0402 Chip Resistor - Surface Mount RoHS,yes,100,100,100,0.0008,0.08,https://www.lcsc.com/product-detail/C138033.html
+43,C14675,RC0603FR-07100KL,YAGEO,0603,,100mW 100kΩ 75V Thick Film Resistor ±100ppm/℃ ±1% 0603 Chip Resistor - Surface Mount RoHS,yes,100,100,100,0.0013,0.13,https://www.lcsc.com/product-detail/C14675.html
+44,C105574,RC0603FR-07200KL,YAGEO,0603,,100mW 200kΩ 75V Thick Film Resistor ±100ppm/℃ ±1% 0603 Chip Resistor - Surface Mount RoHS,yes,100,100,100,0.0014,0.14,https://www.lcsc.com/product-detail/C105574.html
+45,C273765,RC0603FR-07453KL,YAGEO,0603,,453kΩ 100mW 75V Thick Film Resistor ±100ppm/℃ ±1% 0603 Chip Resistor - Surface Mount RoHS,yes,100,100,100,0.0015,0.15,https://www.lcsc.com/product-detail/C273765.html
+46,C7280951,DY-S321610UGC-T2-3T-03,TONYU,1206,,Green 535nm LED Indication - Discrete 2.35V~2.75V 1206,yes,50,50,50,0.0159,0.80,https://www.lcsc.com/product-detail/C7280951.html
+47,C163467,RC0402FR-07390KL,YAGEO,0402,,62.5mW 390kΩ 50V Thick Film Resistor ±100ppm/℃ ±1% 0402 Chip Resistor - Surface Mount RoHS,yes,100,100,100,0.0009,0.09,https://www.lcsc.com/product-detail/C163467.html
+48,C482199,CRCW0402510KFKED,VISHAY,0402,,510kΩ 62.5mW 50V Thick Film Resistor ±1% ±100ppm/℃ 0402 Chip Resistor - Surface Mount RoHS,yes,100,100,100,0.0041,0.41,https://www.lcsc.com/product-detail/C482199.html
+49,C596899,ABM8-25.000MHZ-B2-T,ABRACON,SMD3225-4P,,Crystal 25MHz ±20ppm 18pF 50Ω SMD3225-4P,yes,3,1,1,0.5218,1.57,https://www.lcsc.com/product-detail/C596899.html
+50,C185420,RC0402FR-0739RL,YAGEO,0402,,62.5mW 39Ω 50V Thick Film Resistor ±100ppm/℃ ±1% 0402 Chip Resistor - Surface Mount RoHS,yes,100,100,100,0.0008,0.08,https://www.lcsc.com/product-detail/C185420.html
+51,C2871753,LM4810MMX/NOPB,TI,VSSOP-8,,2-Channel VSSOP-8 Audio Amplifiers RoHS,yes,5,1,1,0.5255,2.63,https://www.lcsc.com/product-detail/C2871753.html
+52,C157997,B4B-ZR(LF)(SN),JST,"Through Hole,P=1.5mm",,Connector Header 4 position 1.5mm Pitch 1A Through Hole -25℃~+85℃,yes,5,5,5,0.1168,0.58,https://www.lcsc.com/product-detail/C157997.html
+53,C5126050,FRC0402F1691TS,FOJAN,0402,,1.69kΩ ±1% 62.5mW 0402 Thick Film Resistor,yes,100,100,100,0.0006,0.06,https://www.lcsc.com/product-detail/C5126050.html
+54,C15195,CL05B103KB5NNNC,Samsung Electro-Mechanics,0402,,10nF ±10% 50V Ceramic Capacitor X7R 0402,yes,100,100,100,0.0015,0.15,https://www.lcsc.com/product-detail/C15195.html
+55,C314277,0402B823K100CT,Walsin,0402,,82nF ±10% 10V Ceramic Capacitor X7R 0402,yes,50,50,50,0.0009,0.05,https://www.lcsc.com/product-detail/C314277.html
+56,C60137,CC0402JRNPO9BN470,YAGEO,0402,,47pF ±5% 50V Ceramic Capacitor NP0 0402,yes,100,100,100,0.0012,0.12,https://www.lcsc.com/product-detail/C60137.html
+57,C2998152,FRC0402F36R0TS,FOJAN,0402,,36Ω ±1% 62.5mW 0402 Thick Film Resistor,yes,100,100,100,0.0005,0.05,https://www.lcsc.com/product-detail/C2998152.html
+58,C114877,RC0402FR-07470RL,YAGEO,0402,,62.5mW 470Ω 50V Thick Film Resistor ±100ppm/℃ ±1% 0402 Chip Resistor - Surface Mount RoHS,yes,100,100,100,0.0008,0.08,https://www.lcsc.com/product-detail/C114877.html
+59,C23179,0603WAF4700T5E,UNI-ROYAL,0603,,470Ω ±1% 100mW 0603 Thick Film Resistor,yes,100,100,100,0.0015,0.15,https://www.lcsc.com/product-detail/C23179.html
+60,C2907024,FRC0603F3901TS,FOJAN,0603,,3.9kΩ ±1% 100mW 0603 Thick Film Resistor,yes,100,100,100,0.0012,0.12,https://www.lcsc.com/product-detail/C2907024.html
+61,C5189234,BAT-HLD-012-SMT,TE Connectivity,SMD,,"SMD Battery Holders, Clips, Contacts RoHS",yes,3,1,1,0.9498,2.85,https://www.lcsc.com/product-detail/C5189234.html
+62,C2944020,LTR-381RGB-01,LITEON,"SMD-6P,2x2mm",,"I2C 1.7V~3.6V SMD-6P,2x2mm Ambient Light, IR, UV Sensors ",-,2,1,1,0.9685,1.94,https://www.lcsc.com/product-detail/C2944020.html
+63,C37704,"BAT54C,215",Nexperia,SOT-23,,Diode Array 1 Pair Common Cathode 30V 200mA Surface Mount SOT-23,yes,10,10,10,0.0523,0.52,https://www.lcsc.com/product-detail/C37704.html
+64,C138021,RC0402FR-0727RL,YAGEO,0402,,27Ω ±1% 62.5mW 0402 Thick Film Resistor,yes,100,100,100,0.0009,0.09,https://www.lcsc.com/product-detail/C138021.html

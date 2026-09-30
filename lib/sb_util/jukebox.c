@@ -6,9 +6,9 @@
 #define PAUSE_WARP_US 600000   // 0.6 seconds for pause
 #define RESUME_WARP_US 1200000 // 1.2 seconds for resume
 #define SKIP_INTERVAL_MS 100   // minimum interval between FF/RW jumps
-#define ICON_BLINK_INTERVAL 150000 // play/pause/ff/rew icon blinking half-period
+#define ICON_BLINK_INTERVAL 250000 // play/pause/ff/rew icon blinking half-period
 #define RGB_BRIGHTNESS 4096 // RGB LED indicator brightness
-#define FF_BLINK_INTERVAL  150000 // 150ms for Fast-Forward
+#define FF_BLINK_INTERVAL  250000 // 150ms for Fast-Forward
 #define REW_BLINK_INTERVAL (FF_BLINK_INTERVAL / 2) // 75ms for Rewind
 
 /* ##########################################################
@@ -67,6 +67,9 @@ int jukebox(int *mode) {
     FIL fil;             // file object
     UINT br;             // pointer to number of bytes read
     uint8_t buffer[2048]; // buffer read from file
+
+    uint16_t vol = (uint32_t)potVal * 0x60 / 4096; // need to set the volume real quick at the beginning
+    dac_set_volume(vol);
 
     current_song_idx = song_choice; // separate buffer to decouple currently playing track and the selected track in the menu
 
@@ -208,7 +211,7 @@ int jukebox(int *mode) {
                 progress = 1.0f;
             prev_progress_bar = progress_bar;
             progress_bar = 240 * progress;
-            uint16_t seconds_passed = (uint16_t)(progress * (((current_track->audio_end - current_track->audio_start) * 8) / (current_track->bitrate * 1000)));
+            uint16_t seconds_passed = (uint16_t)(progress * (((current_track->audio_end - current_track->audio_start) * 8) / (bitRate * 1000)));
             progress_min = (int)seconds_passed / 60;
             progress_sec = seconds_passed % 60;
             bool update_bar = prev_progress_bar != progress_bar;
@@ -256,7 +259,7 @@ int jukebox(int *mode) {
                     // multicore_lockout_end_blocking();
                     break;
                 } else {
-                    uint8_t seconds_into_song = (f_tell(&fil) - current_track->audio_start) / (current_track->bitrate * 125);
+                    uint8_t seconds_into_song = (f_tell(&fil) - current_track->audio_start) / (bitRate * 125);
                     if (seconds_into_song >= 5){
                         // uint32_t audio_start = find_audio_start(&fil);
                         f_lseek(&fil, current_track->audio_start);
@@ -341,7 +344,7 @@ int jukebox(int *mode) {
                     }
                     printf("\r\nUp by 1! Track: %d\r\n", song_choice);
                 } else {
-                    uint8_t seconds_into_song = (f_tell(&fil) - current_track->audio_start) / (current_track->bitrate * 125);
+                    uint8_t seconds_into_song = (f_tell(&fil) - current_track->audio_start) / (bitRate * 125);
                     if (seconds_into_song >= 5){
                         // uint32_t audio_start = find_audio_start(&fil);
                         f_lseek(&fil, current_track->audio_start);
@@ -465,7 +468,7 @@ int jukebox(int *mode) {
                     f_close(&fil);
                     vs1053_stop(&player);
                     if (visualizer == 6) {
-                        pwm_set_gpio_level(LED_R, 65535); // 65535 = Completely OFF (Active Low)
+                        pwm_set_gpio_level(LED_G, 65535); // 65535 = Completely OFF (Active Low)
                     }
                     return 0;
                 }
@@ -480,21 +483,21 @@ int jukebox(int *mode) {
             // Calculate LED brightness during warp
             if (visualizer == 6) {
                 uint16_t led_duty = 65535 - RGB_BRIGHTNESS + (uint16_t)(transport * RGB_BRIGHTNESS);
-                pwm_set_gpio_level(LED_R, led_duty);
+                pwm_set_gpio_level(LED_G, led_duty);
             }
         } else {
             if (ff_rw_active && visualizer == 6)
             {
                 // Active-Low: 32768 = 50% brightness, 65535 = fully OFF
                 uint16_t led_duty = ff_rw_icon_visible ? 65535 - RGB_BRIGHTNESS : 65535;
-                pwm_set_gpio_level(LED_R, led_duty);
+                pwm_set_gpio_level(LED_G, led_duty);
             }
             else
             {
                 // Active-Low normal playback brightness
                 uint16_t led_duty = 65535 - RGB_BRIGHTNESS + (uint16_t)(transport * RGB_BRIGHTNESS);
                 if (visualizer == 6) {
-                    pwm_set_gpio_level(LED_R, led_duty);
+                    pwm_set_gpio_level(LED_G, led_duty);
                 }
             }
         }

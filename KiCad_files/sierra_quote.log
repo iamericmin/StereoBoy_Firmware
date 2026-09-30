@@ -1,0 +1,156 @@
+02-09 13:57:19 sierra_kicad_order.action_sierra_quote 1287:Sierra Circuits Quote plugin version: 4.6 started
+02-09 13:57:19 STDOUT 1673:send:
+02-09 13:57:19 STDOUT 1673:b'GET /kicadInfo HTTP/1.1\r\nAccept-Encoding: identity\r\nHost: prodsuperapi.app.protoexpress.com\r\nUser-Agent: Python-urllib/3.13\r\nContent-Type: application/json\r\nConnection: close\r\n\r\n'
+02-09 13:57:19 STDOUT 1673:reply:
+02-09 13:57:19 STDOUT 1673:'HTTP/1.1 200 OK\r\n'
+02-09 13:57:19 STDOUT 1673:header:
+02-09 13:57:19 STDOUT 1673:Server:
+02-09 13:57:19 STDOUT 1673:nginx/1.18.0 (Ubuntu)
+02-09 13:57:19 STDOUT 1673:header:
+02-09 13:57:19 STDOUT 1673:Date:
+02-09 13:57:19 STDOUT 1673:Mon, 09 Feb 2026 18:57:19 GMT
+02-09 13:57:19 STDOUT 1673:header:
+02-09 13:57:19 STDOUT 1673:Content-Type:
+02-09 13:57:19 STDOUT 1673:application/json
+02-09 13:57:19 STDOUT 1673:header:
+02-09 13:57:19 STDOUT 1673:Content-Length:
+02-09 13:57:19 STDOUT 1673:4080
+02-09 13:57:19 STDOUT 1673:header:
+02-09 13:57:19 STDOUT 1673:Connection:
+02-09 13:57:19 STDOUT 1673:close
+02-09 13:57:19 STDOUT 1673:header:
+02-09 13:57:19 STDOUT 1673:Access-Control-Allow-Origin:
+02-09 13:57:19 STDOUT 1673:*
+02-09 13:57:19 STDOUT 1673:header:
+02-09 13:57:19 STDOUT 1673:Strict-Transport-Security:
+02-09 13:57:19 STDOUT 1673:max-age=31536000; includeSubdomains; preload
+02-09 13:57:19 STDOUT 1673:header:
+02-09 13:57:19 STDOUT 1673:X-Frame-Options:
+02-09 13:57:19 STDOUT 1673:SAMEORIGIN
+02-09 13:57:19 STDOUT 1673:header:
+02-09 13:57:19 STDOUT 1673:X-Content-Type-Options:
+02-09 13:57:19 STDOUT 1673:nosniff
+02-09 13:57:19 STDOUT 1673:header:
+02-09 13:57:19 STDOUT 1673:Referrer-Policy:
+02-09 13:57:19 STDOUT 1673:no-referrer
+02-09 13:57:19 STDOUT 1673:header:
+02-09 13:57:19 STDOUT 1673:Content-Security-Policy:
+02-09 13:57:19 STDOUT 1673:object-src
+02-09 13:57:19 STDOUT 1673:send:
+02-09 13:57:19 STDOUT 1673:b'POST /kiprod/client HTTP/1.1\r\nAccept-Encoding: identity\r\nContent-Length: 52\r\nHost: api.protoexpress-api.net\r\nUser-Agent: Python-urllib/3.13\r\nContent-Type: application/json\r\nAuthorization: Basic d48ff740-05e8-11f1-8000-d065787454d7\r\nConnection: close\r\n\r\n'
+02-09 13:57:19 STDOUT 1673:send:
+02-09 13:57:19 STDOUT 1673:b'{"client_id":"d48ff740-05e8-11f1-8000-d065787454d7"}'
+02-09 13:57:19 STDOUT 1673:reply:
+02-09 13:57:19 STDOUT 1673:'HTTP/1.1 200 OK\r\n'
+02-09 13:57:19 STDOUT 1673:header:
+02-09 13:57:19 STDOUT 1673:Date:
+02-09 13:57:19 STDOUT 1673:Mon, 09 Feb 2026 18:57:20 GMT
+02-09 13:57:19 STDOUT 1673:header:
+02-09 13:57:19 STDOUT 1673:Content-Type:
+02-09 13:57:19 STDOUT 1673:application/json
+02-09 13:57:19 STDOUT 1673:header:
+02-09 13:57:19 STDOUT 1673:Content-Length:
+02-09 13:57:19 STDOUT 1673:32
+02-09 13:57:19 STDOUT 1673:header:
+02-09 13:57:19 STDOUT 1673:Connection:
+02-09 13:57:19 STDOUT 1673:close
+02-09 13:57:19 STDOUT 1673:header:
+02-09 13:57:19 STDOUT 1673:x-amzn-RequestId:
+02-09 13:57:19 STDOUT 1673:e917b5eb-6e94-48b7-8627-5991a607edc2
+02-09 13:57:19 STDOUT 1673:header:
+02-09 13:57:19 STDOUT 1673:Access-Control-Allow-Origin:
+02-09 13:57:19 STDOUT 1673:*
+02-09 13:57:19 STDOUT 1673:header:
+02-09 13:57:19 STDOUT 1673:Access-Control-Allow-Headers:
+02-09 13:57:19 STDOUT 1673:*
+02-09 13:57:19 STDOUT 1673:header:
+02-09 13:57:19 STDOUT 1673:x-amz-apigw-id:
+02-09 13:57:19 STDOUT 1673:YhwijEgxoAMEUOw=
+02-09 13:57:19 STDOUT 1673:header:
+02-09 13:57:19 STDOUT 1673:Access-Control-Allow-Methods:
+02-09 13:57:19 STDOUT 1673:*
+02-09 13:57:19 STDOUT 1673:header:
+02-09 13:57:19 STDOUT 1673:X-Amzn-Trace-Id:
+02-09 13:57:19 STDOUT 1673:Root=1-698a2e0f-05f2ea841bd334fb0463ac6d;Parent=4198e7b43203f936;Sampled=0;Lineage=2:565c4136:0
+02-09 13:57:30 STDOUT 1673:send:
+02-09 13:57:30 STDOUT 1673:b'POST /login HTTP/1.1\r\nAccept-Encoding: identity\r\nContent-Length: 119\r\nHost: prodsuperapi.app.protoexpress.com\r\nUser-Agent: Python-urllib/3.13\r\nContent-Type: application/json\r\nAccept: application/json\r\nConnection: close\r\n\r\n'
+02-09 13:57:30 STDOUT 1673:send:
+02-09 13:57:30 STDOUT 1673:b'{"client_id":"d48ff740-05e8-11f1-8000-d065787454d7","memberID":"ericmin3627@gmail.com","password":"theboywhorocks3627"}'
+02-09 13:57:34 STDOUT 1673:reply:
+02-09 13:57:34 STDOUT 1673:'HTTP/1.1 200 OK\r\n'
+02-09 13:57:34 STDOUT 1673:header:
+02-09 13:57:34 STDOUT 1673:Server:
+02-09 13:57:34 STDOUT 1673:nginx/1.18.0 (Ubuntu)
+02-09 13:57:34 STDOUT 1673:header:
+02-09 13:57:34 STDOUT 1673:Date:
+02-09 13:57:34 STDOUT 1673:Mon, 09 Feb 2026 18:57:34 GMT
+02-09 13:57:34 STDOUT 1673:header:
+02-09 13:57:34 STDOUT 1673:Content-Type:
+02-09 13:57:34 STDOUT 1673:text/html; charset=utf-8
+02-09 13:57:34 STDOUT 1673:header:
+02-09 13:57:34 STDOUT 1673:Content-Length:
+02-09 13:57:34 STDOUT 1673:1690
+02-09 13:57:34 STDOUT 1673:header:
+02-09 13:57:34 STDOUT 1673:Connection:
+02-09 13:57:34 STDOUT 1673:close
+02-09 13:57:34 STDOUT 1673:header:
+02-09 13:57:34 STDOUT 1673:Access-Control-Allow-Origin:
+02-09 13:57:34 STDOUT 1673:*
+02-09 13:57:34 STDOUT 1673:header:
+02-09 13:57:34 STDOUT 1673:Strict-Transport-Security:
+02-09 13:57:34 STDOUT 1673:max-age=31536000; includeSubdomains; preload
+02-09 13:57:34 STDOUT 1673:header:
+02-09 13:57:34 STDOUT 1673:X-Frame-Options:
+02-09 13:57:34 STDOUT 1673:SAMEORIGIN
+02-09 13:57:34 STDOUT 1673:header:
+02-09 13:57:34 STDOUT 1673:X-Content-Type-Options:
+02-09 13:57:34 STDOUT 1673:nosniff
+02-09 13:57:34 STDOUT 1673:header:
+02-09 13:57:34 STDOUT 1673:Referrer-Policy:
+02-09 13:57:34 STDOUT 1673:no-referrer
+02-09 13:57:34 STDOUT 1673:header:
+02-09 13:57:34 STDOUT 1673:Content-Security-Policy:
+02-09 13:57:34 STDOUT 1673:object-src
+02-09 13:57:34 STDERR 1673:/home/iamericmin/.local/share/kicad/9.0/3rdparty//plugins/sierra_kicad_order/action_sierra_quote.py:529: wxPyDeprecationWarning: Call to deprecated item. Use SetSizeHints instead.
+02-09 13:57:34 STDERR 1673:  self.SetSizeHintsSz(sz1, sz2)
+02-09 13:57:52 STDOUT 1673:send:
+02-09 13:57:52 STDOUT 1673:b'POST /verifyOtp?userID=85c605ea-0179-368c-ae1e-a07e0c1dff49 HTTP/1.1\r\nAccept-Encoding: identity\r\nContent-Length: 38\r\nHost: prodsuperapi.app.protoexpress.com\r\nUser-Agent: Python-urllib/3.13\r\nContent-Type: application/json\r\nAccept: application/json\r\nConnection: close\r\n\r\n'
+02-09 13:57:52 STDOUT 1673:send:
+02-09 13:57:52 STDOUT 1673:b'{"otp":"WPU-XYM","otpForLogin":"True"}'
+02-09 13:57:53 STDOUT 1673:reply:
+02-09 13:57:53 STDOUT 1673:'HTTP/1.1 200 OK\r\n'
+02-09 13:57:53 STDOUT 1673:header:
+02-09 13:57:53 STDOUT 1673:Server:
+02-09 13:57:53 STDOUT 1673:nginx/1.18.0 (Ubuntu)
+02-09 13:57:53 STDOUT 1673:header:
+02-09 13:57:53 STDOUT 1673:Date:
+02-09 13:57:53 STDOUT 1673:Mon, 09 Feb 2026 18:57:54 GMT
+02-09 13:57:53 STDOUT 1673:header:
+02-09 13:57:53 STDOUT 1673:Content-Type:
+02-09 13:57:53 STDOUT 1673:text/html; charset=utf-8
+02-09 13:57:53 STDOUT 1673:header:
+02-09 13:57:53 STDOUT 1673:Content-Length:
+02-09 13:57:53 STDOUT 1673:384
+02-09 13:57:53 STDOUT 1673:header:
+02-09 13:57:53 STDOUT 1673:Connection:
+02-09 13:57:53 STDOUT 1673:close
+02-09 13:57:53 STDOUT 1673:header:
+02-09 13:57:53 STDOUT 1673:Access-Control-Allow-Origin:
+02-09 13:57:53 STDOUT 1673:*
+02-09 13:57:53 STDOUT 1673:header:
+02-09 13:57:53 STDOUT 1673:Strict-Transport-Security:
+02-09 13:57:53 STDOUT 1673:max-age=31536000; includeSubdomains; preload
+02-09 13:57:53 STDOUT 1673:header:
+02-09 13:57:53 STDOUT 1673:X-Frame-Options:
+02-09 13:57:53 STDOUT 1673:SAMEORIGIN
+02-09 13:57:53 STDOUT 1673:header:
+02-09 13:57:53 STDOUT 1673:X-Content-Type-Options:
+02-09 13:57:53 STDOUT 1673:nosniff
+02-09 13:57:53 STDOUT 1673:header:
+02-09 13:57:53 STDOUT 1673:Referrer-Policy:
+02-09 13:57:53 STDOUT 1673:no-referrer
+02-09 13:57:53 STDOUT 1673:header:
+02-09 13:57:53 STDOUT 1673:Content-Security-Policy:
+02-09 13:57:53 STDOUT 1673:object-src
+02-09 13:57:53 STDERR 1673:/home/iamericmin/.local/share/kicad/9.0/3rdparty//plugins/sierra_kicad_order/sierra_quote_dialog.py:147: wxPyDeprecationWarning: Call to deprecated item. Use SetSizeHints instead.
+02-09 13:57:53 STDERR 1673:  self.SetSizeHintsSz(sz1, sz2)

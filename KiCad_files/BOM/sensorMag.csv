@@ -1,0 +1,22 @@
+Id;Designator;Footprint;Quantity;Designation;Supplier and ref
+1;J1;GameBoy_GamePak_CGB-002_P1.50mm_Edge;1;GameBoy_GamePak_CGB-002;
+2;BT1;BAT_BAT-HLD-012-SMT;1;BAT-HLD-012-SMT;
+3;R4;R_0603_1608Metric_Pad0.98x0.95mm_HandSolder;1;1000;
+4;J6;microSD_External_Pin;1;microSD;
+5;U3;Bosch_LGA-8_2.5x2.5mm_P0.65mm_ClockwisePinNumbering;1;BME280;
+6;R7;R_0603_1608Metric;1;4.7k;
+7;C10;C_0603_1608Metric_Pad1.08x0.95mm_HandSolder;1;1u;
+8;R3;R_0603_1608Metric;1;10k;
+9;C4,C3,C5,C8;C_0603_1608Metric;4;100n;
+10;C2,C1;C_1206_3216Metric;2;0.1uF;
+11;D1;LED_0603_1608Metric_Green;1;Green;
+12;C11,C9;C_0603_1608Metric_Pad1.08x0.95mm_HandSolder;2;0.1u;
+13;R5;R_0603_1608Metric_Pad0.98x0.95mm_HandSolder;1;4.7k;
+14;R2,R6;R_0603_1608Metric;2;0;
+15;U6;OPTO-SMD_LITEON_LTR-381RGB-01;1;ColorSensor;
+16;R1;R_0603_1608Metric;1;470;
+17;U4;SOIC-14_L10.1-W5.0-P1.27-LS7.4-BL;1;RealTimeClock;
+18;U2;XDCR_LSM6DSO32TR;1;LSM6DSO32TR;
+19;D2;SOT-23;1;BAT54C;
+20;C6;C_0603_1608Metric;1;0.1uF;
+21;U1;SOIC-8_5.3x5.3mm_P1.27mm;1;W25Q16JVSS;
