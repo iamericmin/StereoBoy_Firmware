@@ -71,8 +71,8 @@ uint8_t buttons_get_action() {
     static uint8_t buttons_current;
     static uint8_t buttons_prev;
     buttons_get_edges();
-    printf("Pressed: %08b\n", buttons_pressed);
-    printf("Released: %08b\n", buttons_released);
+    // printf("Pressed: %08b\n", buttons_pressed);
+    // printf("Released: %08b\n", buttons_released);
     if (buttons_pressed) { // if falling edge detected (buttons are active low)
         buttons_current = buttons_raw; // capture raw button states
         hold_counter = 0; // reset hold counter to zero

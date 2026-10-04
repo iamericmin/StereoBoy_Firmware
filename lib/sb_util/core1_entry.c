@@ -437,6 +437,8 @@ void music_menu() {
     
 }
 
+bool album_art_trigger = 1;
+
 uint16_t start;
 void core1_entry()
 {
@@ -450,23 +452,20 @@ void core1_entry()
         adc_select_input(POT_CH);
         potVal = adc_read();
         switch (visualizer) {
-        case 0: // Album Art
-            // track = &tracks[song_choice];
-            // uint64_t hash = generate_FNV(track->title, track->artist, track->album);
-            // uint32_t pointer = lookup_LUT(hash);
-            // st7789_set_cursor(0, 0);
-            // st7789_ramwr();
-            // spi_set_format(spi0, 16, SPI_CPOL_0, SPI_CPHA_0, SPI_MSB_FIRST);
-            // spi_write16_blocking(spi0, frame_buffer, 240 * 240);
-            // Lock into an LED-only
+        case 0: // Album Art (playback)
             process_audio_batch();
+
             adc_select_input(ADC_CH_L);
             uint16_t raw_l = adc_read();
-
             adc_select_input(ADC_CH_R);
             uint16_t raw_r = adc_read();
 
             pca9685_update_vu(&vu_meter, raw_l, raw_r);
+
+            if (album_art_trigger) {
+                display_album_art_by_index(img_buffer, last_played_track_idx);
+                album_art_trigger = 0;
+            }
 
             addIcons(frame_buffer, enableIcons);
             st7789_set_cursor(0, 0);
@@ -492,8 +491,11 @@ void core1_entry()
         case 7:
             scrolling_menu(0);
             break;
+        // case 8: // album covers
+        //     display_album_art_by_index(img_buffer, last_played_track_idx);
+            
         default:
-            visualizer = (visualizer == 2 || 3 || 4) ? 6 : 0;
+            visualizer = (visualizer == 2 || visualizer == 3 || visualizer == 4) ? 6 : 0;
             break;
         }
     }

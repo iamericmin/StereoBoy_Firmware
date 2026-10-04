@@ -153,17 +153,17 @@ int main() {
         while(selected == 65535) {
             // TODO: add left and right for fast scrolling
             switch (buttons_get_action()) {
-            case BTN_D:
-                menu_choice = (menu_choice + 1);
-                break;
-            case BTN_U:
-                menu_choice = (menu_choice - 1);
-                break;
-            case BTN_A:
-                selected = 1;   
-                printf("Poo cum fart shit pee\n");
-            default:
-                break;
+                case BTN_D:
+                    menu_choice = (menu_choice + 1);
+                    break;
+                case BTN_U:
+                    menu_choice = (menu_choice - 1);
+                    break;
+                case BTN_A:
+                    selected = 1;   
+                    printf("Poo cum fart shit pee\n");
+                default:
+                    break;
             }
             if (menu_choice < 1) {
                 menu_choice = 1;

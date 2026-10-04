@@ -25,9 +25,6 @@ bool enableIcons = true;
 
 volatile uint16_t potVal = 0;
 
-track_info_t *last_played_track = NULL;
-track_info_t last_played_track_holder;
-
 int selected_band = 0;
 uint16_t *playStatus = empty_icon;
 uint16_t *ff_rew_status = empty_icon;
@@ -76,15 +73,9 @@ int jukebox(int *mode) {
     uint16_t vol = (uint32_t)potVal * 0x60 / 4096; // need to set the volume real quick at the beginning
     dac_set_volume(vol);
 
-    // separate buffer to decouple currently playing track and the selected track in the menu
-    // Necessary to allow browsing while listening
-    // First, copy track metadata
-    last_played_track_holder = current_track_holder; 
-    last_played_track = &last_played_track_holder;
-
     last_played_track_idx = song_choice; // copy track index
-    last_played_album_idx = song_choice; // copy album index
-    last_played_artist_idx = song_choice; // copy artist index
+    last_played_album_idx = album_choice; // copy album index
+    last_played_artist_idx = artist_choice; // copy artist index
 
     // Write track index to FRAM to refresh last played track data
     fram_write(i2c0, 0x0000, (uint8_t*)&last_played_track_idx, sizeof(last_played_track_idx));
@@ -125,7 +116,8 @@ int jukebox(int *mode) {
 
     // fetch album art if necessary
     if (visualizer == 0) {
-        display_album_art_by_index(img_buffer, last_played_track_idx);
+        album_art_trigger = 1;
+        load_album_cover_by_index(img_buffer, last_played_track_idx);
     }
 
     // mode -1 is when picking up from last played track & time
@@ -423,48 +415,11 @@ int jukebox(int *mode) {
             case BTN_START:
                 visualizer = (visualizer + 1) % (num_visualizations - 1);
                 if (visualizer == 0) {
-                    display_album_art_by_index(img_buffer, last_played_track_idx);
+                    album_art_trigger = 1;
+                    load_album_cover_by_index(img_buffer, last_played_track_idx);
                     printf("changing visualizer");
                 }
-                switch (visualizer) {
-                case 0:
-                    printf("\r\nAlbum Art Visualization\r\n");
-                    break;
-                case 1:
-                    printf("\r\nScope Visualization\r\n");
-                    break;
-                case 2:
-                    printf("\r\nSpectrum Analyzer Visualization\r\n");
-                    break;
-                case 3:
-                    printf("\r\nLissajous Visualization\r\n");
-                    break;
-                case 4:
-                    printf("\r\nMandala Visualization\r\n");
-                    break;
-                case 5:
-                    dprint("Text Display");
-                    printf("\r\nText Display\r\n");
-                    break;
-                case 6:
-                    dprint("Main Menu");
-                }
                 break;
-            // case 'i':
-            // case 'I':
-            //     printf("\r\n\rNOW PLAYING:\r\n");
-            //     printf("  Title : %s\r\n", current_track->title);
-            //     printf("  Artist: %s\r\n", current_track->artist);
-            //     printf("  Album : %s\r\n", current_track->album);
-            //     printf("  Bitrate : %d Kbps\r\n", current_track->bitrate);
-            //     printf("  Sample rate : %d Hz\r\n", current_track->samplespeed);
-            //     printf("  Channels : %s\r\n", current_track->channels == 1 ? "Mono" : "Stereo");
-            //     printf("  Header: %X\r\n", current_track->header);
-            //     break;
-            // case 'm':
-            // case 'M':
-            //     enableIcons = !enableIcons;
-            //     break;
         }
     
         // --- Warp & LED logic (Active-Low: 0 = Full On, 65535 = Off) ---

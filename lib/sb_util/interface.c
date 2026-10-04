@@ -23,6 +23,9 @@ track_info_t track_window[10];
 track_info_t *current_track = NULL;
 track_info_t current_track_holder;
 
+track_info_t *last_played_track = NULL;
+track_info_t last_played_track_holder;
+
 album_info_t album_window[10];
 album_info_t *current_album = NULL;
 album_info_t current_album_holder;
@@ -41,7 +44,6 @@ uint16_t browse_artists(int *exitCode) {
         printf("Error reading track metadata from cache table!\n");
     }
     // read_lwbt();
-    temp_visualizer = (visualizer == 7) ? 1 : visualizer;
     //Return to main menu with list selection:
     if (*exitCode == 0) {
         // pca9685_all_off(&vu_meter);
@@ -89,6 +91,8 @@ uint16_t browse_artists(int *exitCode) {
 int play_track(int *exitCode) {
     current_track = &current_track_holder;
 
+    temp_visualizer = (visualizer == 5 || visualizer == 7) ? 1 : visualizer;
+
     if (!sb_get_track_window_fast(&tracks_cache_file, song_choice, current_track, track_window)) {
         printf("Error reading track metadata from cache table!\n");
     }
@@ -106,18 +110,24 @@ int play_track(int *exitCode) {
 
     set_visualizer(temp_visualizer);
 
+    // separate buffer to decouple currently playing track and the selected track in the menu
+    // Necessary to allow browsing while listening
+    // First, copy track metadata
+    last_played_track_holder = current_track_holder; 
+    last_played_track = &last_played_track_holder;
+
     // Pass it to the playback loop
     *exitCode = jukebox(exitCode);
 
     // play next song
     if (*exitCode == 1){
-        song_choice = (song_choice + 1) % track_count;
+        song_choice = (last_played_track_idx + 1) % track_count;
         printf("\r\n Next song!\r\n");
         dprint("Next song!");
     }
     // play previous song
     if (*exitCode == 2){
-        song_choice = (song_choice - 1 + track_count) % track_count;
+        song_choice = (last_played_track_idx - 1 + track_count) % track_count;
         dprint("Prev Song!");
         printf("\r\nPrev Song!\r\n");
     }
@@ -137,8 +147,6 @@ uint16_t browse_albums(int *exitCode) {
         printf("Error reading track metadata from cache table!\n");
     }
     sb_get_track_window_fast(&tracks_cache_file, current_album->start_track, current_track, track_window);
-    // read_lwbt();
-    temp_visualizer = (visualizer == 7) ? 1 : visualizer;
     //Return to main menu with list selection:
     if (*exitCode == 0) {
         // pca9685_all_off(&vu_meter);
@@ -189,8 +197,6 @@ uint16_t browse_tracks(int *exitCode) {
     if (!sb_get_track_window_fast(&tracks_cache_file, song_choice, current_track, track_window)) {
         printf("Error reading track metadata from cache table!\n");
     }
-    // read_lwbt();
-    temp_visualizer = (visualizer == 5 || visualizer == 7) ? 1 : visualizer;
     //Return to main menu with list selection:
     if (*exitCode == 0) {
         // pca9685_all_off(&vu_meter);

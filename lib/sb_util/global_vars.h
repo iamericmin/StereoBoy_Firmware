@@ -14,6 +14,7 @@
 #include "pico/stdlib.h"
 #include "pico/multicore.h"
 #include "pico/time.h"
+
 #include "hardware/i2c.h"
 #include "hardware/adc.h"
 #include "hardware/gpio.h"
@@ -92,7 +93,7 @@ extern st7789_t display;
 extern mutex_t text_buff_mtx;
 extern semaphore_t text_sem;
 extern int visualizer;
-extern bool album_art_ready;
+extern bool album_art_trigger;
 
 #define IMG_WIDTH 160
 #define IMG_HEIGHT 160
