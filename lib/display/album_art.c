@@ -294,7 +294,7 @@ int display_album_art_by_index(uint16_t *img_buffer, uint32_t global_track_idx) 
             memcpy(dst, src, 160 * sizeof(uint16_t));
         }
         
-        // printf("[Art Success] Displayed art for Global Track ID: %lu\n", global_track_idx);
+        printf("[Art Success] Displayed art for Global Track ID: %lu\n", global_track_idx);
         
         return 0;
     } else {

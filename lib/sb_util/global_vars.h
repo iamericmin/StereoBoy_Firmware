@@ -134,6 +134,8 @@ typedef struct __attribute__((packed)) {
 extern track_info_t track_window[10];
 extern artist_info_t artist_window[10];
 extern album_info_t album_window[10];
+extern album_info_t *current_album;
+extern album_info_t current_album_holder;
 
 // Global runtime database pointers
 extern artist_info_t *global_artists;

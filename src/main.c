@@ -161,7 +161,8 @@ int main() {
                     break;
                 case BTN_A:
                     selected = 1;   
-                    printf("Poo cum fart shit pee\n");
+                    printf("Main: Poo cum fart shit pee\n");
+                    break;
                 default:
                     break;
             }

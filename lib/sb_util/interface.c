@@ -68,7 +68,7 @@ uint16_t browse_artists(int *exitCode) {
                 return 65535;
             case BTN_A:
                 selected = 1;   
-                printf("Poo cum fart shit pee\n");
+                printf("Artists: Poo cum fart shit pee\n");
             default:
                 break;
             }
@@ -143,40 +143,51 @@ int play_track(int *exitCode) {
 uint16_t browse_albums(int *exitCode) {
     current_track = &current_track_holder;
     current_album = &current_album_holder;
+    current_artist = &current_artist_holder;
     if (!sb_get_album_window(album_choice, current_album, album_window)) {
         printf("Error reading track metadata from cache table!\n");
     }
+    if (!sb_get_artist_window(artist_choice, current_artist, artist_window)) {
+        printf("Error reading track metadata from cache table!\n");
+    }
     sb_get_track_window_fast(&tracks_cache_file, current_album->start_track, current_track, track_window);
+    load_album_cover_by_index(img_buffer, current_album->start_track);
+    album_art_trigger = 1;
     //Return to main menu with list selection:
     if (*exitCode == 0) {
-        // pca9685_all_off(&vu_meter);
         uint16_t selected = false;
-        set_visualizer(5);
         prev_choice = album_choice;
+        set_visualizer(8);
         while (selected == false) {
             switch (buttons_get_action()) {
-            case BTN_D:
-                album_choice = (album_choice + 1) % album_count;
-                break;
-            case BTN_U:
-                album_choice = (album_choice - 1 + album_count) % album_count; //added roll-over
-                break;
-            case BTN_R:
-                album_choice = (album_choice + 10) % album_count;
-                break;
-            case BTN_L:
-                album_choice = (album_choice - 10 + album_count) % album_count;
-                break;
-            case BTN_B:
-                return 65535;
-            case BTN_A:
-                selected = 1;   
-                printf("Poo cum fart shit pee\n");
-            default:
-                break;
+                case BTN_D:
+                    artist_choice = (artist_choice + 1) % artist_count;
+                    album_art_trigger = 1;
+                    break;
+                case BTN_U:
+                    artist_choice = (artist_choice - 1 + artist_count) % artist_count; //added roll-over
+                    album_art_trigger = 1;
+                    break;
+                case BTN_R:
+                    album_choice = (album_choice + 1) % album_count;
+                    album_art_trigger = 1;
+                    break;
+                case BTN_L:
+                    album_choice = (album_choice - 1 + album_count) % album_count; //added roll-over
+                    album_art_trigger = 1;
+                    break;
+                case BTN_B:
+                    return 65535;
+                case BTN_A:
+                    selected = 1;   
+                    printf("Album: Poo cum fart shit pee\n");
+                default:
+                    break;
             }
             sb_get_album_window(album_choice, current_album, album_window);
+            sb_get_artist_window(artist_choice, current_artist, artist_window);
             sb_get_track_window_fast(&tracks_cache_file, current_album->start_track, current_track, track_window);
+            load_album_cover_by_index(img_buffer, current_album->start_track);
             if (prev_choice != album_choice){
                 printf("\r\nAlbum Fuck %d/%d: ", album_choice+1, album_count);
                 prev_choice = album_choice;
@@ -223,7 +234,7 @@ uint16_t browse_tracks(int *exitCode) {
                 return 65535;
             case BTN_A:
                 selected = 1;   
-                printf("Poo cum fart shit pee\n");
+                printf("Tracks: Poo cum fart shit pee\n");
             default:
                 break;
             }

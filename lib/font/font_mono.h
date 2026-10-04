@@ -16,7 +16,7 @@
 // #include "font_font.h"
 
 #define font_width 11
-#define font_height 20
+#define font_height 21
 
 // struct Font;
 struct Font {

@@ -491,8 +491,46 @@ void core1_entry()
         case 7:
             scrolling_menu(0);
             break;
-        // case 8: // album covers
-        //     display_album_art_by_index(img_buffer, last_played_track_idx);
+        case 8: // album cover browsing
+            if (album_art_trigger) {
+                display_album_art_by_index(img_buffer, current_album->start_track);
+                album_art_trigger = 0;
+            }
+            st7789_set_cursor(0, 0);
+
+            // --- SCROLLING ALBUM TITLE IMPLEMENTATION ---
+            static uint8_t album_title_pos = 0;
+            static uint32_t album_title_pos_last_update = 0;
+
+            // Advance position (150ms scroll speed, 2000ms start pause)
+            marquee_plus(&album_title_pos, &album_title_pos_last_update, current_album->album_name, 21, 6, 150, 2000);
+
+            // Render string
+            char album_title_buf[23];
+            render_marquee_text(album_title_buf, current_album->album_name, album_title_pos, 21, 6);
+            st7789_draw_string(0, 0 * font_height, album_title_buf, WHITE);
+
+            st7789_ramwr();
+            spi_set_format(spi0, 16, SPI_CPOL_0, SPI_CPHA_0, SPI_MSB_FIRST);
+            spi_write16_blocking(spi0, frame_buffer, 240 * 240);
+
+            // --- SCROLLING ARTIST IMPLEMENTATION ---
+            static uint8_t album_artist_pos = 0;
+            static uint32_t album_artist_pos_last_update = 0;
+
+            // Advance position (150ms scroll speed, 2000ms start pause)
+            marquee_plus(&album_artist_pos, &album_artist_pos_last_update, current_track->artist, 21, 6, 150, 2000);
+
+            // Render string
+            char album_artist_buf[23];
+            render_marquee_text(album_artist_buf, current_track->artist, album_artist_pos, 21, 6);
+            st7789_draw_string(0, 15 + 10 * font_height, album_artist_buf, WHITE);
+
+            st7789_ramwr();
+            spi_set_format(spi0, 16, SPI_CPOL_0, SPI_CPHA_0, SPI_MSB_FIRST);
+            spi_write16_blocking(spi0, frame_buffer, 240 * 240);
+
+            break;
             
         default:
             visualizer = (visualizer == 2 || visualizer == 3 || visualizer == 4) ? 6 : 0;
