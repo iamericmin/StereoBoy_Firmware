@@ -28,6 +28,14 @@
 #define PIN_I2C0_SCL 21
 #define PIN_I2C0_SDA 20
 
+uint16_t song_choice = 0;
+uint16_t album_choice = 0;
+uint16_t artist_choice = 0;
+
+uint16_t last_played_track_idx;
+uint16_t last_played_album_idx;
+uint16_t last_played_artist_idx;
+
 vs1053_t player = {
     .spi = spi1,
     .cs = PIN_CS,
@@ -107,32 +115,27 @@ int main() {
         }
     }
 
-    uint16_t saved_song = 0;
-    uint32_t song_pos = 0;
+    // uint32_t last_played_pos = 0;
     // read last played song
-    int status = fram_read(i2c0, 0x0000, (uint8_t*)&saved_song, sizeof(saved_song));
-    if (status > 0 && saved_song < track_count) {
-        song_choice = saved_song;
+    int status = fram_read(i2c0, 0x0000, (uint8_t*)&last_played_track_idx, sizeof(last_played_track_idx));
+    if (status > 0 && last_played_track_idx < track_count) {
+        // song_choice = last_played_track_idx;
         printf("[F-RAM] Loaded last track: %d\n", song_choice);
     } else {
-        printf("[F-RAM Warning] Invalid read (%d) or bus failure. Defaulting to track 0.\n", saved_song);
+        printf("[F-RAM Warning] Invalid read (%d) or bus failure. Defaulting to track 0.\n", last_played_track_idx);
         song_choice = 0; // Fallback to track 0 safely
     }
-    // read last played song's timestamp
-    if (fram_read(i2c0, 0x000F, (uint8_t*)&song_pos, sizeof(song_pos)) < 0) {
-        printf("Failed to read timestamp from F-RAM!\n");
-        song_pos = current_track->audio_start;
-    }
-    
-    current_track = &current_track_holder;
-    if (!sb_get_track_window_fast(&tracks_cache_file, song_choice, current_track, track_window)) {
-        printf("Error reading track metadata from cache table!\n");
-    }
 
-    float progress = (float)(song_pos - current_track->audio_start) / (float)(current_track->audio_end - current_track->audio_start);
-    uint16_t seconds_passed = (uint16_t)(progress * (((current_track->audio_end - current_track->audio_start) * 8) / (current_track->bitrate * 1000)));
-    progress_min = (int)seconds_passed / 60;
-    progress_sec = seconds_passed % 60;
+    // read last played song's timestamp
+    // if (fram_read(i2c0, 0x0006, (uint8_t*)&last_played_pos, sizeof(last_played_pos)) < 0) {
+    //     printf("Failed to read timestamp from F-RAM!\n");
+    //     last_played_pos = current_track->audio_start;
+    // }
+
+    // float progress = (float)(last_played_pos - current_track->audio_start) / (float)(current_track->audio_end - current_track->audio_start);
+    // uint16_t seconds_passed = (uint16_t)(progress * (((current_track->audio_end - current_track->audio_start) * 8) / (current_track->bitrate * 1000)));
+    // progress_min = (int)seconds_passed / 60;
+    // progress_sec = seconds_passed % 60;
 
     printf("%d Artists\n", artist_count);
     printf("%d Albums\n", album_count);
@@ -149,7 +152,7 @@ int main() {
         set_visualizer(7);
         while(selected == 65535) {
             // TODO: add left and right for fast scrolling
-            switch (buttons_read_long_press()) {
+            switch (buttons_get_action()) {
             case BTN_D:
                 menu_choice = (menu_choice + 1);
                 break;
@@ -173,6 +176,7 @@ int main() {
         switch (menu_choice) {
             // Artists -> Albums -> Tracks
             case 1: {
+                artist_choice = 0;
                 selected = 0;
                 uint16_t start_album = browse_artists(&exitCode);
                 if (start_album == 65535) {
@@ -220,18 +224,18 @@ int main() {
             }
             // Last Played
             case 4: {
-                uint16_t saved_song = 0;
-                int status = fram_read(i2c0, 0x0000, (uint8_t*)&saved_song, sizeof(saved_song));
+                // uint16_t last_played_track_idx = 0;
+                // int status = fram_read(i2c0, 0x0000, (uint8_t*)&last_played_track_idx, sizeof(last_played_track_idx));
 
-                // Ensure I2C read succeeded AND saved_song is within valid track range
-                if (status > 0 && saved_song < track_count) {
-                    song_choice = saved_song;
-                    printf("[F-RAM] Loaded last track: %d\n", song_choice);
-                } else {
-                    printf("[F-RAM Warning] Invalid read (%d) or bus failure. Defaulting to track 0.\n", saved_song);
-                    song_choice = 0; // Fallback to track 0 safely
-                }
-
+                // // Ensure I2C read succeeded AND last_played_track_idx is within valid track range
+                // if (status > 0 && last_played_track_idx < track_count) {
+                //     song_choice = last_played_track_idx;
+                //     printf("[F-RAM] Loaded last track: %d\n", song_choice);
+                // } else {
+                //     printf("[F-RAM Warning] Invalid read (%d) or bus failure. Defaulting to track 0.\n", last_played_track_idx);
+                //     song_choice = 0; // Fallback to track 0 safely
+                // }
+                song_choice = last_played_track_idx;
                 exitCode = -1; // if exitCode != 0, browse_tracks skips the selection menu and goes straight to jukebox
                 int result = 0;
                 while (result != 65535) {

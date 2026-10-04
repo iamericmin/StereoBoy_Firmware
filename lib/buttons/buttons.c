@@ -1,14 +1,16 @@
 #include "lib/sb_util/global_vars.h"
 #include "buttons.h"
 
-#define HOLD_TIME 50
+#define HOLD_CYCLES 10
 
 const uint PIN_LATCH = 11;
 const uint PIN_CLOCK = 23;
 const uint PIN_DATA  = 22;
 
-volatile uint8_t current_button_states = 0;
+uint8_t buttons_raw = 0;
 uint8_t last_button_states = 0; // Used for edge detection
+uint8_t buttons_pressed;
+uint8_t buttons_released;
 
 static bool reading_timer_callback(struct repeating_timer *t) {
     uint8_t reading = 0;
@@ -31,11 +33,9 @@ static bool reading_timer_callback(struct repeating_timer *t) {
         gpio_put(PIN_CLOCK, 0);
     }
 
-    current_button_states = reading;
+    buttons_raw = reading;
     return true;
 }
-
-// --- Public Functions ---
 
 void buttons_init(int32_t scan_time) {
     // GPIO Init
@@ -48,7 +48,7 @@ void buttons_init(int32_t scan_time) {
     
     // Fast-forward the history so no "edges" are detected
     // from whatever buttons are currently being held down.
-    last_button_states = current_button_states;
+    last_button_states = buttons_raw;
 
     // We use a static variable for the timer struct so it persists
     static struct repeating_timer timer;
@@ -56,53 +56,51 @@ void buttons_init(int32_t scan_time) {
 }
 
 uint8_t buttons_get_raw_state(void) {
-    return current_button_states;
+    return buttons_raw;
 }
 
-uint8_t buttons_get_just_pressed(void) {
-    // Snapshot current state
-    uint8_t current = current_button_states;
-    
-    // Detect falling edges (1 -> 0)
-    uint8_t just_pressed = ~current & last_button_states;
-    
-    // Update history
+void buttons_get_edges(void) {
+    uint8_t current = buttons_raw;
+    buttons_pressed  = ~current &  last_button_states; // Active-low press (1 -> 0)
+    buttons_released =  current & ~last_button_states; // Active-low release (0 -> 1)
     last_button_states = current;
-    
-    return just_pressed;
 }
 
-uint8_t buttons_read_long_press() {
+uint8_t buttons_get_action() {
     static uint8_t hold_counter;
-    static uint8_t current_buttons;
-    static uint8_t prev_buttons;
-    if (buttons_get_just_pressed()) { // if falling edge detected (buttons are active low)
-        current_buttons = current_button_states; // capture raw button states
+    static uint8_t buttons_current;
+    static uint8_t buttons_prev;
+    buttons_get_edges();
+    printf("Pressed: %08b\n", buttons_pressed);
+    printf("Released: %08b\n", buttons_released);
+    if (buttons_pressed) { // if falling edge detected (buttons are active low)
+        buttons_current = buttons_raw; // capture raw button states
         hold_counter = 0; // reset hold counter to zero
-    } else if (current_button_states != 0xFF) { // if holding
+    } else if (buttons_raw != 0xFF) { // if holding
         // These are buttons that trigger auto-fire after a ~500ms delay
-        if (current_button_states == BTN_L || current_button_states == BTN_R || current_button_states == BTN_U || current_button_states == BTN_D) {
+        if (buttons_raw == BTN_L || buttons_raw == BTN_R || buttons_raw == BTN_U || buttons_raw == BTN_D) {
             hold_counter++;
-            if (hold_counter >= 10) {
-                current_buttons = current_button_states;
+            if (hold_counter >= HOLD_CYCLES) {
+                buttons_current = buttons_raw;
             } else {
-                current_buttons = 0xFF;
+                buttons_current = 0xFF;
             }
         // These are buttons that auto-fire right away with no delay
-        } else if ((current_button_states == (BTN_SELECT & BTN_L)) || (current_button_states == (BTN_SELECT & BTN_R))) {
-            current_buttons = current_button_states;
+        } else if ((buttons_raw == (BTN_B & BTN_L)) || (buttons_raw == (BTN_B & BTN_R))) {
+            buttons_current = buttons_raw;
         // These are buttons that fire once and never trigger again until it's pressed again
-        } else if ((current_button_states == BTN_A) || (current_button_states == BTN_B)) {
+        } else if ((buttons_raw == BTN_A) || (buttons_raw == BTN_B)) {
             hold_counter = 0;
-            current_buttons = 0xFF;
+            buttons_current = 0xFF;
         } else {
-            current_buttons = 0xFF;
+            buttons_current = 0xFF;
         }
     } else {
         hold_counter = 0;
-        current_buttons = 0xFF;
+        buttons_current = 0xFF;
     }
-    prev_buttons = current_button_states;
+    buttons_prev = buttons_raw;
 
-    return current_buttons;
+
+    return buttons_current;
 }

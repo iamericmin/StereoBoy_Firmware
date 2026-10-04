@@ -115,6 +115,9 @@ typedef struct __attribute__((packed)) {
 extern track_info_t *current_track;
 extern track_info_t current_track_holder;
 
+extern track_info_t *last_played_track;
+extern track_info_t last_played_track_holder;
+
 typedef struct __attribute__((packed)) {
     char artist_name[128];
     uint16_t num_albums;
@@ -162,6 +165,9 @@ extern int count;
 extern uint16_t song_choice;
 extern uint16_t album_choice;
 extern uint16_t artist_choice;
+extern uint16_t last_played_track_idx;
+extern uint16_t last_played_album_idx;
+extern uint16_t last_played_artist_idx;
 extern uint16_t menu_choice;
 
 extern uint8_t marquee_scroll_rate;
@@ -194,9 +200,11 @@ extern uint16_t background_progress_color;
 extern int selected_band;
 extern volatile uint16_t potVal;
 
-extern volatile uint8_t current_button_states;
-extern volatile uint8_t just_pressed;
+extern uint8_t buttons_raw;
+extern uint8_t buttons_released;
+extern uint8_t buttons_released;
 
-
+extern uint16_t WAVE_L_COLOR;
+extern uint16_t WAVE_R_COLOR;
 
 #endif

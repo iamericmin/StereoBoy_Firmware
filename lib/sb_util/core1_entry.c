@@ -174,7 +174,7 @@ void scrolling_menu(int mode) {
         album_info_t *selected_album = &album_window[selected_slot];
 
         snprintf(menu_string, sizeof(menu_string), "%s", selected_album->album_name);
-        snprintf(info_string_1, sizeof(info_string_1), "%s", current_track->artist);
+        snprintf(info_string_1, sizeof(info_string_1), "%s", last_played_track->artist);
         if (selected_album->num_tracks == 1) {
             snprintf(info_string_2, sizeof(info_string_2), "1 Track");
         } else {
@@ -260,9 +260,9 @@ void scrolling_menu(int mode) {
             // Scroll top metadata line
             if (mode == 0 && item_choice == 4) {
                 // Home Screen: "Last Played" track title scrolling
-                if (strlen(current_track->title) > 20) {
+                if (strlen(last_played_track->title) > 20) {
                     marquee_artist_start++;
-                    if (marquee_artist_start >= strlen(current_track->title) + 8) marquee_artist_start = 0;
+                    if (marquee_artist_start >= strlen(last_played_track->title) + 8) marquee_artist_start = 0;
                 }
             } else if (mode != 0 && strlen(info_string_1) > 20) {
                 // Submenu artist line scrolling
@@ -284,10 +284,13 @@ void scrolling_menu(int mode) {
     if (mode == 0) {
         if (item_choice == 4) { // "Last Played" selected
             // Safely format song title (top line) with marquee scrolling/truncation
-            render_marquee_text(marquee_artist, current_track->title, marquee_artist_start, 20, 8);
+            render_marquee_text(marquee_artist, last_played_track->title, marquee_artist_start, 20, 8);
 
             // Safely format progress time (bottom line)
-            snprintf(marquee_album, sizeof(marquee_album), "%d:%02d", progress_min, progress_sec);
+            // snprintf(marquee_album, sizeof(marquee_album), "%d:%02d", progress_min, progress_sec);
+
+            // Safely format artist title (bottom line) with marquee scrolling/truncation
+            render_marquee_text(marquee_album, last_played_track->artist, marquee_album_start, 20, 8);
         } else {
             // Blank top line on home screen for other options
             memset(marquee_artist, ' ', 20);
@@ -473,7 +476,6 @@ void core1_entry()
             break;
         case 1: // Oscilloscope
             update_scope_core1();
-            // st7789_draw_string(1, 200, current_track->title, WHITE);
             break;
         case 4: // Artists
             process_audio_batch();
@@ -661,11 +663,11 @@ void addIcons(uint16_t* frame_buffer, bool enabled) {
         static uint32_t scope_last_update = 0;
 
         // Advance position (150ms scroll speed, 2000ms start pause)
-        marquee_plus(&scope_pos, &scope_last_update, current_track->title, 18, 6, 150, 2000);
+        marquee_plus(&scope_pos, &scope_last_update, last_played_track->title, 18, 6, 150, 2000);
 
         // Render string
         char title_buf[21];
-        render_marquee_text(title_buf, current_track->title, scope_pos, 18, 6);
+        render_marquee_text(title_buf, last_played_track->title, scope_pos, 18, 6);
         st7789_draw_string(30, 1, title_buf, WHITE);
     }
 }

@@ -25,6 +25,9 @@ bool enableIcons = true;
 
 volatile uint16_t potVal = 0;
 
+track_info_t *last_played_track = NULL;
+track_info_t last_played_track_holder;
+
 int selected_band = 0;
 uint16_t *playStatus = empty_icon;
 uint16_t *ff_rew_status = empty_icon;
@@ -36,10 +39,12 @@ int prev_progress_bar = 0;
 
 int num_visualizations = 8;
 bool album_art_ready = false;
-uint32_t current_song_idx;
 
 static uint64_t last_icon_toggle_time = 0;
 static bool ff_rw_icon_visible = false;
+
+uint16_t WAVE_L_COLOR = 0xFFFF;
+uint16_t WAVE_R_COLOR = 0xFFFF;
 
 uint32_t pos = 0;
 
@@ -71,15 +76,25 @@ int jukebox(int *mode) {
     uint16_t vol = (uint32_t)potVal * 0x60 / 4096; // need to set the volume real quick at the beginning
     dac_set_volume(vol);
 
-    current_song_idx = song_choice; // separate buffer to decouple currently playing track and the selected track in the menu
+    // separate buffer to decouple currently playing track and the selected track in the menu
+    // Necessary to allow browsing while listening
+    // First, copy track metadata
+    last_played_track_holder = current_track_holder; 
+    last_played_track = &last_played_track_holder;
+
+    last_played_track_idx = song_choice; // copy track index
+    last_played_album_idx = song_choice; // copy album index
+    last_played_artist_idx = song_choice; // copy artist index
 
     // Write track index to FRAM to refresh last played track data
-    fram_write(i2c0, 0x0000, (uint8_t*)&song_choice, sizeof(song_choice));
+    fram_write(i2c0, 0x0000, (uint8_t*)&last_played_track_idx, sizeof(last_played_track_idx));
+    fram_write(i2c0, 0x0002, (uint8_t*)&last_played_album_idx, sizeof(last_played_album_idx));
+    fram_write(i2c0, 0x0004, (uint8_t*)&last_played_artist_idx, sizeof(last_played_artist_idx));
     
     // get one-time parsed metadata
-    char *filename = current_track->filename;
-    uint16_t sampleSpeed = current_track->samplespeed;
-    uint16_t bitRate = current_track->bitrate;
+    char *filename = last_played_track->filename;
+    uint16_t sampleSpeed = last_played_track->samplespeed;
+    uint16_t bitRate = last_played_track->bitrate;
     uint32_t skip_bits = bitRate * 256; // bitrate * 1024 / 4 = approx. 2 seconds
     int exitType = 0;
     sci_write(&player, 0x05, sampleSpeed + 1); // initialize codec sampling speed (+1 at the end for stereo)
@@ -110,14 +125,14 @@ int jukebox(int *mode) {
 
     // fetch album art if necessary
     if (visualizer == 0) {
-        display_album_art_by_index(img_buffer, current_song_idx);
+        display_album_art_by_index(img_buffer, last_played_track_idx);
     }
 
     // mode -1 is when picking up from last played track & time
     if (*mode == -1) {
-        if (fram_read(i2c0, 0x000F, (uint8_t*)&pos, sizeof(pos)) < 0) {
+        if (fram_read(i2c0, 0x0006, (uint8_t*)&pos, sizeof(pos)) < 0) {
             printf("Failed to read timestamp from F-RAM!\n");
-            pos = current_track->audio_start;
+            pos = last_played_track->audio_start;
         }
         f_lseek(&fil, pos);
         paused = 0;
@@ -130,7 +145,7 @@ int jukebox(int *mode) {
         warp_duration = RESUME_WARP_US;
     } else {
         // if not in mode 1, just start from the beginning
-        f_lseek(&fil, current_track->audio_start);
+        f_lseek(&fil, last_played_track->audio_start);
     }
 
     selected_band = 0;
@@ -149,7 +164,6 @@ int jukebox(int *mode) {
     add_repeating_timer_ms(50, fast_callback, NULL, &timer_50);
     
     while (1) {
-        // printf("Buttons: %08b\n", current_button_states);
         // Very simple & jank benchmark
         loop_cnt++;
         if (loop_cnt >= 100) {
@@ -165,8 +179,10 @@ int jukebox(int *mode) {
         // Handles blinking of fast-forward/rewind icon, or red LED in visualizer 6 (track menu)
         // Blinks at FF_BLINK_INTERVAL speeds normally, but twice as fast (REW_BLINK_INTERVAL) when blinking LED during rewind
         uint64_t current_blink_interval = ff_or_rew ? FF_BLINK_INTERVAL : (visualizer == 6) ? REW_BLINK_INTERVAL : FF_BLINK_INTERVAL;
-        if (current_button_states == (BTN_SELECT & BTN_L) || current_button_states == (BTN_SELECT & BTN_R)) {
+        if (buttons_raw == (BTN_B & BTN_L) || buttons_raw == (BTN_B & BTN_R)) {
             ff_rw_active = 1;
+            WAVE_L_COLOR = 0xF800;
+            WAVE_R_COLOR = 0xF800;
             if (get_absolute_time() - last_icon_toggle_time >= current_blink_interval) {
                 ff_rw_icon_visible = !ff_rw_icon_visible;
                 last_icon_toggle_time = get_absolute_time();
@@ -176,6 +192,8 @@ int jukebox(int *mode) {
             ff_rw_active = 0;
             ff_rw_icon_visible = false;
             playStatus = paused ? pause_icon : play_icon;
+            WAVE_L_COLOR = 0xFFFF;
+            WAVE_R_COLOR = 0xFFFF;
         }
 
         // Always feed decoder unless fully paused
@@ -195,7 +213,7 @@ int jukebox(int *mode) {
 
         if (slow_callback_flag) {
             slow_callback_flag = 0; // clear flag
-            fram_write(i2c0, 0x000F, (uint8_t*)&pos, sizeof(pos)); // save current timestampt to FRAM
+            fram_write(i2c0, 0x0006, (uint8_t*)&pos, sizeof(pos)); // save current timestampt to FRAM
         }
         
         if (fast_callback_flag) {
@@ -204,14 +222,14 @@ int jukebox(int *mode) {
             pos = f_tell(&fil); // update file position
             
             //progress bar (should make separate function)
-            float progress = (float)(pos - current_track->audio_start) / (float)(current_track->audio_end - current_track->audio_start);
+            float progress = (float)(pos - last_played_track->audio_start) / (float)(last_played_track->audio_end - last_played_track->audio_start);
             if (progress < 0.0f)
                 progress = 0.0f;
             if (progress > 1.0f)
                 progress = 1.0f;
             prev_progress_bar = progress_bar;
             progress_bar = 240 * progress;
-            uint16_t seconds_passed = (uint16_t)(progress * (((current_track->audio_end - current_track->audio_start) * 8) / (bitRate * 1000)));
+            uint16_t seconds_passed = (uint16_t)(progress * (((last_played_track->audio_end - last_played_track->audio_start) * 8) / (bitRate * 1000)));
             progress_min = (int)seconds_passed / 60;
             progress_sec = seconds_passed % 60;
             bool update_bar = prev_progress_bar != progress_bar;
@@ -222,7 +240,7 @@ int jukebox(int *mode) {
             
         }
 
-        switch (buttons_read_long_press()) {
+        switch (buttons_get_action()) {
             case BTN_R: 
                 if (visualizer == 6) {
                     if (song_choice + 10 > track_count) {
@@ -259,10 +277,10 @@ int jukebox(int *mode) {
                     // multicore_lockout_end_blocking();
                     break;
                 } else {
-                    uint8_t seconds_into_song = (f_tell(&fil) - current_track->audio_start) / (bitRate * 125);
+                    uint8_t seconds_into_song = (f_tell(&fil) - last_played_track->audio_start) / (bitRate * 125);
                     if (seconds_into_song >= 5){
                         // uint32_t audio_start = find_audio_start(&fil);
-                        f_lseek(&fil, current_track->audio_start);
+                        f_lseek(&fil, last_played_track->audio_start);
                         break;
                     } else {
                         exitType = 2;
@@ -298,39 +316,59 @@ int jukebox(int *mode) {
                                 : "\r\nTape resuming...\r\n");
                     break;
                 }
-            case BTN_SELECT & BTN_R:
-                    ff_or_rew = 1;
-                    if (pos > f_size(&fil)) {
-                        pos = f_size(&fil) - 1;
+            case BTN_B:
+                if (1) {
+                    if (paused) {
+                        exitType = 0;
+                        vs1053_set_play_speed(&player, 0); // hard pause
+                        printf("\r\nStopping....\r\n");
+                        f_close(&fil);
+                        vs1053_stop(&player);
+                        return exitType;
                     } else {
-                        pos += skip_bits;
-                    }
-                    f_lseek(&fil, pos);
-                    if (f_read(&fil, buffer, sizeof(buffer), &br) != FR_OK || br == 0)
-                    {
-                        exitType = 1; // Default return when no bytes read (end of song)
+                        stopped = 1;
+                        warp_start_time = get_absolute_time();
+                        warp_start_transport = transport;
+                        warp_target = 0.0f;
+                        warp_duration = PAUSE_WARP_US;
+                        warping = true;
                         break;
                     }
-                    vs1053_play_data(&player, buffer, br); // play current pos for scrubbing sound effect
-                    printf("\r\nFast-forwarded ~2s\r\n");
+                } else {
+                    break;
+                }
+            case BTN_B & BTN_R:
+                ff_or_rew = 1;
+                if (pos > f_size(&fil)) {
+                    pos = f_size(&fil) - 1;
+                } else {
+                    pos += skip_bits;
+                }
+                f_lseek(&fil, pos);
+                if (f_read(&fil, buffer, sizeof(buffer), &br) != FR_OK || br == 0)
+                {
+                    exitType = 1; // Default return when no bytes read (end of song)
+                    break;
+                }
+                vs1053_play_data(&player, buffer, br); // play current pos for scrubbing sound effect
+                printf("\r\nFast-forwarded ~2s\r\n");
                 break;
+            case BTN_B & BTN_L:
+                ff_or_rew = 0;
+                if (pos < last_played_track->audio_start + skip_bits) {
+                    pos = last_played_track->audio_start;
+                } else {
+                    pos -= skip_bits;
+                }
+                f_lseek(&fil, pos);
+                if (f_read(&fil, buffer, sizeof(buffer), &br) != FR_OK || br == 0)
+                {
+                    exitType = 1; // Default return when no bytes read (end of song)
+                    break;
+                }
 
-            case BTN_SELECT & BTN_L:
-                    ff_or_rew = 0;
-                    if (pos < current_track->audio_start + skip_bits) {
-                        pos = current_track->audio_start;
-                    } else {
-                        pos -= skip_bits;
-                    }
-                    f_lseek(&fil, pos);
-                    if (f_read(&fil, buffer, sizeof(buffer), &br) != FR_OK || br == 0)
-                    {
-                        exitType = 1; // Default return when no bytes read (end of song)
-                        break;
-                    }
-
-                    vs1053_play_data(&player, buffer, br); // play current pos for scrubbing sound effect
-                    printf("\r\nRewound ~2s\r\n");
+                vs1053_play_data(&player, buffer, br); // play current pos for scrubbing sound effect
+                printf("\r\nRewound ~2s\r\n");
                 break;
             case BTN_U:
                 if (visualizer == 6) { // scroll through menu without actually changing the track
@@ -344,10 +382,10 @@ int jukebox(int *mode) {
                     }
                     printf("\r\nUp by 1! Track: %d\r\n", song_choice);
                 } else {
-                    uint8_t seconds_into_song = (f_tell(&fil) - current_track->audio_start) / (bitRate * 125);
+                    uint8_t seconds_into_song = (f_tell(&fil) - last_played_track->audio_start) / (bitRate * 125);
                     if (seconds_into_song >= 5){
                         // uint32_t audio_start = find_audio_start(&fil);
-                        f_lseek(&fil, current_track->audio_start);
+                        f_lseek(&fil, last_played_track->audio_start);
                         break;
                     } else {
                         exitType = 2;
@@ -385,7 +423,7 @@ int jukebox(int *mode) {
             case BTN_START:
                 visualizer = (visualizer + 1) % (num_visualizations - 1);
                 if (visualizer == 0) {
-                    display_album_art_by_index(img_buffer, current_song_idx);
+                    display_album_art_by_index(img_buffer, last_played_track_idx);
                     printf("changing visualizer");
                 }
                 switch (visualizer) {
@@ -427,24 +465,6 @@ int jukebox(int *mode) {
             // case 'M':
             //     enableIcons = !enableIcons;
             //     break;
-            case BTN_B:
-                if (paused)
-                {
-                    exitType = 0;
-                    vs1053_set_play_speed(&player, 0); // hard pause
-                    printf("\r\nStopping....\r\n");
-                    f_close(&fil);
-                    vs1053_stop(&player);
-                    return exitType;
-                }
-                stopped = 1;
-                warp_start_time = get_absolute_time();
-                warp_start_transport = transport;
-                warp_target = 0.0f;
-                warp_duration = PAUSE_WARP_US;
-                warping = true;
-                // album_art_ready = false;
-                break;
         }
     
         // --- Warp & LED logic (Active-Low: 0 = Full On, 65535 = Off) ---

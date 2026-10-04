@@ -18,7 +18,6 @@
 #define PIN_RST  27
 
 uint16_t prev_choice = 0;
-uint16_t song_choice = 0;
 
 track_info_t track_window[10];
 track_info_t *current_track = NULL;
@@ -32,9 +31,6 @@ artist_info_t artist_window[10];
 artist_info_t *current_artist = NULL;
 artist_info_t current_artist_holder;
 
-uint16_t song_choice;
-uint16_t album_choice;
-uint16_t artist_choice;
 uint16_t menu_choice;
 
 int temp_visualizer;
@@ -53,7 +49,7 @@ uint16_t browse_artists(int *exitCode) {
         set_visualizer(4);
         prev_choice = artist_choice;
         while (selected == false) {
-            switch (buttons_read_long_press()) {
+            switch (buttons_get_action()) {
             case BTN_D:
                 artist_choice = (artist_choice + 1) % artist_count;
                 break;
@@ -150,7 +146,7 @@ uint16_t browse_albums(int *exitCode) {
         set_visualizer(5);
         prev_choice = album_choice;
         while (selected == false) {
-            switch (buttons_read_long_press()) {
+            switch (buttons_get_action()) {
             case BTN_D:
                 album_choice = (album_choice + 1) % album_count;
                 break;
@@ -202,9 +198,9 @@ uint16_t browse_tracks(int *exitCode) {
         set_visualizer(6);
         printf("\r\nSong %d/%d: ", song_choice+1, track_count);
         prev_choice = song_choice;
-        // buttons_read_long_press(&current_buttons, &prev_buttons);
+        // buttons_get_action(&current_buttons, &prev_buttons);
         while (selected == false) {
-            switch (buttons_read_long_press()) {
+            switch (buttons_get_action()) {
             case BTN_D:
                 song_choice = (song_choice + 1) % track_count;
                 break;
