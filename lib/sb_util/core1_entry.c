@@ -508,7 +508,7 @@ void core1_entry()
             // Render string
             char album_title_buf[23];
             render_marquee_text(album_title_buf, current_album->album_name, album_title_pos, 21, 6);
-            st7789_draw_string(0, 0 * font_height, album_title_buf, WHITE);
+            st7789_draw_string(0, 0 * font_height, album_title_buf, HIGHLIGHT_COLOR_SECONDARY);
 
             st7789_ramwr();
             spi_set_format(spi0, 16, SPI_CPOL_0, SPI_CPHA_0, SPI_MSB_FIRST);
@@ -524,7 +524,7 @@ void core1_entry()
             // Render string
             char album_artist_buf[23];
             render_marquee_text(album_artist_buf, current_track->artist, album_artist_pos, 21, 6);
-            st7789_draw_string(0, 15 + 10 * font_height, album_artist_buf, WHITE);
+            st7789_draw_string(0, 15 + 10 * font_height, album_artist_buf, HIGHLIGHT_COLOR_SECONDARY);
 
             st7789_ramwr();
             spi_set_format(spi0, 16, SPI_CPOL_0, SPI_CPHA_0, SPI_MSB_FIRST);

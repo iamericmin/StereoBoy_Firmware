@@ -40,10 +40,11 @@ int temp_visualizer;
 
 uint16_t browse_artists(int *exitCode) {
     current_artist = &current_artist_holder;
+    // printf("Artist choice: %d\n", artist_choice);
+    // printf("LP Artist choice: %d\n", last_played_artist_idx);
     if (!sb_get_artist_window(artist_choice, current_artist, artist_window)) {
         printf("Error reading track metadata from cache table!\n");
     }
-    // read_lwbt();
     //Return to main menu with list selection:
     if (*exitCode == 0) {
         // pca9685_all_off(&vu_meter);
@@ -65,6 +66,7 @@ uint16_t browse_artists(int *exitCode) {
                 artist_choice = (artist_choice - 10 + artist_count) % artist_count;
                 break;
             case BTN_B:
+                printf("artist_choice: %d\n", artist_choice);
                 return 65535;
             case BTN_A:
                 selected = 1;   
@@ -79,12 +81,9 @@ uint16_t browse_artists(int *exitCode) {
             }
             sleep_ms(50);
         }
+        // last_played_artist_idx = artist_choice;
     }
-
-    // if (!sb_get_artist_window(artist_choice, current_artist, artist_window)) {
-    //     printf("Error reading track metadata from cache table!\n");
-    // }
-
+    printf("artist_choice: %d\n", artist_choice);
     return current_artist->start_album;
 }
 
@@ -115,6 +114,14 @@ int play_track(int *exitCode) {
     // First, copy track metadata
     last_played_track_holder = current_track_holder; 
     last_played_track = &last_played_track_holder;
+
+    last_played_track_idx = song_choice; // copy track index
+    last_played_album_idx = album_choice; // copy album index
+    last_played_artist_idx = artist_choice; // copy artist index
+
+    printf("Last played track: %d\n", last_played_track_idx);
+    printf("Last played album: %d\n", last_played_album_idx);
+    printf("Last played artist: %d\n", last_played_artist_idx);
 
     // Pass it to the playback loop
     *exitCode = jukebox(exitCode);
@@ -159,13 +166,18 @@ uint16_t browse_albums(int *exitCode) {
         prev_choice = album_choice;
         set_visualizer(8);
         while (selected == false) {
+            // TODO: Figure out how to sync artists when R/L changes artist
             switch (buttons_get_action()) {
                 case BTN_D:
                     artist_choice = (artist_choice + 1) % artist_count;
+                    sb_get_artist_window(artist_choice, current_artist, artist_window);
+                    album_choice = current_artist->start_album;
                     album_art_trigger = 1;
                     break;
                 case BTN_U:
                     artist_choice = (artist_choice - 1 + artist_count) % artist_count; //added roll-over
+                    sb_get_artist_window(artist_choice, current_artist, artist_window);
+                    album_choice = current_artist->start_album;
                     album_art_trigger = 1;
                     break;
                 case BTN_R:
@@ -185,7 +197,6 @@ uint16_t browse_albums(int *exitCode) {
                     break;
             }
             sb_get_album_window(album_choice, current_album, album_window);
-            sb_get_artist_window(artist_choice, current_artist, artist_window);
             sb_get_track_window_fast(&tracks_cache_file, current_album->start_track, current_track, track_window);
             load_album_cover_by_index(img_buffer, current_album->start_track);
             if (prev_choice != album_choice){
@@ -194,11 +205,8 @@ uint16_t browse_albums(int *exitCode) {
             }
             sleep_ms(50);
         }
+        // last_played_album_idx = album_choice;
     }
-
-    // if (!sb_get_album_window(album_choice, current_album, album_window)) {
-    //     printf("Error reading track metadata from cache table!\n");
-    // }
 
     return current_album->start_track;
 }

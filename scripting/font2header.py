@@ -4,8 +4,8 @@ from PIL import Image, ImageFont, ImageDraw
 # ---------------------------------------------------------
 # 1. Configuration
 # ---------------------------------------------------------
-TTF_FONT_FILE = 'CPMono_Bold.ttf'  
-FONT_POINT_SIZE = 18  # Font size inside canvas
+TTF_FONT_FILE = 'Profont.ttf'  
+FONT_POINT_SIZE = 20  # Font size inside canvas
 
 # ---------------------------------------------------------
 # TWEAK SMOOTHING & BLOCKINESS HERE:
@@ -14,13 +14,13 @@ FONT_POINT_SIZE = 18  # Font size inside canvas
 # - Lower (30 to 80)   = Thicker, blockier, mostly solid white with sharp edge drop-off.
 # - Higher (150 to 220) = Thinner, softer, gentler feathering/anti-aliasing.
 # - Default Pillow behavior is roughly equivalent to 180-200.
-SMOOTHING_THRESHOLD = 120
+SMOOTHING_THRESHOLD = 200
 
 # Optional: Physical stroke outline (0 = off, 1 = adds 1px extra weight to stems)
 STROKE_WIDTH = 0  
 
 OUTPUT_C_FILE = '../lib/font/font.c'
-OUTPUT_H_FILE = '../lib/font/font.h'
+OUTPUT_H_FILE = '../lib/font/font.h' 
 
 GRID_WIDTH = 11   # Character width in pixels
 GRID_HEIGHT = 20  # Character height in pixels
