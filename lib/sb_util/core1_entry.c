@@ -174,7 +174,7 @@ void scrolling_menu(int mode) {
         album_info_t *selected_album = &album_window[selected_slot];
 
         snprintf(menu_string, sizeof(menu_string), "%s", selected_album->album_name);
-        snprintf(info_string_1, sizeof(info_string_1), "%s", last_played_track->artist);
+        snprintf(info_string_1, sizeof(info_string_1), "%s", get_track_artist_name(last_played_track));
         if (selected_album->num_tracks == 1) {
             snprintf(info_string_2, sizeof(info_string_2), "1 Track");
         } else {
@@ -213,8 +213,8 @@ void scrolling_menu(int mode) {
         track_info_t *selected_track = &track_window[selected_slot];
 
         snprintf(menu_string, sizeof(menu_string), "%s", selected_track->title);
-        snprintf(info_string_1, sizeof(info_string_1), "%s", selected_track->artist);
-        snprintf(info_string_2, sizeof(info_string_2), "%s", selected_track->album);
+        snprintf(info_string_1, sizeof(info_string_1), "%s", get_track_artist_name(selected_track));
+        snprintf(info_string_2, sizeof(info_string_2), "%s", get_track_album_name(selected_track));
     } else { // HOME SCREEN
         item_choice = menu_choice;
         item_count = 8;
@@ -290,7 +290,7 @@ void scrolling_menu(int mode) {
             // snprintf(marquee_album, sizeof(marquee_album), "%d:%02d", progress_min, progress_sec);
 
             // Safely format artist title (bottom line) with marquee scrolling/truncation
-            render_marquee_text(marquee_album, last_played_track->artist, marquee_album_start, 20, 8);
+            render_marquee_text(marquee_album, get_track_artist_name(last_played_track), marquee_album_start, 20, 8);
         } else {
             // Blank top line on home screen for other options
             memset(marquee_artist, ' ', 20);
@@ -519,11 +519,11 @@ void core1_entry()
             static uint32_t album_artist_pos_last_update = 0;
 
             // Advance position (150ms scroll speed, 2000ms start pause)
-            marquee_plus(&album_artist_pos, &album_artist_pos_last_update, current_track->artist, 21, 6, 150, 2000);
+            marquee_plus(&album_artist_pos, &album_artist_pos_last_update, get_track_artist_name(current_track), 21, 6, 150, 2000);
 
             // Render string
             char album_artist_buf[23];
-            render_marquee_text(album_artist_buf, current_track->artist, album_artist_pos, 21, 6);
+            render_marquee_text(album_artist_buf, get_track_artist_name(current_track), album_artist_pos, 21, 6);
             st7789_draw_string(0, 15 + 10 * font_height, album_artist_buf, HIGHLIGHT_COLOR_SECONDARY);
 
             st7789_ramwr();

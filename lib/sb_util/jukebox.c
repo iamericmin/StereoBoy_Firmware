@@ -73,9 +73,6 @@ int jukebox(int *mode) {
     uint16_t vol = (uint32_t)potVal * 0x60 / 4096; // need to set the volume real quick at the beginning
     dac_set_volume(vol);
 
-    printf("Last played artist idx: %d\n", last_played_artist_idx);
-    printf("Last played album idx: %d\n", last_played_album_idx);
-
     // Write track index to FRAM to refresh last played track data
     fram_write(i2c0, 0x0000, (uint8_t*)&last_played_track_idx, sizeof(last_played_track_idx));
     fram_write(i2c0, 0x0002, (uint8_t*)&last_played_album_idx, sizeof(last_played_album_idx));

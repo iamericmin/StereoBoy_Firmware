@@ -31,17 +31,6 @@ void clear_framebuffer()
     mutex_exit(&text_buff_mtx);
 }
 
-
-void sb_print_track(track_info_t *t)
-{
-    printf("\n%s - %s\n", t->artist, t->title);
-    printf("Album: %s\n", t->album);
-    printf("%d kbps  %d Hz  %s\n",
-           t->bitrate,
-           t->samplespeed,
-           t->channels ? "Mono" : "Stereo");
-}
-
 int get_selected_band(){
     return selected_band;
 }
@@ -278,46 +267,6 @@ int sb_scan_folders(folder_info_t *folders, int max_folders) {
     return folder_count;
 }
 
-// This function scans the current directory for all MP3 files
-// and quickly generates an array of all their filenames
-// Made this to make initial directory parsing faster
-int sb_get_raw_tracks(char raw_tracks[][256], int max_tracks) {
-    DIR dir;
-    FILINFO fno;
-    int count = 0;
-
-    if (f_opendir(&dir, "0:/") != FR_OK) {
-        return 0; 
-    }
-
-    while (f_readdir(&dir, &fno) == FR_OK && fno.fname[0] != 0)
-    {
-        // Skip directories
-        if (fno.fattrib & AM_DIR)
-            continue;
-
-        char *ext = strrchr(fno.fname, '.');
-        if (ext && !strcasecmp(ext, ".mp3") && count < max_tracks)
-        {
-            // Copy filename into the current slot, then increment
-            strncpy(raw_tracks[count], fno.fname, 255);
-            raw_tracks[count][255] = '\0'; // Safety null-terminator
-            count++;
-        }
-    }
-
-    f_closedir(&dir);
-
-    if (count == 0)
-    {
-        printf("No MP3 files found.\r\n");
-        return 0;
-    }
-
-    qsort(raw_tracks, count, 256, compare_filenames_raw);
-    return count;
-}
-
 int sb_get_track_window_fast(FIL *fil, uint16_t idx, track_info_t *out_track, track_info_t *track_window) {
     if (fil == NULL || track_count == 0) return 0;
 
@@ -413,6 +362,25 @@ int sb_get_artist_window(uint16_t idx, artist_info_t *out_artist, artist_info_t 
     return 1;
 }
 
+// Get album name string safely from a track pointer
+const char* get_track_album_name(const track_info_t *track) {
+    if (track && track->album_idx < album_count) {
+        return global_albums[track->album_idx].album_name;
+    }
+    return "Unknown Album";
+}
+
+// Get artist name string safely from a track pointer
+const char* get_track_artist_name(const track_info_t *track) {
+    if (track && track->album_idx < album_count) {
+        uint16_t art_idx = global_albums[track->album_idx].artist_idx;
+        if (art_idx < artist_count) {
+            return global_artists[art_idx].artist_name;
+        }
+    }
+    return "Unknown Artist";
+}
+
 void sb_check_cache_loaded() {
     FIL db_fil;
     UINT br;
@@ -477,8 +445,8 @@ void sb_check_cache_loaded() {
         // Read sequentially until we reach the End-of-File boundary
         while (f_read(&db_fil, &t, sizeof(track_info_t), &br) == FR_OK && br == sizeof(track_info_t))
         {
-            printf("[%03d] %s by %s\n", index, t.title, t.artist);
-            printf("  Album : %s\r\n", t.album);
+            // printf("[%03d] %s by %s\n", index, t.title, t.artist);
+            // printf("  Album : %s\r\n", t.album);
             printf("  Filename : %s\r\n", t.filename);
             printf("  ============================================\r\n");
             index++;

@@ -107,10 +107,9 @@ typedef struct __attribute__((packed)) {
     uint16_t samplespeed;
     uint8_t mpegID;
     uint8_t channels;
+    uint16_t album_idx;      // <--- Back-reference to parent album
     char filename[256];
     char title[128];
-    char artist[128];
-    char album[128];
 } track_info_t;
 
 extern track_info_t *current_track;
@@ -129,6 +128,7 @@ typedef struct __attribute__((packed)) {
     char album_name[128];
     uint16_t num_tracks;
     uint16_t start_track;
+    uint16_t artist_idx;     // <--- Back-reference to parent artist
 } album_info_t;
 
 extern track_info_t track_window[10];

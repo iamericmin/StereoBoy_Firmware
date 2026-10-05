@@ -98,8 +98,8 @@ int play_track(int *exitCode) {
 
     printf("\r\n\rNOW PLAYING:\r\n");
     printf("  Title : %s\r\n", current_track->title);
-    printf("  Artist: %s\r\n", current_track->artist);
-    printf("  Album : %s\r\n", current_track->album);
+    printf("  Artist: %s\r\n", get_track_artist_name(current_track));
+    printf("  Album : %s\r\n", get_track_album_name(current_track));
     printf("  Bitrate : %d Kbps\r\n", current_track->bitrate);
     printf("  Sample rate : %d Hz\r\n", current_track->samplespeed);
     printf("  Channels : %s\r\n", current_track->channels == 1 ? "Mono" : "Stereo");
@@ -116,8 +116,11 @@ int play_track(int *exitCode) {
     last_played_track = &last_played_track_holder;
 
     last_played_track_idx = song_choice; // copy track index
-    last_played_album_idx = album_choice; // copy album index
-    last_played_artist_idx = artist_choice; // copy artist index
+    last_played_album_idx = current_track->album_idx; // copy album index
+    last_played_artist_idx = global_albums[current_track->album_idx].artist_idx; // copy artist index
+
+    album_choice = last_played_album_idx;
+    artist_choice = last_played_artist_idx;
 
     printf("Last played track: %d\n", last_played_track_idx);
     printf("Last played album: %d\n", last_played_album_idx);
